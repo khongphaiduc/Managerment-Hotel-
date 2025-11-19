@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using MyData.Models;
 using System;
 using System.Collections.Generic;
 
@@ -58,4 +59,6 @@ public partial class Booking
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
+    // 
+    public virtual Order? Orders { get; set; }
 }

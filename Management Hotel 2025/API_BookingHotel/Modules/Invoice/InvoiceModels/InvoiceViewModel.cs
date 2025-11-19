@@ -2,7 +2,8 @@
 {
     public class InvoiceViewModel
     {
-        public int InvoiceCode { get; set; }
+        public string BookingCode { get; set; }
+        public string InvoiceCode { get; set; }
         public string CustomerName { get; set; }
         public string RoomNumber { get; set; }
         public DateTime? CheckInDate { get; set; }

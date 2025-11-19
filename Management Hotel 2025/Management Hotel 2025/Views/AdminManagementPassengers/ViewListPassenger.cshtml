@@ -32,9 +32,9 @@
                         <td>@customer.Nationality</td>
                         <td>@customer.TimesVisited</td>
                         <td class="text-center">
-                            <button class="btn btn-info btn-sm mx-1">Lịch Sử</button>
+
                             <a asp-action="GetPassengersInfo" asp-controller="AdminManagementPassengers" asp-route-codePassenger="@customer.PersonalCode" class="btn btn-primary btn-sm mx-1">Thông Tin</a>
-                            <button class="btn btn-warning btn-sm mx-1">Hóa Đơn</button>
+                            <button class="btn btn-info btn-sm mx-1">Lịch Sử</button>
                         </td>
                     </tr>
                 }
@@ -216,31 +216,28 @@
 
     /* --- Responsive table --- */
     @@media (max-width: 992px) {
-        .container-fluid
+        .container-fluid {
+            padding: 15px 20px;
+        }
 
-    {
-        padding: 15px 20px;
-    }
+        table th, table td {
+            font-size: 14px;
+            padding: 10px;
+        }
 
-    table th, table td {
-        font-size: 14px;
-        padding: 10px;
-    }
+        .btn {
+            min-width: 60px;
+            font-size: 11px;
+            padding: 6px 10px;
+            margin-right: 0 !important; /* Remove mx-1 on small screen */
+            margin-left: 0 !important;
+            margin: 2px;
+        }
 
-    .btn {
-        min-width: 60px;
-        font-size: 11px;
-        padding: 6px 10px;
-        margin-right: 0 !important; /* Remove mx-1 on small screen */
-        margin-left: 0 !important;
-        margin: 2px;
-    }
-
-    td.text-center {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
+        td.text-center {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
     }
 </style>

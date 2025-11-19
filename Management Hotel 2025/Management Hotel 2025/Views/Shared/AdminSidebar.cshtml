@@ -57,9 +57,13 @@
                 </li>
 
 
+                <li>
+                    <a  target="_blank" asp-controller="Home" asp-action="MemeDevelopment"
+                       class="@(ViewContext.RouteData.Values["action"].ToString() == "MemeDevelopment" ? "active" : "")">
+                        <i class="bi bi-person-workspace"></i> <span>Quản lý nhân viên</span>
+                    </a>
+                </li>
 
-
-                <li><a href="#"><i class="bi bi-person-workspace"></i> <span>Quản lý nhân viên</span></a></li>
                 <li><a href="#"><i class="bi bi-bar-chart"></i> <span>Báo cáo & thống kê</span></a></li>
                 <li><a href="#"><i class="bi bi-gear"></i> <span>Cài đặt hệ thống</span></a></li>
                 <li><a href="#"><i class="bi bi-bell"></i> <span>Cài đặt thông báo</span></a></li>

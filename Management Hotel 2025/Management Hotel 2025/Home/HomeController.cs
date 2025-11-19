@@ -41,6 +41,11 @@ namespace Management_Hotel_2025.Controllers
             return View();
         }
 
+        [Route("trial")]
+        public IActionResult MemeDevelopment()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {

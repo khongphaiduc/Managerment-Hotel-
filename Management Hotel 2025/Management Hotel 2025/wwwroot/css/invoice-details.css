@@ -1,0 +1,383 @@
+﻿/* invoice-details.css
+   Layout rõ ràng hơn: grid main + sticky totals panel + section cards
+   Replace previous file with this to get clearer zoning for a 5-star invoice.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+    --text: #1f2d33;
+    --muted: #6b7a80;
+    --accent-deep: #072a33;
+    --accent-gold: #d4af37;
+    --accent-gold-dark: #b0892a;
+    --card-bg: #ffffff;
+    --panel-bg: #fbfaf8;
+    --border: rgba(31,45,51,0.08);
+}
+
+/* Container */
+.invoice-root {
+    max-width: 1100px;
+    margin: 22px auto;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    position: relative;
+}
+
+    /* Card */
+    .invoice-root .card {
+        border: none;
+        border-radius: 14px;
+        overflow: visible;
+        box-shadow: 0 20px 50px rgba(12,24,34,0.10);
+        background: linear-gradient(180deg, #fff, #fbfdff);
+    }
+
+    /* Card body */
+    .invoice-root .card-body {
+        padding: 28px;
+        background: var(--card-bg);
+        border-radius: 14px;
+        position: relative;
+    }
+
+/* Header layout */
+.header-top {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* Logo */
+.invoice-logo {
+    width: 92px;
+    height: 92px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(7,42,59,0.03));
+    border: 2px solid rgba(212,175,55,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-gold-dark);
+    font-weight: 700;
+    font-family: "Playfair Display", serif;
+    font-size: 22px;
+    box-shadow: 0 8px 20px rgba(7,42,59,0.06);
+}
+
+/* Hotel title */
+.invoice-root h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 2rem;
+    color: var(--accent-deep);
+    margin: 0;
+    letter-spacing: -0.6px;
+}
+
+/* small meta */
+.hotel-meta {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 6px;
+}
+
+/* Accent bar */
+.header-accent {
+    height: 6px;
+    width: 100%;
+    margin: 12px 0 18px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, rgba(212,175,55,0.16), rgba(11,74,111,0.06));
+}
+
+/* MAIN GRID: left content + right totals */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 22px;
+    align-items: start;
+}
+
+/* On mobile stack */
+@media (max-width: 991.98px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Section cards: create clear blocks */
+.section-card {
+    border-radius: 12px;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,250,0.98));
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    box-shadow: 0 6px 18px rgba(11,74,111,0.03);
+}
+
+/* Section header with gold accent line */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+    .section-header h6 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--accent-deep);
+        font-size: 1rem;
+    }
+
+    .section-header .accent-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: linear-gradient(180deg,var(--accent-gold),var(--accent-gold-dark));
+        box-shadow: 0 3px 8px rgba(184,134,11,0.12);
+    }
+
+/* Table styling inside sections */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    margin-bottom: 0;
+}
+
+    .table.table-bordered {
+        border: none;
+    }
+
+    .table thead th {
+        background: linear-gradient(180deg, rgba(7,42,59,0.95), rgba(7,42,59,0.95));
+        color: #fff;
+        font-weight: 700;
+        padding: 10px 12px;
+        border: none;
+        font-size: 0.92rem;
+    }
+
+    .table tbody td {
+        padding: 12px;
+        border-top: 1px solid rgba(31,45,51,0.05);
+        vertical-align: middle;
+        font-size: 0.95rem;
+        color: var(--text);
+    }
+
+    .table tbody tr:nth-child(odd) td {
+        background: rgba(7,42,59,0.015);
+    }
+
+/* Emphasize numeric columns */
+.text-end {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: #072a33;
+}
+
+/* Right totals panel */
+.totals-col {
+    position: relative;
+}
+
+.totals-panel {
+    position: sticky;
+    top: 26px;
+    border-radius: 14px;
+    padding: 18px;
+    background: linear-gradient(180deg, var(--panel-bg), #fff);
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 30px rgba(11,74,111,0.06);
+}
+
+    .totals-panel .panel-title {
+        font-weight: 700;
+        color: var(--accent-deep);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+.totals-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(31,45,51,0.04);
+}
+
+    .totals-row:last-child {
+        border-bottom: none;
+    }
+
+    .totals-row .label {
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    .totals-row .value {
+        color: var(--text);
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+/* Grand total emphasized */
+.grand-total {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02));
+    border: 1px solid rgba(212,175,55,0.10);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .grand-total .gt-label {
+        font-weight: 700;
+        color: var(--accent-deep);
+    }
+
+    .grand-total .gt-amount {
+        font-family: "Playfair Display", serif;
+        color: var(--accent-gold-dark);
+        font-size: 1.45rem;
+        font-weight: 800;
+        letter-spacing: -0.6px;
+    }
+
+/* Paid/Due badge inside totals */
+.totals-badge {
+    display: inline-block;
+    padding: 0.45rem 0.7rem;
+    border-radius: 0.6rem;
+    background: rgba(212,175,55,0.06);
+    color: var(--accent-gold-dark);
+    font-weight: 700;
+    border: 1px solid rgba(212,175,55,0.10);
+    box-shadow: 0 6px 18px rgba(11,74,111,0.04);
+}
+
+/* Signature area */
+.signature-area {
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.signature {
+    flex: 1;
+    min-height: 68px;
+    border-top: 1px dashed rgba(31,45,51,0.06);
+    padding-top: 8px;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Print friendly */
+@media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .invoice-root .card {
+        box-shadow: none;
+        border: none;
+    }
+
+    .invoice-root::after {
+        display: none;
+    }
+
+    .totals-panel {
+        position: static;
+        top: auto;
+        box-shadow: none;
+    }
+
+    .table thead th {
+        -webkit-print-color-adjust: exact;
+        background: #072a33 !important;
+        color: #fff !important;
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 767.98px) {
+    .invoice-logo {
+        width: 72px;
+        height: 72px;
+        font-size: 18px;
+    }
+
+    .totals-panel {
+        position: relative;
+        top: auto;
+        margin-top: 8px;
+    }
+
+    .grand-total .gt-amount {
+        font-size: 1.05rem;
+    }
+}
+.invoice-root .card {
+    position: relative;
+    border-radius: 32px; /* bo cong lớn */
+    overflow: hidden;
+    padding: 12px; /* khoảng cách giữa viền và nội dung */
+    background: linear-gradient(180deg, #fff, #fbfaf8);
+    box-shadow: 0 20px 50px rgba(12,24,34,0.10);
+}
+
+    /* Viền lượn sóng bên ngoài */
+    .invoice-root .card::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        right: -6px;
+        bottom: -6px;
+        border-radius: 40px; /* bo cong hơn nữa */
+        background: linear-gradient(135deg, #d4af37, #072a33);
+        opacity: 0.15; /* độ mờ */
+        z-index: 0;
+    }
+
+/* Viền nội dung bên trong */
+.invoice-root .card-body {
+    position: relative;
+    z-index: 1; /* đưa nội dung lên trên */
+    border-radius: 26px;
+    background: #ffffff;
+    padding: 28px;
+}
+
+/* Tạo các góc uốn lượn dạng “wave” */
+.invoice-root .card::after {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 40px;
+    left: -10%;
+    bottom: -20px;
+    background: radial-gradient(circle at center, rgba(212,175,55,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: rotate(-5deg);
+    z-index: 0;
+}
+
+/* Hiệu ứng in ấn vẫn giữ đẹp */
+@media print {
+    .invoice-root .card::before,
+    .invoice-root .card::after {
+        display: none;
+    }
+}

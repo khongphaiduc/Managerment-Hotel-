@@ -1,4 +1,5 @@
-﻿using Mydata.Models;
+﻿using Management_Hotel_2025.Modules.Rooms.RoomService;
+using Mydata.Models;
 
 namespace Management_Hotel_2025.ViewModel
 {
@@ -42,7 +43,7 @@ namespace Management_Hotel_2025.ViewModel
         public decimal PricePerNight { get; set; }   // giá phòng
         public int NumberOfNights { get; set; }      // số đêm
 
-        public ICollection<BookingService> UsedToServices { get; set; } = new List<BookingService>();
+        public ICollection<ServiceToUsed> UsedToServices { get; set; } = new List<ServiceToUsed>();
 
         // Tính tổng dịch vụ động
         public decimal TotalService => UsedToServices.Sum(s => s.UnitPrice * s.Quantity);
@@ -54,6 +55,13 @@ namespace Management_Hotel_2025.ViewModel
         public decimal TotalAmount => TotalAmountRoom + TotalService;
     }
 
+
+    public  class ServiceToUsed
+    {
+        public string ServiceName { get; set; } = null!;
+        public decimal UnitPrice { get; set; }
+        public int Quantity { get; set; }
+    }
 
 
 }

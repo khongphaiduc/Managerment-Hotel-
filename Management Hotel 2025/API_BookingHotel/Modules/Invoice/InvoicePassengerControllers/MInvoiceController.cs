@@ -19,10 +19,10 @@ namespace API_BookingHotel.Modules.Invoice.InvoicePassengerControllers
 
         // api lấy danh sách hóa đơn
         [HttpGet("invoice")]
-        public async Task<IActionResult> GetInvoicePassenger()
-        { 
+        public async Task<IActionResult> GetInvoicePassenger(string? key, DateTime? startdate, DateTime? enddate, int indexpage)
+        {
 
-            var result = await _Invoices.GetListInvoicePasseners();
+            var result = await _Invoices.GetListInvoicePasseners(key, startdate, enddate, indexpage);
 
             if (result == null)
             {
@@ -32,8 +32,6 @@ namespace API_BookingHotel.Modules.Invoice.InvoicePassengerControllers
             {
                 return Ok(result);
             }
-
-
         }
 
 

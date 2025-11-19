@@ -26,7 +26,7 @@ namespace API_BookingHotel.Modules.Invoice.MInvoiceServices
                     .ThenInclude(s => s.Room)
                     .Select(s => new InvoiceViewModel()
                     {
-                        InvoiceCode = s.OrderId,
+                        InvoiceCode = s.OrderCode,
                         CustomerName = s.Booking.CustomerName,
                         RoomNumber = string.Join(", ", s.Booking.BookingDetails.Select(b => b.Room.RoomNumber)),
                         CheckInDate = s.Booking.RealTimeCheckIn,
@@ -47,44 +47,81 @@ namespace API_BookingHotel.Modules.Invoice.MInvoiceServices
             }
         }
 
-
         // lấy danh sách toàn bộ hóa đơn
-        public async Task<List<InvoiceViewModel>> GetListInvoicePasseners()
+        public async Task<PagedResult<InvoiceViewModel>> GetListInvoicePasseners(string? SearchKey, DateTime? startdate, DateTime? enddate, int indexpage)
         {
             try
             {
-                var ListInvoices = await _dbcontext.Orders
-                    .Include(s => s.Booking)
-                    .ThenInclude(s => s.BookingDetails)
-                    .ThenInclude(s => s.Room)
-                    .Select(s => new InvoiceViewModel()
-                    {
-                        InvoiceCode = s.OrderId,
-                        CustomerName = s.Booking.CustomerName,
-                        RoomNumber = string.Join(", ", s.Booking.BookingDetails.Select(b => b.Room.RoomNumber)),
-                        CheckInDate = s.Booking.RealTimeCheckIn,
-                        CheckOutDate = s.Booking.RealTimeCheckOut,
-                        TotalAmount = s.TotalAmount,
-                        StatusInvoice = s.OrderStatus,
-                        CreatedBy = "Phạm Trung Đức"
-                    }).ToListAsync();
 
-                if (ListInvoices == null || ListInvoices.Count == 0)
+                if (!startdate.HasValue) startdate = DateTime.Now.AddDays(-7);
+
+                if (!enddate.HasValue) enddate = DateTime.Now;
+
+
+                var query = _dbcontext.Orders
+                        .Include(o => o.Booking)
+                            .ThenInclude(b => b.BookingDetails)
+                                .ThenInclude(d => d.Room)
+                        .AsQueryable();
+
+                if (startdate.HasValue)
+                    query = query.Where(o => o.OrderDate >= startdate.Value);
+
+                if (enddate.HasValue)
+                    query = query.Where(o => o.OrderDate <= enddate.Value);
+
+
+                if (!string.IsNullOrEmpty(SearchKey))
                 {
-                    return new List<InvoiceViewModel>();
+                    SearchKey = SearchKey.Trim();
+
+                    query = query.Where(o => o.CustomerName.Contains(SearchKey)  // where chỉ giữ lại các phần tử mà biểu thức trả về true
+                                   || o.OrderCode.Contains(SearchKey));
                 }
-                else
+
+                int totalRecords = await query.CountAsync();
+
+                query = query
+                    .OrderByDescending(o => o.OrderDate)
+                    .Skip((indexpage - 1) * 10)
+                    .Take(10);
+
+
+                var listInvoices = await query
+                    .Select(o => new InvoiceViewModel
+                    {
+                        BookingCode = o.Booking.BookingCode,
+                        InvoiceCode = o.OrderCode,
+                        CustomerName = o.Booking.CustomerName,
+                        RoomNumber = string.Join(", ", o.Booking.BookingDetails.Select(d => d.Room.RoomNumber)),
+                        CheckInDate = o.Booking.RealTimeCheckIn,
+                        CheckOutDate = o.Booking.RealTimeCheckOut,
+                        TotalAmount = o.TotalAmount,
+                        StatusInvoice = o.OrderStatus,
+                        CreatedBy = "Phạm Trung Đức"
+                    })
+                    .ToListAsync();
+
+                return new PagedResult<InvoiceViewModel>
                 {
-                    return ListInvoices;
-                }
+                    Items = listInvoices,
+                    PageIndex = indexpage,
+                    PageSize = 10,
+                    TotalRecords = totalRecords,
+                    TotalPages = (int)Math.Ceiling(totalRecords / (double)10),
+                    StartTime = startdate ?? DateTime.Now,
+                    EndTime = enddate ?? DateTime.Now
+
+                };
 
             }
             catch (Exception s)
             {
                 _logger.LogInformation("Lỗi lấy danh sách hóa đơn: " + s.Message);
-                return new List<InvoiceViewModel>();
+                return new PagedResult<InvoiceViewModel>();
             }
 
         }
+
     }
 }

@@ -29,6 +29,9 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
 
             booking.Status = "CheckOut";
             booking.RealTimeCheckOut = DateTime.Now.Date;
+
+            string Code = DateTime.Now.ToString("ddMMyyyyHHmmss") + new Random().Next(100, 999);
+
             var newOrder = new MyData.Models.Order
             {
                 OrderDate = DateTime.Now,
@@ -41,7 +44,8 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
                 OrderStatus = "Completed",
                 PaymentMethod = OrdersMethod,
                 IdStaff = idStaff,
-                Booking = booking
+                Booking = booking,
+                OrderCode = "PTD" + Code
             };
 
             _dbcontext.Orders.Add(newOrder);
@@ -54,7 +58,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
         // xem hóa đơn đạt phòng
         async Task<Order> IOrder.ViewOrder(string bookingcode)
         {
-            var booking = await _dbcontext.Bookings
+            var booking = await _dbcontext.Bookings.Include(s => s.Orders)
                 .Include(s => s.BookingDetails)
                 .ThenInclude(s => s.Room)
                 .ThenInclude(s => s.RoomType)
@@ -77,7 +81,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
                 RealCheckInDate = booking.RealTimeCheckIn ?? DateTime.MinValue,
                 RealCheckOutDate = booking.RealTimeCheckOut ?? DateTime.MinValue,
                 Deposit = booking.DepositAmount,
-                OrderStatus = "Pending",
+                OrderStatus = booking.Orders?.OrderStatus ?? "Pending",
                 roomsOrders = booking.BookingDetails.Select(ro => new RoomOrder
                 {
                     RoomType = ro.Room.RoomType.Name,
@@ -86,8 +90,9 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
                     NumberOfNights = ro.CheckOutDate.HasValue && ro.CheckInDate.HasValue
     ? (ro.CheckOutDate.Value - ro.CheckInDate.Value).Days
     : 0,
-                    UsedToServices = ro.BookingServices.Select(bs => new BookingService
+                    UsedToServices = ro.BookingServices.Select(bs => new ServiceToUsed()
                     {
+                        ServiceName = bs.Service.ServiceName,
                         UnitPrice = bs.UnitPrice,
                         Quantity = bs.Quantity
                     }).ToList()
@@ -97,4 +102,5 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
             return order;
         }
     }
+
 }

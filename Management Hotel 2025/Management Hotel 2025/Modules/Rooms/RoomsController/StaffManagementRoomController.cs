@@ -5,6 +5,7 @@ using Management_Hotel_2025.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using Mydata.Models;
 using System.Collections.Generic;
@@ -226,11 +227,13 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
         }
 
 
-        // check out
+        //  hiên thị hóa đơn check
         [HttpGet]
         public async Task<IActionResult> CheckOutPassenger(string bookingcode)
         {
+
             var order = await _order.ViewOrder(bookingcode);
+             ViewBag.TimeCheckOut = DateTime.Now;
             return View(order);
         }
 
