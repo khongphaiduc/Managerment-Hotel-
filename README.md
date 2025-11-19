@@ -24,7 +24,7 @@ Link Demo : chưa có hihi
 
 - Authentication: JWT, OAuth2
 
-- Payment Gateway: VNPAY,Momo (dự kiến)
+- Payment Gateway: VNPAY, Quét QR (PayOS) 
 
 ### Các tính năng của dự án (theo dự kiến)
 ### 1. User (Khách hàng)
@@ -70,9 +70,6 @@ Link Demo : chưa có hihi
 
   + In hóa đơn cho khách (VAT, dịch vụ, tổng tiền)
 
-  + Xử lý yêu cầu/hủy đặt phòng từ khách
-
-  + Quản lý phản hồi/đánh giá từ khách hàng
 
  ###  3. Admin (Quản trị hệ thống)
 
