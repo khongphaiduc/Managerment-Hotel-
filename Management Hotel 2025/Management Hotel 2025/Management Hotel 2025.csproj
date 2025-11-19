@@ -47,4 +47,8 @@
     <ProjectReference Include="..\MyData\MyData.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\Statistics\StatisticsServices\" />
+  </ItemGroup>
+
 </Project>
