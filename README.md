@@ -24,7 +24,7 @@ Link Demo : chưa có hihi
 
 - Authentication: JWT, OAuth2
 
-- Payment Gateway: VNPAY, Quét QR (PayOS) 
+- Payment Gateway: VNPAY, Quét QR (PayOS) // pham trung duc tesst 
 
 ### Các tính năng của dự án (theo dự kiến)
 ### 1. User (Khách hàng)
