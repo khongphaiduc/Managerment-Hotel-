@@ -21,16 +21,28 @@ namespace Management_Hotel_2025.Controllers
         [Route("trungducluxuryhotel")]
         public IActionResult Index()
         {
+
+
             // nếu là nhân viên hay là thằng admin thì chuyển giao diện
             if (User.IsInRole("Staff"))
             {
                 return RedirectToAction("StaffViewListRoom", "StaffManagementRoom");
-            }else if (User.IsInRole("Admin"))
+            }
+            else if (User.IsInRole("Admin"))
             {
                 return RedirectToAction("AdminHomePage", "Admin");
             }
             else
             {
+
+                string? payIdentity = HttpContext.Session.GetString("Pay_Identity");
+
+                // Chỉ tạo mới nếu chưa có
+                if (string.IsNullOrEmpty(payIdentity))
+                {
+                    payIdentity = Guid.NewGuid().ToString("N").Substring(0, 24);
+                    HttpContext.Session.SetString("Pay_Identity", payIdentity);
+                }
                 return View();
             }
         }

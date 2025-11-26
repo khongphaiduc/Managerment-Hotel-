@@ -1,7 +1,16 @@
 ﻿@model IEnumerable<Management_Hotel_2025.Modules.AdminMPassengers.MPassengerModels.PassengersInfo>
-
+@using System.Security.Claims
 @{
-    Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+    if (role == "Admin")
+    {
+        Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/StaffHeader.cshtml";
+    }
     ViewBag.Title = "Danh sách khách hàng";
     var stt = 1;
 }

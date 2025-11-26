@@ -1,356 +1,582 @@
-﻿@{
-    Layout = null;
+﻿@using System.Security.Claims
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Trang chủ";
 }
 
-@using System.Security.Claims
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Luxury Hotel - Trang Chủ</title>
+    <title>Trung Duc Luxury Hotel - Đẳng cấp nghỉ dưỡng</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Bootstrap CSS -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Animate.css -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
-    <!-- AOS.js CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
     <style>
-        #hero-fullpage {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 9999;
-            overflow: hidden;
+        :root {
+            --primary-gold: #c19b76;
+            --dark-text: #1a1a1a;
+            --light-bg: #f8f9fa;
         }
 
-        .slide {
-            position: absolute;
-            width: 100vw;
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #444;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* --- Hero Section --- */
+        .hero-section {
             height: 100vh;
-            top: 0;
-            left: 0;
-            background-size: cover;
-            background-position: center;
+            width: 100%;
+            background: url('https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/09/nhung-trai-nghiem-chi-co-o-khach-san-5-sao-1.jpg') no-repeat center center/cover;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.7s;
+            text-align: center;
         }
 
-            .slide.active {
-                opacity: 1;
-                z-index: 2;
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 900px;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-gold {
+            background-color: var(--primary-gold);
+            color: white;
+            padding: 12px 35px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            transition: all 0.3s;
+        }
+
+            .btn-gold:hover {
+                background-color: #a07e5b;
+                color: white;
+                transform: translateY(-3px);
             }
 
-        .caption {
-            color: #fff;
-            font-size: 2.8rem;
-            text-align: center;
-            background: rgba(0,0,0,0.39);
-            border-radius: 18px;
-            padding: 32px 24px 32px 24px;
-            font-weight: 600;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.16);
-            max-width: 700px;
+        /* --- Booking Form Full Width --- */
+        .booking-wrapper {
+            position: relative;
+            margin-top: -50px;
+            z-index: 10;
+            width: 100%;
         }
 
-        body.lock-scroll {
+        .booking-form {
+            background: white;
+            padding: 40px 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .form-control, .form-select {
+            border: none;
+            border-bottom: 1px solid #ddd;
+            border-radius: 0;
+            padding-left: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+        }
+
+        /* --- General Layout --- */
+        .section-padding {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        .section-subtitle {
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        /* --- About Section Full --- */
+        .about-img-full {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+        }
+
+        /* --- Rooms Full Width Cards --- */
+        .room-card {
+            border: none;
             overflow: hidden;
+            position: relative;
+            height: 500px;
+        }
+
+            .room-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.8s ease;
+            }
+
+        .room-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 40px;
+            color: white;
+        }
+
+        .room-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .room-price {
+            color: var(--primary-gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* --- Service Full Width --- */
+        .service-item {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+        }
+
+            .service-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: 0.5s;
+            }
+
+        .service-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 2;
+            width: 80%;
+            opacity: 0;
+            transition: 0.5s;
+        }
+
+        .service-item:hover img {
+            filter: brightness(0.4);
+            transform: scale(1.05);
+        }
+
+        .service-item:hover .service-content {
+            opacity: 1;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #111;
+            color: #aaa;
+            padding: 80px 0;
+        }
+
+        .footer-logo {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ========================================= */
+        /* === LUXURY LOADING (BRAND PULSE) CSS === */
+        /* ========================================= */
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85); /* Nền tối đậm hơn một chút để nổi bật chữ */
+            backdrop-filter: blur(8px); /* Làm mờ hậu cảnh mạnh hơn */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: all 0.4s ease;
+        }
+
+        .text-gold {
+            color: var(--primary-gold) !important;
+        }
+
+        /* Hiệu ứng chữ thở */
+        .brand-loader {
+            animation: pulseText 2.5s infinite ease-in-out;
+        }
+
+        @@keyframes pulseText {
+            0%
+
+        {
+            opacity: 0.4;
+            transform: scale(0.98);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1);
+            text-shadow: 0 0 25px rgba(193, 155, 118, 0.6);
+        }
+
+        100% {
+            opacity: 0.4;
+            transform: scale(0.98);
+        }
+
+        }
+
+        /* Thanh line chạy bên dưới */
+        .loader-line {
+            width: 200px;
+            height: 1px; /* Mảnh hơn cho tinh tế */
+            background-color: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+            .loader-line::after {
+                content: '';
+                position: absolute;
+                left: -50%;
+                height: 100%;
+                width: 50%;
+                background-color: var(--primary-gold);
+                animation: lineRun 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+        @@keyframes lineRun {
+            0%
+
+        {
+            left: -50%;
+        }
+
+        100% {
+            left: 100%;
+        }
+
         }
     </style>
 </head>
 <body>
-    <!-- Full page intro -->
-    <div id="hero-fullpage">
-        <div class="slide active" style="background-image:url('https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2020/09/nhung-trai-nghiem-chi-co-o-khach-san-5-sao-1.jpg');">
-            <div class="caption">
-                Trải nghiệm nghỉ dưỡng đẳng cấp<br />
-                <span style="font-size:1.3rem;font-weight:400">Kỳ nghỉ xa hoa tại TrungDucLuxury Hotel</span>
+
+    <div id="loadingOverlay" class="d-none">
+        <div class="loading-content text-center">
+            <div class="brand-loader mb-3">
+                <span class="d-block display-4 serif-font text-white fw-bold">TRUNG DUC</span>
+                <span class="d-block text-gold text-uppercase" style="letter-spacing: 5px; font-size: 0.8rem; margin-top: 5px;">Luxury Hotel</span>
             </div>
+
+            <div class="loader-line mt-4"></div>
         </div>
-        <div class="slide" style="background-image:url('https://steelmanpartners.com/wp-content/uploads/2023/05/Ho_Tram_Exterior.webp');">
-            <div class="caption">
-                Phòng nghỉ tiện nghi<br />
-                <span style="font-size:1.3rem;font-weight:400">Không gian sang trọng, dịch vụ tận tâm</span>
-            </div>
+    </div>
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content" data-aos="zoom-in" data-aos-duration="1200">
+            <span class="hero-subtitle text-uppercase mb-3 d-block letter-spacing-3">Welcome to Paradise</span>
+            <h1 class="hero-title">Đẳng cấp thượng lưu</h1>
+            <a href="#rooms" class="btn btn-outline-light rounded-0 px-5 py-3 mt-3">Khám phá ngay</a>
         </div>
-        <div class="slide" style="background-image:url('https://anandamaya-residences.com/images/upload/album/1181120200302album.jpg');">
-            <div class="caption">
-                Không gian ấn tượng<br />
-                <span style="font-size:1.3rem;font-weight:400">Đẳng cấp trong từng chi tiết</span>
+    </header>
+
+    <div class="booking-wrapper">
+        <div class="container-fluid px-0">
+            <div class="booking-form">
+
+                <form id="searchRoomForm"
+                      asp-action="ViewListRoomVer2"
+                      asp-controller="ManagementRoom"
+                      asp-route-PageCurrent="1"
+                      asp-route-NumerItemOfPage="8"
+                      method="get">
+
+                    <div class="row align-items-end g-4 px-lg-5">
+
+                        <div class="col-md-3">
+                            <label class="form-label text-uppercase text-muted small fw-bold">Check-in</label>
+                            <input type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                   value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                   required name="StartDate" value="@ViewBag.StartDate">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label text-uppercase text-muted small fw-bold">Check-out</label>
+                            <input type="date" class="form-control" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                                   required name="EndDate" value="@ViewBag.EndDate">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label text-uppercase text-muted small fw-bold">Khách</label>
+                            <select class="form-select" name="Person">
+                                <option value="null">Gia đình</option>
+                                <option value="1">01 Người lớn</option>
+                                <option value="2">02 Người lớn</option>
+                                <option value="3">03 Người lớn</option>
+                                <option value="4">04 Người lớn</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-gold w-100 py-3 rounded-0">Tìm phòng</button>
+                        </div>
+
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
 
-    <div id="main-content" style="display:none;">
-        <!-- ------------- HEADER NAV ------------- -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="https://i.ytimg.com/vi/ptDXS9XYmvI/maxresdefault.jpg" alt="Luxury Hotel" width="40" class="me-2">
-                    <span class="fs-3 fw-bold">TrungDucLuxury Hotel</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" href="#"> <i class="bi bi-house-door-fill"></i>Trang chủ</a></li>
-                        <li class="nav-item">
-                            <a target="_blank" class="nav-link" asp-controller="ManagementRoom" asp-action="ChosseDate">
-                                <i class="fa-solid fa-magnifying-glass"></i> Tìm Phòng
-                            </a>
-                        </li>
-
-                        @if (User.IsInRole("User") || User.IsInRole("admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Game" asp-action="UserPayDeposit">
-                                    Nạp tiền
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="fas fa-coins me-1"></i>
-                                    Coin : @(User.FindFirst("Coin")?.Value ?? "0")
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link">
-                                    <img src="@User.FindFirst("MyAvatar")?.Value"
-                                         alt="avatar"
-                                         style="width:30px;height:30px;border-radius:50%;" />
-                                    @User.FindFirst("FullName")?.Value
-                                </a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Authen" asp-action="SignOut"> |<i class="bi bi-box-arrow-right"></i> Đăng Xuất</a></li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Authen" asp-action="Login">
-                                    <i class="bi bi-building"></i> Giới Thiệu Khách Sạn
-                                </a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Authen" asp-action="Login"> <i class="bi bi-person-circle"></i>Đăng Nhập</a></li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Ảnh carousel (bạn có thể bỏ/move xuống dưới nếu thích) -->
-        <section class="py-5 bg-light" data-aos="fade-up">
-            <div class="container">
-                <div id="hotelImagesCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner rounded shadow-lg">
-                        <div class="carousel-item active">
-                            <img src="https://img.freepik.com/premium-photo/luxurious-hotel-lobby-with-marble-floors-gold-accents-comfortable-seating_14117-728026.jpg" class="d-block w-100 hotel-img" alt="Ảnh khách sạn 1">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://sleepifier.com/wp-content/uploads/pixxio_images/thumbnail_1953643250.jpg" class="d-block w-100 hotel-img" alt="Ảnh khách sạn 2">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://www.yankodesign.com/images/design_news/2024/08/elements-of-interior-design-form/00-elements-design-form-1.jpg" class="d-block w-100 hotel-img" alt="Ảnh khách sạn 3">
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#hotelImagesCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#hotelImagesCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Luxury Hotel -->
-        <section class="container py-5" data-aos="fade-right">
+    <section id="about" class="section-padding">
+        <div class="container-fluid px-4 px-lg-5">
             <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="https://img.freepik.com/premium-photo/luxurious-hotel-lobby-with-marble-floors-gold-accents-comfortable-seating_14117-728026.jpg" alt="Luxury Hotel" class="img-fluid rounded shadow-lg">
+                <div class="col-lg-6 mb-5 mb-lg-0 pe-lg-5" data-aos="fade-right">
+                    <span class="section-subtitle">Câu chuyện của chúng tôi</span>
+                    <h2 class="section-title mt-2">Nghệ thuật nghỉ dưỡng</h2>
+                    <p class="lead text-dark opacity-75 mb-4">Mỗi chi tiết tại Trung Duc Luxury đều là một tác phẩm nghệ thuật, được thiết kế để đánh thức mọi giác quan của bạn.</p>
+                    <p class="text-secondary mb-5" style="line-height: 1.8;">
+                        Nằm ngay trái tim của thành phố, chúng tôi mang đến không gian tĩnh lặng tuyệt đối giữa chốn phồn hoa. Sự kết hợp hoàn hảo giữa kiến trúc hiện đại và vẻ đẹp truyền thống tạo nên một không gian độc bản.
+                    </p>
+                    <div class="row g-4 mb-4">
+                        <div class="col-6">
+                            <h3 class="display-4 fw-bold text-dark">50+</h3>
+                            <span class="text-uppercase text-muted small spacing-2">Suites cao cấp</span>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="display-4 fw-bold text-dark">15</h3>
+                            <span class="text-uppercase text-muted small spacing-2">Năm kinh nghiệm</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-dark rounded-0 px-5 py-3">Đọc thêm</a>
                 </div>
-                <div class="col-lg-6">
-                    <h2 class="fw-bold mb-3">Giới thiệu Trung Duc Luxury Hotel</h2>
-                    <p class="lead">Luxury Hotel tọa lạc tại trung tâm thành phố, thiết kế sang trọng, dịch vụ chuyên nghiệp và tiện nghi hiện đại. Chúng tôi cam kết mang lại trải nghiệm nghỉ dưỡng hoàn hảo nhất cho quý khách.</p>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <img src="https://viashotels.com/wp-content/uploads/2022/05/Rectangle-2772.jpg" class="about-img-full shadow-lg" alt="Lobby">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rooms" class="section-padding bg-light">
+        <div class="container-fluid px-4 px-lg-5">
+            <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
+                <div>
+                    <span class="section-subtitle">Không gian riêng tư</span>
+                    <h2 class="section-title">Phòng & Suites</h2>
+                </div>
+                <a href="#" class="btn btn-outline-dark rounded-0 px-4 d-none d-md-block">Xem tất cả phòng</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="room-card">
+                        <img src="https://acihome.vn/uploads/15/thiet-ke-khach-san-hien-dai-co-cac-ban-cong-view-bien-sieu-dep-seaside-mirage-hotel-1.JPG" alt="Room 1">
+                        <div class="room-overlay">
+                            <h3 class="serif-font">Deluxe Ocean View</h3>
+                            <p class="mb-3 opacity-75">Tầm nhìn hướng biển tuyệt đẹp</p>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <span class="room-price">2.800.000₫</span>
+                                <a href="#" class="text-white text-uppercase small text-decoration-none fw-bold">Chi tiết <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="room-card">
+                        <img src="https://steelmanpartners.com/wp-content/uploads/2023/05/Ho_Tram_Exterior.webp" alt="Room 2">
+                        <div class="room-overlay">
+                            <h3 class="serif-font">Executive Suite</h3>
+                            <p class="mb-3 opacity-75">Không gian làm việc và nghỉ ngơi đẳng cấp</p>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <span class="room-price">4.500.000₫</span>
+                                <a href="#" class="text-white text-uppercase small text-decoration-none fw-bold">Chi tiết <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12" data-aos="fade-up" data-aos-delay="300">
+                    <div class="room-card">
+                        <img src="https://anandamaya-residences.com/images/upload/album/1181120200302album.jpg" alt="Room 3">
+                        <div class="room-overlay">
+                            <h3 class="serif-font">Royal Penthouse</h3>
+                            <p class="mb-3 opacity-75">Sự xa hoa bậc nhất dành cho thượng khách</p>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <span class="room-price">15.000.000₫</span>
+                                <a href="#" class="text-white text-uppercase small text-decoration-none fw-bold">Chi tiết <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container-fluid p-0">
+            <div class="row g-0">
+                <div class="col-md-6 col-lg-3 service-item">
+                    <img src="https://thewatsonpremiumhalonghotel.com/uploads/photos/full_1682151095_1545_0164ca8fbd6cd13b628b7d34936e865f.jpg" alt="Pool">
+                    <div class="service-content">
+                        <i class="bi bi-water fs-1 mb-3"></i>
+                        <h3>Hồ bơi vô cực</h3>
+                        <p>Thư giãn giữa làn nước xanh mát</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 service-item">
+                    <img src="https://mtcs.1cdn.vn/2022/07/18/xanh-3.jpg" alt="Spa">
+                    <div class="service-content">
+                        <i class="bi bi-flower1 fs-1 mb-3"></i>
+                        <h3>Luxury Spa</h3>
+                        <p>Tái tạo năng lượng sống</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 service-item">
+                    <img src="https://cdn0126.cdn4s.com/media/nha-hang-sen-2.jpg" alt="Restaurant">
+                    <div class="service-content">
+                        <i class="bi bi-cup-hot fs-1 mb-3"></i>
+                        <h3>Nhà hàng 5 Sao</h3>
+                        <p>Ẩm thực tinh hoa thế giới</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 service-item">
+                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/59/99/fb/grand-ballroom.jpg?w=700&h=-1&s=1" alt="Gym">
+                    <div class="service-content">
+                        <i class="bi bi-activity fs-1 mb-3"></i>
+                        <h3>Fitness Center</h3>
+                        <p>Trang thiết bị hiện đại nhất</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding bg-dark text-white text-center" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');">
+        <div class="container" data-aos="zoom-in">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <i class="bi bi-quote fs-1 text-warning mb-4 d-block"></i>
+                    <h2 class="serif-font fst-italic mb-5" style="font-weight: 400; font-size: 2.2rem; line-height: 1.4;color:aliceblue">
+                        "Chưa bao giờ tôi cảm thấy được phục vụ chu đáo đến thế. Trung Duc Luxury Hotel thực sự là một chuẩn mực mới của ngành khách sạn."
+                    </h2>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="https://yt3.googleusercontent.com/c-Z7mIlntSpG6VyQ5ZqaPggqkZRhaySr-H5ZEazFN2iR1pP4eD1UGekwu0y--c4CSVhJJ1A4QT8=s900-c-k-c0x00ffffff-no-rj" class="rounded-circle border border-2 border-warning p-1 me-3" width="60" height="60" alt="User">
+                        <div class="text-start">
+                            <h5 class="mb-0 text-white">Sơn Tùng-MTP</h5>
+                            <small class="text-muted text-uppercase">CEO - Continental Corp</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container-fluid px-4 px-lg-5">
+            <div class="row">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <div class="footer-logo">PHAM TRUNG DUC.</div>
+                    <p class="pe-lg-5">Biểu tượng của sự sang trọng và lòng hiếu khách. Chúng tôi cam kết mang đến những trải nghiệm không thể nào quên cho mỗi vị khách.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="text-white mb-4">Khám phá</h5>
                     <ul class="list-unstyled">
-                        <li><i class="bi bi-check-circle text-primary"></i> Vị trí đắc địa</li>
-                        <li><i class="bi bi-check-circle text-primary"></i> Dịch vụ 5 sao</li>
-                        <li><i class="bi bi-check-circle text-primary"></i> Tiện ích đa dạng</li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Phòng & Suites</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Ẩm thực</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Sức khỏe & Spa</a></li>
                     </ul>
                 </div>
-            </div>
-        </section>
-
-        <!-- Services -->
-        <section class="bg-white py-5" data-aos="fade-left">
-            <div class="container">
-                <h2 class="fw-bold text-center mb-4">Dịch vụ nổi bật</h2>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in">
-                        <div class="service-card-big p-3 shadow rounded text-center">
-                            <img src="https://thewatsonpremiumhalonghotel.com/uploads/photos/full_1682151095_1545_0164ca8fbd6cd13b628b7d34936e865f.jpg"
-                                 alt="Hồ bơi ngoài trời"
-                                 class="service-img-big mb-3" />
-                            <h5 class="fw-bold mb-2">Hồ bơi ngoài trời</h5>
-                            <p>Thư giãn và tận hưởng không gian xanh, sạch, đẹp.</p>
-                        </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="text-white mb-4">Liên hệ</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Tuyển dụng</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Điều khoản</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none mb-2 d-block">Liên hệ hỗ trợ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="text-white mb-4">Bản tin</h5>
+                    <p class="small text-secondary mb-3">Đăng ký để nhận ưu đãi độc quyền.</p>
+                    <div class="input-group mb-4">
+                        <input type="email" class="form-control bg-dark border-secondary text-white" placeholder="Email của bạn...">
+                        <button class="btn btn-gold text-white" type="button">Gửi</button>
                     </div>
-                    <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-delay="150">
-                        <div class="service-card-big p-3 shadow rounded text-center">
-                            <img src="https://mtcs.1cdn.vn/2022/07/18/xanh-3.jpg"
-                                 alt="Spa & Massage"
-                                 class="service-img-big mb-3" />
-                            <h5 class="fw-bold mb-2">Spa & Massage</h5>
-                            <p>Chăm sóc sức khỏe và sắc đẹp với đội ngũ chuyên nghiệp.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="service-card-big p-3 shadow rounded text-center">
-                            <img src="https://cdn0126.cdn4s.com/media/nha-hang-sen-2.jpg"
-                                 alt="Nhà hàng Âu - Á"
-                                 class="service-img-big mb-3" />
-                            <h5 class="fw-bold mb-2">Nhà hàng Âu - Á</h5>
-                            <p>Thực đơn phong phú, không gian sang trọng.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-delay="450">
-                        <div class="service-card-big p-3 shadow rounded text-center">
-                            <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/59/99/fb/grand-ballroom.jpg?w=700&h=-1&s=1"
-                                 alt="Phòng hội nghị"
-                                 class="service-img-big mb-3" />
-                            <h5 class="fw-bold mb-2">Phòng hội nghị</h5>
-                            <p>Đầy đủ tiện nghi, đáp ứng mọi nhu cầu sự kiện.</p>
-                        </div>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-secondary rounded-circle btn-sm p-2"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="btn btn-outline-secondary rounded-circle btn-sm p-2"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-secondary rounded-circle btn-sm p-2"><i class="bi bi-twitter"></i></a>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Reviews -->
-        <section class="bg-gradient py-5" data-aos="zoom-in">
-            <div class="container">
-                <h2 class="fw-bold text-center mb-5">Đánh giá khách hàng</h2>
-                <div class="row justify-content-center">
-                    <div class="col-md-4 mb-4" data-aos="fade-up">
-                        <div class="card shadow-lg border-0 h-100 review-card">
-                            <div class="card-body text-center">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle mb-3 shadow" width="70" height="70" alt="Nguyễn Văn A">
-                                <h5 class="card-title fw-bold mb-2">Nguyễn Văn A</h5>
-                                <div class="mb-2">
-                                    <span class="text-warning fs-4">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                                </div>
-                                <blockquote class="blockquote mb-0 fw-normal">
-                                    "Kỳ nghỉ tuyệt vời, phòng sạch sẽ, nhân viên thân thiện! Sẽ quay lại lần sau."
-                                </blockquote>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="150">
-                        <div class="card shadow-lg border-0 h-100 review-card">
-                            <div class="card-body text-center">
-                                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="rounded-circle mb-3 shadow" width="70" height="70" alt="Trần Thị B">
-                                <h5 class="card-title fw-bold mb-2">Trần Thị B</h5>
-                                <div class="mb-2">
-                                    <span class="text-warning fs-4">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                                </div>
-                                <blockquote class="blockquote mb-0 fw-normal">
-                                    "Dịch vụ xuất sắc, view đẹp, rất hài lòng với kỳ nghỉ tại Luxury Hotel."
-                                </blockquote>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                        <div class="card shadow-lg border-0 h-100 review-card">
-                            <div class="card-body text-center">
-                                <img src="https://randomuser.me/api/portraits/men/65.jpg" class="rounded-circle mb-3 shadow" width="70" height="70" alt="Lê Văn C">
-                                <h5 class="card-title fw-bold mb-2">Lê Văn C</h5>
-                                <div class="mb-2">
-                                    <span class="text-warning fs-4">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                                </div>
-                                <blockquote class="blockquote mb-0 fw-normal">
-                                    "Không gian sang trọng, đồ ăn ngon, nhân viên chu đáo!"
-                                </blockquote>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="border-top border-secondary pt-4 mt-5 d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <small>© 2025 Trung Duc Luxury Hotel. All rights reserved.</small>
+                <small>Designed by You</small>
             </div>
-        </section>
+        </div>
+    </footer>
 
-        <!-- Footer -->
-        <footer class="bg-dark text-light py-4 mt-5">
-            <div class="container text-center">
-                <p>&copy; 2025 Trung Duc Luxury Hotel. Hotline: 0123 456 789 | Email: ptrungduc1011@gmail.com</p>
-                <div>
-                    <a href="#" class="text-light me-2"><i class="bi bi-facebook"></i> Facebook</a>
-                    <a href="#" class="text-light"><i class="bi bi-instagram"></i> Instagram</a>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- JS: Bootstrap, AOS, và phần cho Fullpage slider -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true });
-        // FullPage onboarding effect JS
-        let curSlide = 0;
-        const slides = document.querySelectorAll('#hero-fullpage .slide');
-        const hero = document.getElementById('hero-fullpage');
-        const main = document.getElementById('main-content');
-        function showSlide(idx) {
-            slides.forEach((s, i) => s.classList.toggle('active', i === idx));
-        }
-        document.body.classList.add('lock-scroll');
-        window.addEventListener('wheel', function (e) {
-            if(document.body.classList.contains('lock-scroll')) {
-                if(e.deltaY > 0) {
-                    if(curSlide < slides.length-1) {
-                        curSlide++;
-                        showSlide(curSlide);
-                    } else {
-                        hero.style.display='none'; main.style.display='';
-                        document.body.classList.remove('lock-scroll');
-                    }
-                } else if(e.deltaY < 0 && curSlide>0) {
-                    curSlide--; showSlide(curSlide);
-                }
-                e.preventDefault();
-            }
-        },{passive:false});
+        AOS.init({ duration: 800, once: true, offset: 50 });
 
-        // Optional: Hỗ trợ cho mobile swipe
-        let touchStartY = null;
-        hero.addEventListener('touchstart', function(e){
-            if(e.touches.length===1) touchStartY = e.touches[0].clientY;
-        });
-        hero.addEventListener('touchend', function(e){
-            if(touchStartY!=null && e.changedTouches.length===1){
-                let dy = e.changedTouches[0].clientY - touchStartY;
-                if(Math.abs(dy) > 60) { // threshold
-                    if(dy < 0 && curSlide < slides.length-1) { // swipe up
-                        curSlide++; showSlide(curSlide);
-                    }
-                    else if(dy > 0 && curSlide>0) { // swipe down
-                        curSlide--; showSlide(curSlide);
-                    }
-                    else if(dy < 0 && curSlide===slides.length-1) {
-                        hero.style.display='none'; main.style.display='';
-                        document.body.classList.remove('lock-scroll');
-                    }
-                }
-                touchStartY=null;
+        // Script xử lý Loading Luxury
+        document.getElementById('searchRoomForm').addEventListener('submit', function(e) {
+            // Bước 1: Kiểm tra tính hợp lệ của form (ngày tháng, số lượng...)
+            if (!this.checkValidity()) {
+                // Nếu chưa điền đủ, trình duyệt sẽ tự báo lỗi, không chạy loading
+                return;
             }
+
+            // Bước 2: Hiển thị Overlay "Brand Pulse"
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('d-none');
+            overlay.classList.add('d-flex');
         });
     </script>
 </body>

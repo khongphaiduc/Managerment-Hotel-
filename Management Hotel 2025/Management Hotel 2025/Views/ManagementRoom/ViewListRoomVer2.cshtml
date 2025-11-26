@@ -1,12 +1,11 @@
 ﻿@using Management_Hotel_2025.ViewModel
 
-@{
 
-    Layout = null;
-}
 
 @model Management_Hotel_2025.ViewModel.PaginatedResult<ViewRoomModel>
-
+@{
+    ViewData["BodyClass"] = "dark-mode";
+}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -17,14 +16,6 @@
 </head>
 <body>
     <div class="lux-hotel-bg">
-
-        @if (!User.IsInRole("Staff"))
-        {
-            <div class="lux-hotel-header">
-                <h1>Danh sách phòng khách sạn</h1>
-                <p>Trải nghiệm đẳng cấp với không gian sang trọng và dịch vụ tuyệt vời</p>
-            </div>
-        }
 
         <div class="lux-room-filter">
             <form id="lux-filter-form" asp-action="ViewListRoomVer2" asp-controller="ManagementRoom" method="get" style="display: flex; gap: 32px; align-items: center;">

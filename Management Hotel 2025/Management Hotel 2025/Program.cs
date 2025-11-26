@@ -19,6 +19,8 @@ using PayOS;
 using Management_Hotel_2025.Modules.Rooms.RoleAdmin.AdminServices;
 using Management_Hotel_2025.Modules.WorkFile;
 using Management_Hotel_2025.Modules.AdminMPassengers.MPassengersServices;
+using Management_Hotel_2025.Modules.Payment.PayOSPayments;
+using Management_Hotel_2025.Modules.SignalRModels;
 
 
 
@@ -45,7 +47,7 @@ namespace Management_Hotel_2025
 
                 q.AddJob<RefreshStatusRoom>(opts => opts.WithIdentity(jobKey));      //Dòng này đăng ký job (công việc cần thực hiện).
 
-                // Lên lịch: chạy mỗi ngày lúc 00:00
+
                 q.AddTrigger(opts => opts
                     .ForJob(jobKey)
                     .WithIdentity("RefreshStatusRoomTrigger", "group1")
@@ -159,6 +161,7 @@ namespace Management_Hotel_2025
             builder.Services.AddTransient<IAdminManagement, AdminManagement>();
             builder.Services.AddTransient<IMyFiles, MyFiles>();
             builder.Services.AddTransient<IAdminMPassengers, AdminMPassengers>();
+            builder.Services.AddTransient<IGameBlackRed, GameBlackRed>();
             ////-----
             //builder.Services.AddControllers();
             //builder.Services.AddEndpointsApiExplorer();
@@ -171,15 +174,17 @@ namespace Management_Hotel_2025
             {
                 return new PayOSClient(new PayOSOptions
                 {
-                    ClientId = "be2",
-                    ApiKey = "2525e477ac65",
-                    ChecksumKey = "cb2a2"
+                    ClientId = builder.Configuration["PayOS:ClientId"],
+                    ApiKey = builder.Configuration["PayOS:ApiKey"],
+                    ChecksumKey = builder.Configuration["PayOS:ChecksumKey"]
 
-                })
-                {
-
-                };
+                });
             });
+
+
+
+
+            builder.Services.AddSignalR();
 
 
             var app = builder.Build();
@@ -191,6 +196,11 @@ namespace Management_Hotel_2025
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+
+            app.MapHub<CoinHub>("/coinhub");
+            app.MapHub<TaiXiuGames>("/taixiugame");
+            app.MapHub<NotificationSystem>("/notificationsystem");
 
             app.UseSession();             // Kích hoạt Session trong ứng dụng
             app.UseHttpsRedirection();

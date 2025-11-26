@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Data;
 using Microsoft.AspNetCore.Authentication.Google;
 using Mydata.Models;
+using System.Threading.Tasks;
 
 namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 {
@@ -59,7 +60,8 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
                new Claim(ClaimTypes.Name, userFromDb.Email),
                new Claim(ClaimTypes.Role, userFromDb.Role),   // Role từ DB
                new Claim("FullName", userFromDb.FullName), // Thêm claim FullName nếu cần
-               new Claim("IdUser", IdUser.ToString())
+               new Claim("IdUser", IdUser.ToString()),
+               new Claim(ClaimTypes.NameIdentifier, IdUser.ToString())  // sử dụng để map với SignalR
             };
 
             /* Trong bảo mật, Claim là một thông tin về người dùng mà hệ thống xác nhận là đúng sau khi người đó đăng nhập.
@@ -242,7 +244,9 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
                new Claim(ClaimTypes.Role,user.Role),
                new  Claim("FullName", user.Username),
                new Claim("IdUser", user.UserId.ToString()),
-               new Claim("MyAvatar",avatar)
+               new Claim("MyAvatar",avatar),
+              new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+
             };
 
             var identity = new ClaimsIdentity(claim, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -262,6 +266,32 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); // Xóa cookie đăng nhập
             // chuyển hướng về home
             return RedirectToAction("Index", "Home");   // action  - controller 
+        }
+
+
+
+        public async Task<ActionResult> ForgotPassword()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ForgotPasswordProcess([FromBody] string email)
+        {
+
+            Console.WriteLine($"email của bạn là {email}");
+
+            var result = await _MyRegister.ResetPassword(email);
+            if (result)
+            {
+                return Ok(new { status = result });
+
+            }
+            else
+            {
+                return NotFound(new { status = result });
+            }
         }
 
     }

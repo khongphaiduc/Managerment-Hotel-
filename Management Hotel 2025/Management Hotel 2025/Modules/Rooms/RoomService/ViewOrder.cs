@@ -20,14 +20,22 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
         {
             var booking = await _dbcontext.Bookings
                 .FirstOrDefaultAsync(b => b.BookingCode == order.BookingCode);
-
-
+            string status = "Completed";
 
             if (booking == null)
                 return false;
 
+            if (OrdersMethod == "QR Code")
+            {
+                status = "Peding";
+                booking.Status = "CheckIn";
+            }
+            else
+            {
+                booking.Status = "CheckOut";
+            }
 
-            booking.Status = "CheckOut";
+
             booking.RealTimeCheckOut = DateTime.Now.Date;
 
             string Code = DateTime.Now.ToString("ddMMyyyyHHmmss") + new Random().Next(100, 999);
@@ -41,7 +49,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
                 Email = order.Email,
                 Deposit = order.Deposit.ToString(),
                 TotalAmount = order.TotalAmountOrder,
-                OrderStatus = "Completed",
+                OrderStatus = status,
                 PaymentMethod = OrdersMethod,
                 IdStaff = idStaff,
                 Booking = booking,
@@ -51,6 +59,37 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
             _dbcontext.Orders.Add(newOrder);
 
             return await _dbcontext.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> ConfirmTranfersQRcode(string bookingcode)
+        {
+            try
+            {
+
+                var booking = await _dbcontext.Bookings.Include(s => s.Orders).FirstOrDefaultAsync(s => s.BookingCode == bookingcode);
+
+                if (booking != null)
+                {
+                    booking.Status = "CheckOut";
+
+                    if (booking.Orders != null)
+                    {
+                        booking.Orders.OrderStatus = "Completed";
+                    }
+                }
+
+
+                return await _dbcontext.SaveChangesAsync() > 0;
+
+
+            }
+            catch (Exception s)
+            {
+                Console.WriteLine($"Bug : {s.Message}");
+                return false;
+
+            }
+
         }
 
 

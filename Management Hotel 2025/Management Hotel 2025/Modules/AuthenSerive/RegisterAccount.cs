@@ -1,5 +1,7 @@
 ﻿
 using Management_Hotel_2025.Modules.AuthenSerive;
+using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
+using Microsoft.EntityFrameworkCore;
 using Mydata.Models;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,11 +12,15 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
     {
         private readonly ManagermentHotelContext _dbcontext;
         private readonly IEncoding _Iendcoding;
+        private readonly INotifications _notification;
+        private readonly ILogger<RegisterAccount> _logger;
 
-        public RegisterAccount(ManagermentHotelContext dbcontext, IEncoding iencoding)
+        public RegisterAccount(ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger)
         {
             _dbcontext = dbcontext;
             _Iendcoding = iencoding;
+            _notification = notifications;
+            _logger = logger;
         }
 
         public bool Register(string username, string phone, string email, string password)
@@ -56,6 +62,47 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
         public bool EmailExists(string email)
         {
             return _dbcontext.Users.Any(u => u.Email == email);
+        }
+
+
+
+        public async Task<bool> ResetPassword(string email)
+        {
+
+            var user = await _dbcontext.Users.FirstOrDefaultAsync(s => s.Email == email);
+
+            if (user == null)
+            {
+                Console.WriteLine("User NUll");
+                return false;
+            }
+            else
+            {
+                _logger.LogInformation($"User là {user.Email}");
+                var listchar = "zxcvbnmasdfghjklqwertyuyiop1234567890";
+
+                char[] chars = new char[listchar.Length];
+                Random random = new Random();
+                for (int i = 0; i < listchar.Length; i++)
+                {
+                    int index = random.Next(0, listchar.Length);
+                    chars[i] = listchar[index];
+                }
+
+                string password = new string(chars);
+                string satl = _Iendcoding.GenerateSalt();
+
+                string passwordHash = _Iendcoding.HashPassword(password, satl);
+
+                user.PasswordHash = passwordHash;
+                user.Salt = satl;
+
+
+                await _notification.SendNotificationResetPassword(user.Email, "Thay đổi mật khẩu", password);
+
+            }
+            return await _dbcontext.SaveChangesAsync() > 0;
+
         }
 
 

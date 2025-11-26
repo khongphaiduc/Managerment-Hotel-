@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 {
- 
+
     public class StaffManagementRoomController : Controller
     {
         private readonly IManagementRoom _IManagementRoom;
@@ -233,13 +233,13 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
         {
 
             var order = await _order.ViewOrder(bookingcode);
-             ViewBag.TimeCheckOut = DateTime.Now;
+            ViewBag.TimeCheckOut = DateTime.Now;
             return View(order);
         }
 
         // confirm check-out
-        [HttpPost]
-        public async Task<IActionResult> ConfirmCheckOutPassenger([FromBody]Order orderpassager)
+        [HttpPut]
+        public async Task<IActionResult> ConfirmCheckOutPassenger([FromBody] Order orderpassager)
         {
             var idStaff = int.Parse(User.FindFirst("IdUser").Value);   // lấy id của nhân viên 
 
@@ -252,6 +252,25 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
             else
             {
                 return Json(new { success = false, message = "Check-out failed. Please try again." });
+            }
+        }
+
+
+        // tạo hóa đơn thành toán bằng qr
+        [HttpPost]
+        public async Task<IActionResult> ConfirmCheckOutPassengerQR([FromBody] Order orderpassager)
+        {
+            var idStaff = int.Parse(User.FindFirst("IdUser").Value);   // lấy id của nhân viên 
+
+            var result = await _order.ConfirmCheckOut(orderpassager, "QR Code", idStaff);
+
+            if (result)
+            {
+                return Json(new { success = true, message = "Create order thành công " });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Tạo order thất bại ,vui lòng kiểm tra lại!" });
             }
         }
 

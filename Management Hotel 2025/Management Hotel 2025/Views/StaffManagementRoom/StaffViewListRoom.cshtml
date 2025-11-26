@@ -4,249 +4,255 @@
 @using System.Globalization
 @using Management_Hotel_2025.ViewModel
 @model IEnumerable<ViewRoomModel>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Phòng Khách sạn</title>
+    <title>Quản lý Phòng - Staff Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* 5-Star Hotel Palette */
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-gold: #c5a365; /* Màu vàng sang trọng */
+            --brand-primary: #1e3a8a; /* Xanh Navy chuyên nghiệp */
+            /* Status Colors */
+            --status-vacant: #10b981; /* Xanh lá - Trống */
+            --status-occupied: #ef4444; /* Đỏ - Có khách */
+            --status-maintenance: #f59e0b; /* Cam - Bảo trì */
+            --status-dirty: #6366f1; /* Tím - Cần dọn */
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-body);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
         }
 
-        .main-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin: 30px 0;
-            overflow: hidden;
-            padding-bottom: 2rem;
-        }
-
-        .filter-section {
-            background: var(--light-bg);
-            padding: 0.5rem 1rem 0.5rem 1rem;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .filter-card {
-            background: white;
-            border-radius: 10px;
-            padding: 0.7rem 0.7rem 0.2rem 0.7rem;
-            box-shadow: var(--card-shadow);
-            border: none;
-        }
-
-        .form-label {
-            font-size: 0.95rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
-            padding: 0.3rem 0.5rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            font-size: 0.92rem;
-            height: 30px;
-        }
-
-            .form-control[type="date"] {
-                height: 30px;
-            }
-
-            .form-control:focus, .form-select:focus {
-                border-color: var(--secondary-color);
-                box-shadow: 0 0 0 0.15rem rgba(52, 152, 219, 0.08);
-            }
-
-        .btn-filter {
-            background: var(--secondary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 0.32rem 0.7rem;
-            font-weight: 500;
-            font-size: 0.92rem;
-            transition: background 0.3s, transform 0.3s;
-        }
-
-            .btn-filter:hover {
-                background: #2980b9;
-                transform: translateY(-2px);
-            }
-
-        .btn-reset {
-            background: var(--warning-color);
-            border: none;
-            border-radius: 8px;
-            padding: 0.32rem 0.7rem;
-            font-weight: 500;
-            font-size: 0.92rem;
-            transition: background 0.3s, transform 0.3s;
-        }
-
-            .btn-reset:hover {
-                background: #d68910;
-                transform: translateY(-2px);
-            }
-
-        .rooms-container {
-            padding: 2rem 2.5rem 1rem 2.5rem;
-        }
-
-        .room-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            transition: box-shadow 0.3s, transform 0.3s;
-            border: none;
-            overflow: hidden;
+        /* --- Header & Stats Section --- */
+        .dashboard-header {
             margin-bottom: 1.5rem;
-            min-height: 320px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
 
-            .room-card:hover {
-                transform: translateY(-5px) scale(1.025);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.13);
+        .stat-card-modern {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: transform 0.2s;
+        }
+
+            .stat-card-modern:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
             }
 
-        .room-image {
-            height: 190px;
-            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+        .stat-icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            color: #bbb;
-            overflow: hidden;
+            font-size: 1.25rem;
+            margin-right: 1rem;
         }
 
-        .room-info {
-            padding: 1.2rem 1.2rem 0.5rem 1.2rem;
+        .stat-info h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
         }
 
-        .room-number {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 0.2rem;
-        }
-
-        .room-type {
-            color: var(--secondary-color);
-            font-weight: 500;
-            margin-bottom: 0.6rem;
-        }
-
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 18px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .status-available {
-            background: rgba(39, 174, 96, 0.13);
-            color: var(--success-color);
-            border: 1px solid rgba(39, 174, 96, 0.25);
-        }
-
-        .status-occupied {
-            background: rgba(231, 76, 60, 0.13);
-            color: var(--danger-color);
-            border: 1px solid rgba(231, 76, 60, 0.25);
-        }
-
-        .status-maintenance {
-            background: rgba(243, 156, 18, 0.13);
-            color: var(--warning-color);
-            border: 1px solid rgba(243, 156, 18, 0.25);
-        }
-
-        .room-features {
-            margin-top: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .feature-icon {
-            margin-right: 0.4rem;
-            color: var(--secondary-color);
-        }
-
-        .room-actions {
-            padding: 0.7rem 1.2rem;
-            background: var(--light-bg);
-            border-top: 1px solid #e9ecef;
-            text-align: right;
-        }
-
-        .btn-action {
-            margin-right: 0.35rem;
-            border-radius: 6px;
+        .stat-info span {
             font-size: 0.875rem;
-            padding: 0.38rem 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        .stats-section {
-            background: var(--light-bg);
-            padding: 0.5rem 1rem 0.5rem 1rem;
-            border-bottom: 1px solid #dee2e6;
+        /* --- Filter Bar --- */
+        .filter-bar {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
         }
 
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 0.6rem 0.3rem;
-            text-align: center;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 0.5rem;
+        .form-label-sm {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
         }
 
-        .stat-number {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.1rem;
+        .form-select-custom, .form-control-custom {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            box-shadow: none;
+            transition: border-color 0.15s ease-in-out;
         }
 
-        .stat-label {
-            color: #6c757d;
+            .form-select-custom:focus, .form-control-custom:focus {
+                border-color: var(--brand-primary);
+                box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+            }
+
+        /* --- Room Card Design --- */
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .room-card-pro {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .room-card-pro:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-4px);
+                border-color: var(--accent-gold);
+            }
+
+        /* Status Strip at top of card */
+        .status-strip {
+            height: 6px;
+            width: 100%;
+        }
+
+        .room-header {
+            padding: 1rem 1.25rem 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .room-number-badge {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+        }
+
+        .room-price-tag {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            background: rgba(197, 163, 101, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .room-body {
+            padding: 0.5rem 1.25rem 1rem;
+            flex-grow: 1;
+        }
+
+        .room-image-thumb {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            background-color: #f0f0f0;
+        }
+
+        .guest-info {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            border: 1px dashed #d1d5db;
+        }
+
+            .guest-info i {
+                width: 16px;
+                color: var(--text-secondary);
+            }
+
+        .room-actions-footer {
+            padding: 0.75rem 1.25rem;
+            background: #fff;
+            border-top: 1px solid #f3f4f6;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn-hotel {
             font-size: 0.8rem;
-        }
-
-        .no-results {
+            font-weight: 600;
+            padding: 0.4rem 0.5rem;
+            border-radius: 6px;
             text-align: center;
-            padding: 2.5rem 1rem;
-            color: #6c757d;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
-        .fade-in {
-            animation: fadeIn 0.4s ease-in;
+        .btn-primary-hotel {
+            background-color: var(--brand-primary);
+            color: white;
+            border: none;
         }
 
-        @@keyframes fadeIn {
+            .btn-primary-hotel:hover {
+                background-color: #172554;
+                color: white;
+            }
+
+        .btn-outline-hotel {
+            background-color: transparent;
+            border: 1px solid #d1d5db;
+            color: var(--text-primary);
+        }
+
+            .btn-outline-hotel:hover {
+                border-color: var(--text-primary);
+                background: #f9fafb;
+            }
+
+        /* Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        @@keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(25px);
+                transform: translateY(20px);
             }
 
             to {
@@ -255,223 +261,231 @@
             }
         }
 
-        @@media (max-width: 1200px) {
-            .rooms-container, .stats-section {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-        }
-
-        .filter-card form .d-flex {
-            gap: 10px;
-        }
-
-            .filter-card form .d-flex::-webkit-scrollbar {
-                height: 6px;
+        /* Responsive Tweaks */
+        @@media (max-width: 768px) {
+            .filter-bar .d-flex {
+                flex-direction: column;
             }
 
-            .filter-card form .d-flex::-webkit-scrollbar-thumb {
-                background: rgba(0,0,0,0.2);
-                border-radius: 3px;
+            .filter-bar .col-auto {
+                width: 100%;
             }
-
-
-        .no-results {
-            text-align: center;
-            padding: 3.5rem 1rem;
-            color: #6c757d;
-            background: linear-gradient(45deg, #f8f9fa 70%, #eaf6ff 100%);
-            border-radius: 18px;
-            box-shadow: 0 2px 16px rgba(52, 152, 219, 0.08);
-            margin: 2rem 0;
-            animation: fadeIn 0.5s;
-        }
-
-        .no-results-icon {
-            font-size: 3.2rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <div class="filter-card">
-                <div class="d-flex flex-wrap align-items-end gap-3">
-                    <!-- Form lọc phòng -->
-                    <form id="lux-filter-form" method="get" asp-action="StaffViewListRoom" asp-controller="StaffManagementRoom" class="d-flex flex-wrap align-items-end gap-2 flex-grow-1" style="min-width:0;">
-                        <div class="col-auto flex-fill" style="min-width:120px;">
-                            <label class="form-label">Trạng thái</label>
-                            <select name="option" class="form-select" onchange="resetPageAndSubmit()">
-                                <option value="all">Tất cả</option>
-                                <option value="Available" selected="@(ViewBag.option == "Available" ? "selected" : null)">Trống</option>
-                                <option value="Success" selected="@(ViewBag.option == "Success" ? "selected" : null)">Đã thuê</option>
-                                <option value="CheckIn" selected="@(ViewBag.option == "CheckIn" ? "selected" : null)">Đang sử dụng</option>
-                                <option value="Maintenance" selected="@(ViewBag.option== "Maintenance" ? "selected" : null)">Đang dọn (đang update)</option>
-                                <option value="Maintenance" selected="@(ViewBag.option== "Maintenance" ? "selected" : null)">Bảo trì</option>
-                            </select>
-                        </div>
-                        <div class="col-auto flex-fill" style="min-width:120px;">
-                            <label class="form-label">Tầng</label>
-                            <select name="Floor" class="form-select" onchange="resetPageAndSubmit()">
-                                <option value="">Tất cả</option>
-                                @for (int i = 1; i <= 10; i++)
-                                {
-                                    <option value="@i" selected="@(ViewBag.Floor == i ? "selected" : null)">Tầng @i</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-auto flex-fill" style="min-width:130px;">
-                            <label class="form-label">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" name="StartDate" value="@ViewBag.StartDate" onchange="resetPageAndSubmit()">
-                        </div>
-                        <div class="col-auto flex-fill" style="min-width:130px;">
-                            <label class="form-label">Ngày kết thúc</label>
-                            <input type="date" class="form-control" value="@ViewBag.EndDate" name="EndDate" onchange="resetPageAndSubmit()">
-                        </div>
-                        <button type="button" class="btn btn-reset text-white flex-fill" onclick="resetOption()">
-                            <i class="fas fa-undo me-1"></i>Reset
-                        </button>
+    <div class="container-fluid py-4 px-lg-5">
 
-                    </form>
-                    <!-- Form tìm kiếm ID khách hàng -->
-                    <form id="search-customer-form" method="get" asp-action="StaffSearchByIdRoom" asp-controller="StaffManagementRoom" class="d-flex align-items-end ms-auto" style="min-width:280px;">
-                        <div class="col-auto flex-fill" style="min-width:140px;">
-                            <label class="form-label">Tìm  theo số phòng,id</label>
-                            <input type="text" class="form-control" name="IdRoom" placeholder="Tìm kiếm...">
-                        </div>
-                        <button type="submit" class="btn btn-filter text-white ms-2">
-                            <i class="fas fa-search me-1"></i>Tìm kiếm
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats-section">
+        <div class="dashboard-header">
             <div class="row g-3">
-                <div class="col-lg-3 col-md-6 col-6">
-                    <div class="stat-card">
-                        <div class="stat-number text-primary">9</div>
-                        <div class="stat-label">Tổng số phòng</div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-modern" style="border-left-color: var(--brand-primary);">
+                        <div class="stat-icon-circle" style="background: rgba(30, 58, 138, 0.1); color: var(--brand-primary);">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h5>9</h5>
+                            <span>Tổng số phòng</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-6">
-                    <div class="stat-card">
-                        <div class="stat-number text-success">5</div>
-                        <div class="stat-label">Phòng trống</div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-modern" style="border-left-color: var(--status-vacant);">
+                        <div class="stat-icon-circle" style="background: rgba(16, 185, 129, 0.1); color: var(--status-vacant);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h5>5</h5>
+                            <span>Phòng trống</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-6">
-                    <div class="stat-card">
-                        <div class="stat-number text-danger">3</div>
-                        <div class="stat-label">Đã thuê</div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-modern" style="border-left-color: var(--status-occupied);">
+                        <div class="stat-icon-circle" style="background: rgba(239, 68, 68, 0.1); color: var(--status-occupied);">
+                            <i class="fas fa-user-lock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h5>3</h5>
+                            <span>Đã thuê</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-6">
-                    <div class="stat-card">
-                        <div class="stat-number text-warning">1</div>
-                        <div class="stat-label">Bảo trì</div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-modern" style="border-left-color: var(--status-maintenance);">
+                        <div class="stat-icon-circle" style="background: rgba(245, 158, 11, 0.1); color: var(--status-maintenance);">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h5>1</h5>
+                            <span>Bảo trì</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Rooms Container -->
-        <div class="rooms-container">
-            <div class="row">
 
-
-
-
-
-                @if (Model.Count() == 0 || Model.Any(s => s.NumberOfRooms == null))
-                {
-                    <div class="col-12">
-                        <div class="no-results fade-in">
-                            <span class="no-results-icon">
-                                <i class="fas fa-search-minus"></i>
-                            </span>
-                            <h4>Không tìm thấy kết quả phù hợp</h4>
-                            <p>Vui lòng kiểm tra lại bộ lọc hoặc thử tìm kiếm với thông tin khác.</p>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    @foreach (var room in Model)
-                    {
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 fade-in">
-                            <div class="room-card h-100 d-flex flex-column">
-                                <div class="room-image">
-                                    @if (!string.IsNullOrEmpty(room.Name))
+        <div class="filter-bar">
+            <div class="row align-items-end g-3">
+                <div class="col-lg-9">
+                    <form id="lux-filter-form" method="get" asp-action="StaffViewListRoom" asp-controller="StaffManagementRoom">
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="flex-grow-1" style="min-width: 150px; max-width: 200px;">
+                                <label class="form-label-sm">Trạng thái</label>
+                                <select name="option" class="form-select form-select-custom" onchange="resetPageAndSubmit()">
+                                    <option value="all">Tất cả trạng thái</option>
+                                    <option value="Available" selected="@(ViewBag.option == "Available" ? "selected" : null)">Trống (Sẵn sàng)</option>
+                                    <option value="Success" selected="@(ViewBag.option == "Success" ? "selected" : null)">Đã thuê</option>
+                                    <option value="CheckIn" selected="@(ViewBag.option == "CheckIn" ? "selected" : null)">Đang ở</option>
+                                    <option value="Maintenance" selected="@(ViewBag.option== "Maintenance" ? "selected" : null)">Bảo trì / Dọn dẹp</option>
+                                </select>
+                            </div>
+                            <div class="" style="min-width: 100px;">
+                                <label class="form-label-sm">Tầng</label>
+                                <select name="Floor" class="form-select form-select-custom" onchange="resetPageAndSubmit()">
+                                    <option value="">Tất cả</option>
+                                    @for (int i = 1; i <= 10; i++)
                                     {
-                                        <img src="@room.Image" alt="Phòng @room.Floor" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+                                        <option value="@i" selected="@(ViewBag.Floor == i ? "selected" : null)">Tầng @i</option>
                                     }
-                                    else
-                                    {
-                                        <i class="fas fa-bed"></i>
-                                    }
-                                </div>
-                                <div class="room-info flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <div class="room-number">Phòng @room.NumberOfRooms</div>
-                                            <div class="room-type">@room.Name</div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-1">
-                                        <strong class="text-primary">
-                                            @room.Price.ToString("C0", CultureInfo.GetCultureInfo("vi-VN")) / đêm
-                                        </strong>
-                                    </div>
-                                    <div class="room-features">
-                                        @* @foreach (var feature in room.features) *@
-                                        @* { *@
-                                        @*     <span class="me-2 mb-1 d-inline-block"><i class="fas fa-check feature-icon"></i>@feature</span> *@
-                                        @* } *@
-                                    </div>
-                                    <div class="mt-1"><small class="text-muted"><i class="fas fa-user me-1"></i>Khách:@room.NamePasssger</small></div>
-                                    <div class="mt-1"><small class="text-muted"><i class="fas fa-calendar me-1"></i>Ngày: bắt đầu</small></div>
-                                    <div class="mt-1"><small class="text-muted"><i class="fas fa-calendar me-1"></i>Ngày: ngày kết thúc</small></div>
-                                </div>
-                                <div class="room-actions">
-                                    <a class="btn btn-success btn-sm btn-action" style="opacity:1;" target="_blank" asp-controller="StaffManagementRoom" asp-action="CheckInPassengers">
-                                        <i class="fas fa-plus me-1">   </i>Check-in
-                                    </a>
-                                    <a class="btn btn-warning btn-sm btn-action" style="opacity:1;" target="_blank"
-                                       asp-controller="StaffManagementRoom"
-                                       asp-action="ViewCalenderBookingOfRoom"
-                                       asp-route-NumberRoom="@room.NumberOfRooms"
-                                       asp-route-IdRoom="@room.IdRoom">
-                                        Lịch
-                                    </a>
-                                    <a class="btn btn-warning btn-sm btn-action" asp-action="ViewDetailRoomVer2"
-                                       asp-controller="ManagementRoom"
-                                       asp-route-idRoom="@room.IdRoom" class="lux-book-btn" target="_blank" style="text-decoration:none">
-                                        Xem chi tiết phòng
-                                    </a>
-                                </div>
+                                </select>
+                            </div>
+                            <div class="" style="min-width: 140px;">
+                                <label class="form-label-sm">Từ ngày</label>
+                                <input type="date" class="form-control form-control-custom" name="StartDate" value="@ViewBag.StartDate" onchange="resetPageAndSubmit()">
+                            </div>
+                            <div class="" style="min-width: 140px;">
+                                <label class="form-label-sm">Đến ngày</label>
+                                <input type="date" class="form-control form-control-custom" value="@ViewBag.EndDate" name="EndDate" onchange="resetPageAndSubmit()">
+                            </div>
+                            <div class="d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" style="height: 38px;" onclick="resetOption()">
+                                    <i class="fas fa-redo-alt me-1"></i> Xóa lọc
+                                </button>
                             </div>
                         </div>
-                    }
-                }
+                    </form>
+                </div>
+                <div class="col-lg-3 border-start-lg ps-lg-4">
+                    <form id="search-customer-form" method="get" asp-action="StaffSearchByIdRoom" asp-controller="StaffManagementRoom">
+                        <label class="form-label-sm">Tìm nhanh</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-custom" name="IdRoom" placeholder="Số phòng, ID khách...">
+                            <button class="btn btn-primary" type="submit" style="background: var(--brand-primary);"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+
+        <div class="room-grid">
+            @if (Model.Count() == 0 || Model.Any(s => s.NumberOfRooms == null))
+            {
+                <div class="col-12 text-center py-5 w-100 grid-column-span-full" style="grid-column: 1 / -1;">
+                    <div class="p-5 bg-white rounded-3 shadow-sm">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4 class="fw-light">Không tìm thấy phòng phù hợp</h4>
+                        <p class="text-secondary">Thử thay đổi bộ lọc hoặc tìm kiếm từ khóa khác.</p>
+                        <button class="btn btn-primary-hotel mt-2" onclick="resetOption()">Xem tất cả phòng</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @foreach (var room in Model)
+                {
+                    /* Logic xác định màu sắc trạng thái (Giả lập logic hiển thị để demo) */
+                    string statusColor = "var(--status-vacant)"; // Mặc định là Trống
+                    string statusText = "Sẵn sàng";
+                    if (!string.IsNullOrEmpty(room.NamePasssger)) { statusColor = "var(--status-occupied)"; statusText = "Có khách"; }
+
+                    <div class="room-card-pro fade-in-up">
+                        <div class="status-strip" style="background-color: @statusColor;"></div>
+
+                        <div class="room-header">
+                            <div>
+                                <div class="room-number-badge">@room.NumberOfRooms</div>
+                                <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.7rem;">@room.Name</small>
+                            </div>
+                            <div class="room-price-tag">
+                                @room.Price.ToString("C0", CultureInfo.GetCultureInfo("vi-VN"))
+                            </div>
+                        </div>
+
+                        <div class="room-body">
+                            <div class="position-relative">
+                                @if (!string.IsNullOrEmpty(room.Image))
+                                {
+                                    <img src="@room.Image" alt="Room @room.NumberOfRooms" class="room-image-thumb">
+                                }
+                                else
+                                {
+                                    <div class="room-image-thumb d-flex align-items-center justify-content-center text-muted">
+                                        <i class="fas fa-bed fa-2x"></i>
+                                    </div>
+                                }
+                                <span class="position-absolute top-0 end-0 m-2 badge rounded-pill" style="background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+                                    @statusText
+                                </span>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(room.NamePasssger))
+                            {
+                                <div class="guest-info">
+                                    <div class="d-flex align-items-center mb-1 text-truncate">
+                                        <i class="fas fa-user me-2 text-primary"></i>
+                                        <strong>@room.NamePasssger</strong>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="far fa-calendar-alt me-2"></i>
+                                        <span>Check-in: --/--</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="far fa-clock me-2"></i>
+                                        <span>Out: --/--</span>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="guest-info text-center text-muted" style="border-style: dashed; background: transparent;">
+                                    <small>Hiện chưa có khách</small>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="room-actions-footer">
+                            <a class="btn btn-primary-hotel btn-hotel w-100" target="_blank" asp-controller="StaffManagementRoom" asp-action="CheckInPassengers" style="grid-column: span 2;">
+                                <i class="fas fa-key"></i> Check-in / Out
+                            </a>
+                            <a class="btn btn-outline-hotel btn-hotel" target="_blank"
+                               asp-controller="StaffManagementRoom"
+                               asp-action="ViewCalenderBookingOfRoom"
+                               asp-route-NumberRoom="@room.NumberOfRooms"
+                               asp-route-IdRoom="@room.IdRoom" title="Xem lịch">
+                                <i class="far fa-calendar-alt"></i> Lịch
+                            </a>
+                            <a class="btn btn-outline-hotel btn-hotel"
+                               asp-action="ViewDetailRoomVer2"
+                               asp-controller="ManagementRoom"
+                               asp-route-idRoom="@room.IdRoom" target="_blank" title="Chi tiết">
+                                <i class="fas fa-info-circle"></i> Chi tiết
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
     </div>
+
     <script>
         function resetPageAndSubmit() {
             document.getElementById("lux-filter-form").submit();
         }
         function resetOption() {
-             document.querySelector('[name="option"]').value = "";
-            document.querySelector('[name="Floor"]').value = "";
-            document.querySelector('[name="StartDate"]').value = "";
-            document.querySelector('[name="EndDate"]').value = "";
-            document.getElementById("lux-filter-form").submit();
+            const form = document.getElementById("lux-filter-form");
+            form.querySelectorAll('select, input').forEach(input => input.value = "");
+            form.submit();
         }
     </script>
 </body>

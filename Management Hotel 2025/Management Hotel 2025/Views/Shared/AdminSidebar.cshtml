@@ -1,106 +1,334 @@
 ﻿@{
     Layout = null;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Hotel Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Hotel Management</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="~/css/admin-sidebar.css" rel="stylesheet" asp-append-version="true" />
+    <style>
+        :root {
+            --sidebar-bg: #111c43; /* Màu xanh đậm quyền lực hơn bản Staff */
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 80px;
+            --gold-accent: #c5a059;
+            --active-bg: rgba(255, 255, 255, 0.1);
+            --body-bg: #f3f4f7;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- WRAPPER --- */
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        /* --- SIDEBAR --- */
+        #sidebar {
+            min-width: var(--sidebar-width);
+            max-width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: #fff;
+            transition: all 0.3s;
+            min-height: 100vh;
+            z-index: 999;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+        }
+
+            #sidebar.active {
+                margin-left: calc(var(--sidebar-width) * -1);
+            }
+
+        .sidebar-header {
+            padding: 20px;
+            background: rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .sidebar-header h4 {
+                font-weight: 700;
+                letter-spacing: 1px;
+                margin: 0;
+                font-size: 1.2rem;
+                color: var(--gold-accent);
+            }
+
+                .sidebar-header h4 i {
+                    margin-right: 10px;
+                }
+
+        ul.components {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+            ul.components li {
+                margin-bottom: 5px;
+            }
+
+                ul.components li a {
+                    padding: 15px 25px;
+                    font-size: 0.95rem;
+                    display: flex;
+                    align-items: center;
+                    color: #aab8c5; /* Màu chữ xám nhạt */
+                    text-decoration: none;
+                    transition: all 0.3s;
+                    border-left: 4px solid transparent;
+                }
+
+                    ul.components li a:hover {
+                        color: #fff;
+                        background: rgba(255,255,255,0.02);
+                    }
+
+                    ul.components li a.active {
+                        color: #fff;
+                        background: var(--active-bg);
+                        border-left-color: var(--gold-accent);
+                    }
+
+                    ul.components li a i {
+                        font-size: 1.2rem;
+                        margin-right: 15px;
+                        width: 25px;
+                        text-align: center;
+                    }
+
+        /* --- MAIN CONTENT --- */
+        #content {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+
+        /* --- TOP NAVBAR --- */
+        .top-navbar {
+            background: #fff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-toggle {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--sidebar-bg);
+            cursor: pointer;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            position: relative;
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .icon-btn:hover {
+                color: var(--sidebar-bg);
+            }
+
+        .badge-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background-color: #dc3545;
+            border-radius: 50%;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold-accent);
+        }
+
+        /* --- CONTENT BODY --- */
+        .main-body {
+            padding: 30px;
+            flex: 1;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            #sidebar
+
+        {
+            margin-left: calc(var(--sidebar-width) * -1);
+        }
+
+        #sidebar.active {
+            margin-left: 0;
+        }
+
+        }
+    </style>
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <div class="d-flex">
 
-        <nav id="sidebar" class="sidebar">
-            <div class="sidebar-header text-center py-4">
-                <h4>Hotel Admin</h4>
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fas fa-hotel"></i> ADMIN CP</h4>
             </div>
 
             <ul class="list-unstyled components">
                 <li>
                     <a asp-controller="Admin" asp-action="AdminHomePage"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "AdminHomePage" ? "active" : "")">
-                        <i class="bi bi-house"></i> <span>Trang chủ</span>
+                       class="@(currentAction == "AdminHomePage" ? "active" : "")">
+                        <i class="fas fa-home"></i> <span>Dashboard</span>
                     </a>
                 </li>
 
+                <li class="small text-uppercase fw-bold text-white-50 px-4 py-2 mt-2" style="font-size: 0.7rem;">Quản lý chung</li>
+
                 <li>
                     <a asp-controller="Admin" asp-action="AdminManagementRoom"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "AdminManagementRoom" ? "active" : "")">
-                        <i class="bi bi-door-open"></i> <span>Quản lý phòng</span>
+                       class="@(currentAction == "AdminManagementRoom" ? "active" : "")">
+                        <i class="fas fa-door-open"></i> <span>Hệ thống phòng</span>
                     </a>
                 </li>
 
                 <li>
                     <a asp-controller="ManagementAmenity" asp-action="ViewListAmentity"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "ViewListAmentity" ? "active" : "")">
-                        <i class="bi bi-box-seam"></i> <span>Quản lý tiện ích</span>
+                       class="@(currentAction == "ViewListAmentity" ? "active" : "")">
+                        <i class="fas fa-concierge-bell"></i> <span>Dịch vụ & Tiện ích</span>
                     </a>
                 </li>
 
                 <li>
                     <a asp-controller="AdminManagementPassengers" asp-action="ViewListPassenger"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "ViewListPassenger" ? "active" : "")">
-                        <i class="bi bi-box-seam"></i> <span>Quản lý khách hàng</span>
+                       class="@(currentAction == "ViewListPassenger" ? "active" : "")">
+                        <i class="fas fa-users"></i> <span>Khách hàng</span>
                     </a>
                 </li>
+
+                <li class="small text-uppercase fw-bold text-white-50 px-4 py-2 mt-2" style="font-size: 0.7rem;">Tài chính & Nhân sự</li>
 
                 <li>
                     <a asp-controller="MInvociesPassengers" asp-action="GetlistInvoicesPassengers"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "GetlistInvoicesPassengers" ? "active" : "")">
-                        <i class="bi bi-receipt"></i> <span>Hóa đơn & Thanh toán</span>
+                       class="@(currentAction == "GetlistInvoicesPassengers" ? "active" : "")">
+                        <i class="fas fa-file-invoice-dollar"></i> <span>Hóa đơn</span>
                     </a>
                 </li>
-
 
                 <li>
-                    <a  target="_blank" asp-controller="Home" asp-action="MemeDevelopment"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "MemeDevelopment" ? "active" : "")">
-                        <i class="bi bi-person-workspace"></i> <span>Quản lý nhân viên</span>
+                    <a target="_blank" asp-controller="Home" asp-action="MemeDevelopment"
+                       class="@(currentAction == "MemeDevelopment" ? "active" : "")">
+                        <i class="fas fa-id-card-alt"></i> <span>Nhân sự (HR)</span>
                     </a>
                 </li>
-
 
                 <li>
                     <a target="_blank" asp-controller="MStatistics" asp-action="ViewStatistics"
-                       class="@(ViewContext.RouteData.Values["action"].ToString() == "ViewStatistics" ? "active" : "")">
-                        <i class="bi bi-bar-chart"></i> <span>Báo cáo & thống kê</span>
+                       class="@(currentAction == "ViewStatistics" ? "active" : "")">
+                        <i class="fas fa-chart-line"></i> <span>Báo cáo doanh thu</span>
                     </a>
                 </li>
 
-               
-                <li><a href="#"><i class="bi bi-gear"></i> <span>Cài đặt hệ thống</span></a></li>
-                <li><a href="#"><i class="bi bi-bell"></i> <span>Cài đặt thông báo</span></a></li>
-                <li><a href="#"><i class="bi bi-controller"></i> <span>Game</span></a></li>
+                <li class="small text-uppercase fw-bold text-white-50 px-4 py-2 mt-2" style="font-size: 0.7rem;">Hệ thống</li>
 
-                <li class="logout">
-                    <a asp-controller="Authen" asp-action="SignOut"><i class="bi bi-box-arrow-right"></i> <span>Đăng xuất</span></a>
+                <li><a href="#"><i class="fas fa-cogs"></i> <span>Cấu hình</span></a></li>
+                <li><a href="#"><i class="fas fa-gamepad"></i> <span>Giải trí</span></a></li>
+
+                <li>
+                    <a asp-controller="Authen" asp-action="SignOut" class="text-danger">
+                        <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+                    </a>
                 </li>
             </ul>
         </nav>
 
-        <button class="btn btn-dark toggle-btn" id="toggleBtn">
-            <i class="bi bi-list"></i>
-        </button>
+        <div id="content">
 
-        <div class="content">
-            @RenderBody()
+            <nav class="top-navbar">
+                <button type="button" id="sidebarCollapse" class="btn-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <div class="admin-profile">
+                    <div class="icon-btn" title="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge-dot"></span>
+                    </div>
+                    <div class="icon-btn" title="Cài đặt nhanh">
+                        <i class="fas fa-cog"></i>
+                    </div>
+
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=111c43&color=fff" alt="" class="profile-img me-2">
+                            <span class="d-none d-sm-inline fw-bold">Administrator</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
+                            <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" asp-controller="Authen" asp-action="SignOut">Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="main-body">
+                @RenderBody()
+            </div>
+
         </div>
-
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById("toggleBtn").onclick = function () {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-            document.querySelector(".content").classList.toggle("collapsed");
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const toggleBtn = document.getElementById('sidebarCollapse');
+
+            toggleBtn.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+            });
+        });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

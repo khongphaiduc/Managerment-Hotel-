@@ -1,7 +1,20 @@
-﻿@model IEnumerable<Management_Hotel_2025.Modules.Invoices.InvocieModels.InvoicesViewModel>
+﻿@using System.Security.Claims
+@model IEnumerable<Management_Hotel_2025.Modules.Invoices.InvocieModels.InvoicesViewModel>
 @{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+
+    if (role == "Admin")
+    {
+        Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/StaffHeader.cshtml";
+    }
+
     ViewBag.Title = "Danh sách hóa đơn khách sạn";
-    Layout = "~/Views/Shared/AdminSidebar.cshtml";
+
 }
 
 <!DOCTYPE html>
@@ -142,7 +155,7 @@
                                 </a>
 
                                 <!-- Nút In (ví dụ) -->
-                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Home" asp-action="MemeDevelopment"  title="In hoá đơn" target="_blank">
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Home" asp-action="MemeDevelopment" title="In hoá đơn" target="_blank">
                                     <!-- printer SVG -->
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16" aria-hidden="true">
                                         <path d="M2 7a1 1 0 0 0-1 1v3h2V8a1 1 0 0 0-1-1z" />

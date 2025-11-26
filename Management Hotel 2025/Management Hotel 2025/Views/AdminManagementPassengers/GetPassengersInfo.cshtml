@@ -1,4 +1,18 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+    if (role == "Admin")
+    {
+        Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    }
+    else if (role == "Staff")
+    {
+        Layout = "~/Views/Shared/StaffHeader.cshtml";
+    }
+}
+
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8" />
@@ -82,9 +96,7 @@
         }
     </style>
 </head>
-@{
-    Layout = "~/Views/Shared/AdminSidebar.cshtml";
-}
+
 
 <body>
 

@@ -142,8 +142,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
             }
             else
             {
-                // Xử lý khi thanh toán thất bại
-                // Ví dụ: Hiển thị thông báo lỗi hoặc chuyển hướng người dùng đến trang lỗi
+                // thành toán thất bại
                 return BadRequest("Payment failed. Please try again.");
             }
         }

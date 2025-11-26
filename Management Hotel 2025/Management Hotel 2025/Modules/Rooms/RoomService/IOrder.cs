@@ -1,4 +1,5 @@
 ﻿using Management_Hotel_2025.ViewModel;
+using Microsoft.Identity.Client;
 
 namespace Management_Hotel_2025.Modules.Rooms.RoomService
 {
@@ -9,6 +10,10 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
 
 
         public Task<bool> ConfirmCheckOut(Order order, string OrdersMethod, int idStaff);
+
+
+        //confirm chuyển khoản checkout của thằng  khách
+        public Task<bool> ConfirmTranfersQRcode(string bookingcode);
 
     }
 

@@ -1,45 +1,54 @@
 ﻿@model Management_Hotel_2025.ViewModel.Order
 @{
-    Layout = null; // hoặc đặt Layout = "_Layout" nếu bạn dùng layout chung
+    Layout = null;
     Func<decimal, string> fmt = v => string.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:N0} đ", v);
-    string statusBadge(string status) =>
-        status?.ToLower() switch
-        {
-            "đã thanh toán" => "badge bg-success",
-            "chưa thanh toán" => "badge bg-danger",
-            "đang chờ" => "badge bg-warning text-dark",
-            _ => "badge bg-secondary"
-        };
 }
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chi tiết hóa đơn</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/invoice-details.css" />
 
+    <style>
+        /* CSS cho khu vực hiển thị QR Code */
+        #qrCodeContainer {
+            display: none; /* Mặc định ẩn */
+            background-color: #f8f9fa;
+            border: 2px dashed #0d6efd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        #qrcode canvas, #qrcode img {
+            margin: 0 auto;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
     <div class="container my-4 invoice-root">
         <div class="card shadow-sm">
             <div class="card-body">
-                <!-- Header: Hotel Info + Invoice Meta -->
                 <div class="row">
                     <div class="col-md-7">
                         <h3 class="mb-1">TrungDuc Luxury Hotel</h3>
                         <p class="mb-0">VIET NAM</p>
                         <p class="mb-0">Điện thoại: 09211212</p>
-                        <p class="mb-0">Email:ptrungduc1011@gmail.com</p>
-
+                        <p class="mb-0">Email: ptrungduc1011@gmail.com</p>
                         <p class="mb-0">Mã số thuế: 2HONDAICODON</p>
-
                     </div>
                 </div>
 
                 <hr />
 
-                <!-- Customer & Booking Info -->
                 <div class="row g-3">
                     <div class="col-md-6">
                         <h6>Thông tin khách hàng</h6>
@@ -49,24 +58,18 @@
                         {
                             <p class="mb-0">Email: @Model.Email</p>
                         }
-                        <p class="mb-0">Số CCCD/Hộ chiếu: @Model?.PersonalId</p>
-                        @if (!string.IsNullOrEmpty(Model?.CustomerAddress))
-                        {
-                            <p class="mb-0">Địa chỉ: @Model.CustomerAddress</p>
-                        }
+                        <p class="mb-0">CCCD/Hộ chiếu: @Model?.PersonalId</p>
                     </div>
                     <div class="col-md-6">
                         <h6>Thông tin đặt phòng</h6>
                         <p class="mb-0">Mã đặt phòng: <strong>@Model?.BookingCode</strong></p>
                         <p class="mb-0">Nhận phòng: @Model?.RealCheckInDate.ToString("dd/MM/yyyy")</p>
                         <p class="mb-0">Trả phòng:  @ViewBag.TimeCheckOut.ToString("dd/MM/yyyy") </p>
-
                     </div>
                 </div>
 
                 <hr />
 
-                <!-- Rooms List -->
                 <h6>Danh sách phòng</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
@@ -107,13 +110,11 @@
 
                 <hr />
 
-                <!-- Services -->
                 <h6>Dịch vụ phát sinh</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
                         <thead class="table-light">
                             <tr>
-
                                 <th>#</th>
                                 <th>Tên dịch vụ</th>
                                 <th class="text-center">Số lượng</th>
@@ -127,7 +128,6 @@
                                 var idx = 1;
                                 foreach (var s in Model.roomsOrders)
                                 {
-
                                     foreach (var item in s.UsedToServices)
                                     {
                                         <tr>
@@ -139,7 +139,6 @@
                                         </tr>
                                         idx++;
                                     }
-
                                 }
                             }
                             else
@@ -152,7 +151,6 @@
 
                 <hr />
 
-                <!-- Tax & Discount -->
                 <div class="row">
                     <div class="col-md-6">
                         <h6>Thuế & Giảm giá</h6>
@@ -164,7 +162,7 @@
                         <table class="w-100">
                             <tr>
                                 <td>Tổng tiền trước thuế:</td>
-                                <td class="text-end">@fmt(Model.TotalAmountOrder)</td>
+                                <td class="text-end">@fmt(Model.TotalAmountOrder + Model.Deposit)</td>
                             </tr>
                             <tr>
                                 <td>Thuế VAT (0%):</td>
@@ -172,15 +170,15 @@
                             </tr>
                             <tr class="fw-bold">
                                 <td>Tổng tiền sau thuế:</td>
-                                <td class="text-end">@fmt(Model.TotalAmountOrder)</td>
+                                <td class="text-end">@fmt(Model.TotalAmountOrder + Model.Deposit)</td>
                             </tr>
                             <tr>
-                                <td>Khách đã trả:</td>
+                                <td>Khách đã trả (Cọc):</td>
                                 <td class="text-end">@fmt(Model.Deposit)</td>
                             </tr>
-                            <tr>
+                            <tr class="text-danger fw-bold fs-5">
                                 <td>Tiền còn thiếu:</td>
-                                <td class="text-end">@fmt(Model.TotalAmountOrder - Model.Deposit)</td>
+                                <td class="text-end">@fmt(Model.TotalAmountOrder)</td>
                             </tr>
                         </table>
                     </div>
@@ -190,27 +188,51 @@
 
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <small class="text-muted">Hóa đơn được tạo tự động và có giá trị thanh toán.</small>
+                        <small class="text-muted">Hóa đơn có giá trị thanh toán ngay lập tức.</small>
                     </div>
-                    <div class="text-end">
-                        <a class="btn btn-outline-secondary btn-sm" id="btnCheckout">Xác nhận thanh toán</a>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary btn-sm" id="btnCheckout">
+                            <i class="bi bi-cash"></i> Thanh toán Tiền mặt
+                        </button>
+                        <button class="btn btn-primary btn-sm" id="btnCheckOutQR">
+                            <i class="bi bi-qr-code"></i> Thanh Toán Chuyển Khoản (QR)
+                        </button>
                     </div>
                 </div>
+
+                <div id="qrCodeContainer">
+                    <h5 class="text-primary fw-bold mb-2">QUÉT MÃ VIETQR ĐỂ THANH TOÁN</h5>
+                    <p class="text-muted mb-3">Sử dụng App ngân hàng để quét mã</p>
+
+                    <div id="qrcode" class="d-flex justify-content-center"></div>
+
+                    <div class="mt-3">
+                        <div class="spinner-border text-primary" role="status" id="waitingSpinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-primary mt-2 small blink-text">Đang chờ xác nhận thanh toán...</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
+        // 1. Xử lý Thanh toán Tiền Mặt
         document.getElementById('btnCheckout').addEventListener('click', function () {
+            if(!confirm("Xác nhận khách đã thanh toán đủ tiền mặt?")) return;
+
             const order = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
 
             fetch('/StaffManagementRoom/ConfirmCheckOutPassenger', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(order)
             })
             .then(response => {
@@ -223,9 +245,133 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Đã xảy ra lỗi khi check-out.');
+                alert('Lỗi hệ thống khi check-out tiền mặt.');
             });
         });
+
+
+        // 2. Xử lý Thanh toán QR PayOS
+        document.getElementById('btnCheckOutQR').addEventListener('click', function () {
+            const btn = this;
+            const qrContainer = document.getElementById('qrCodeContainer');
+
+            // UI Feedback
+            btn.disabled = true;
+            btn.innerHTML = 'Đang tạo mã...';
+
+            const order = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
+
+            // Bước 1: Gọi API tạo hóa đơn (Backend lưu trạng thái)
+            fetch('/StaffManagementRoom/ConfirmCheckOutPassengerQR', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(order)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Không thể tạo hóa đơn trong hệ thống.");
+
+                // Bước 2: Gọi API lấy chuỗi string QR từ PayOS
+                const amount = order.TotalAmountOrder;
+                const descriptionOrder = order.BookingCode; // Dùng mã booking làm nội dung ck
+
+                return fetch('/payos/checkoutbypayos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Amount: amount,
+                        Description: descriptionOrder
+                    })
+                });
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Lỗi khi lấy mã QR từ PayOS.");
+                return response.json();
+            })
+            .then(data => {
+
+                console.log("PayOS Response:", data);
+
+
+                let qrString = data.result || data.qrCode || data;
+
+                if (typeof qrString !== 'string') {
+                     // Fallback nếu data là object nhưng không tìm thấy key, thử convert
+                     qrString = JSON.stringify(data);
+                }
+
+                if (qrString) {
+                    // 1. Hiển thị container
+                    qrContainer.style.display = 'block';
+
+                    // 2. Xóa QR cũ (nếu có) để tránh bị trùng
+                    document.getElementById("qrcode").innerHTML = "";
+
+                    // 3. Tạo QR mới bằng thư viện
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: qrString,
+                        width: 250,
+                        height: 250,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.M
+                    });
+
+                    // Cuộn xuống chỗ QR
+                    qrContainer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert("API không trả về dữ liệu QR hợp lệ.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+                qrContainer.style.display = 'none';
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-qr-code"></i> Thanh Toán Chuyển Khoản (QR)';
+            });
+        });
+
+
+        // 3. SignalR: Lắng nghe xác nhận thanh toán
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationsystem")
+            .build();
+
+        connection.on("NotificationTransferQRCode", (message) => {
+
+            console.log("Payment success:", message);
+
+            //  thông báo đẹp
+            const qrContainer = document.getElementById('qrCodeContainer');
+            qrContainer.innerHTML = `
+                <div class="alert alert-success py-5">
+                    <h1 class="display-4">🎉</h1>
+                    <h4>Thanh toán thành công!</h4>
+                    <p>${message}</p>
+                    <a href="/StaffManagementRoom/BookingsView" class="btn btn-success mt-3">Quay về danh sách</a>
+                </div>
+            `;
+
+        });
+
+        connection.start()
+            .then(() => console.log("SignalR Connected."))
+            .catch(err => console.error("SignalR Error:", err));
+
     </script>
+
+    <style>
+        .blink-text {
+            animation: blinker 1.5s linear infinite;
+        }
+
+        @@keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
 </body>
 </html>

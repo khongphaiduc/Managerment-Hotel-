@@ -156,7 +156,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin.AdminServices
 
             // danh sách khách hàng đang lưu trú
             var item3 = _dbcontext.BookingDetails.Include(s => s.Room).ThenInclude(s => s.RoomType).Include(s => s.Booking)
-                .Where(bd => bd.CheckInDate <= DateTime.Now.Date && bd.CheckOutDate >= DateTime.Now.Date && bd.Booking.Status== "CheckIn")
+                .Where(bd => bd.CheckInDate <= DateTime.Now.Date && bd.CheckOutDate >= DateTime.Now.Date && bd.Booking.Status == "CheckIn")
                 .Select(bd => new RoomTemporary
                 {
                     NameCustomer = bd.Booking.CustomerName,
@@ -174,6 +174,8 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin.AdminServices
                 ListCheckInToday = item1,
                 ListCheckOutToday = item2,
                 ListCustomerUsing = item3
+
+
             };
 
             return adminListsViewRoom;
