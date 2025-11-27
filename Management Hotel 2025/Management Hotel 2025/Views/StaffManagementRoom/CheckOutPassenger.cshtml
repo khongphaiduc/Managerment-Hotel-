@@ -261,7 +261,6 @@
 
             const order = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
 
-            // Bước 1: Gọi API tạo hóa đơn (Backend lưu trạng thái)
             fetch('/StaffManagementRoom/ConfirmCheckOutPassengerQR', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -270,9 +269,9 @@
             .then(response => {
                 if (!response.ok) throw new Error("Không thể tạo hóa đơn trong hệ thống.");
 
-                // Bước 2: Gọi API lấy chuỗi string QR từ PayOS
+                
                 const amount = order.TotalAmountOrder;
-                const descriptionOrder = order.BookingCode; // Dùng mã booking làm nội dung ck
+                const descriptionOrder = order.BookingCode; 
 
                 return fetch('/payos/checkoutbypayos', {
                     method: 'POST',

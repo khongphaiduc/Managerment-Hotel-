@@ -169,21 +169,16 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                 }
                 else if (webhookData.Description.StartsWith("PTDHOTEL"))
                 {
-                    var idUser = webhookData.Description.Substring(8);
+                    var idUser = webhookData.Description.Substring(13);  // lấy id của user từ Description trong payos
 
                     Console.WriteLine("Round 2 ");
                     string codeHotel = "TDH";
 
                     // note toàn bộ các data lấy từ session sẽ bị null bởi vì nó webhook nó không nằm cùng context của user
 
-                    // id phòng đang booking
-                    int? IdRoom = HttpContext.Session.GetInt32("IdRoom");
-                    decimal TotalRoom = Convert.ToDecimal(HttpContext.Session.GetString("TotalRoom"));
-                    decimal DepositAmount = Convert.ToDecimal(HttpContext.Session.GetString("DepositAmount"));
-                    var CustomerName = HttpContext.Session.GetString("CustomerName");
-                    var CustomerPhone = HttpContext.Session.GetString("CustomerPhone");
-                    var Nationality = HttpContext.Session.GetString("Nationality");
-                    var Email = HttpContext.Session.GetString("Email");
+                    var bookingTemporary = await _dbcontext.BookingTemporaryPayOs.FirstOrDefaultAsync(s => s.PaymentCode == webhookData.Description);
+
+                    if (bookingTemporary == null) return BadRequest();
 
                     string? OldCodeBooking = _dbcontext.Bookings
                    .OrderByDescending(s => s.BookingCode)
@@ -196,17 +191,19 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                     // chuyuern 
                     string CodeBookingCode = codeHotel + Code.ToString("D6");
 
+
+
                     var NewBooking = new Booking
                     {
                         BookingDate = DateTime.Now,
                         BookingSource = "Website",
-                        DepositAmount = DepositAmount,
-                        TotalAmountBooking = TotalRoom,
+                        DepositAmount = bookingTemporary.DepositAmount ?? 000,
+                        TotalAmountBooking = bookingTemporary.NumberOFRoom ?? 00,
                         Status = "Success",
-                        CustomerName = CustomerName ?? "Vô danh",
-                        CustomerPhone = CustomerPhone ?? "000000",
-                        Nationality = Nationality ?? "00000",
-                        Email = Email ?? "0000",
+                        CustomerName = bookingTemporary.NameCustomer ?? "Vô danh",
+                        CustomerPhone = bookingTemporary.PhoneNumber ?? "000000",
+                        Nationality = bookingTemporary.Nationality ?? "00000",
+                        Email = bookingTemporary.Email ?? "0000",
                         BookingCode = CodeBookingCode
                     };
                     // check xem có id thằng user không thì mới gán
@@ -214,9 +211,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                     {
                         NewBooking.UserId = Int32.Parse(idUser);
                     }
-                    // lưu vào để chuyển qua  bên email
-                    HttpContext.Session.SetString("CodeBooking", CodeBookingCode);
-
+                  
                     _dbcontext.Bookings.Add(NewBooking);
                     _dbcontext.SaveChanges();
                     int idBooking = NewBooking.BookingId;  // booking id  vừa tạo xong
@@ -224,9 +219,9 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                     var NewbookingDetail = new BookingDetail
                     {
                         BookingId = idBooking,
-                        RoomId = IdRoom ?? 10,
-                        CheckInDate = Convert.ToDateTime(HttpContext.Session.GetString("StartDate")),
-                        CheckOutDate = Convert.ToDateTime(HttpContext.Session.GetString("EndDate")),
+                        RoomId = bookingTemporary.IdRoom ?? 00,
+                        CheckInDate = bookingTemporary.StartDate,
+                        CheckOutDate = bookingTemporary.EndDate,
                     };
 
                     _dbcontext.BookingDetails.Add(NewbookingDetail);
@@ -239,7 +234,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                         Console.WriteLine($"Giá trị của Row là {row}");
 
 
-                        await _hubNotificationSystem.Clients.User(idUser).SendAsync("NotificationBookingByPayOS", CodeBookingCode , DepositAmount);
+                        await _hubNotificationSystem.Clients.User(idUser).SendAsync("NotificationBookingByPayOS", CodeBookingCode, bookingTemporary.DepositAmount);
 
 
                         return Ok();

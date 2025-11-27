@@ -13,27 +13,65 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
     {
         private readonly PayOSClient _payOS;
         private readonly ILogger<BookingByPayOSController> _logger;
+        private readonly ManagermentHotelContext _dbcontext;
 
-        public BookingByPayOSController(PayOSClient payOSClient, ILogger<BookingByPayOSController> logger)
+        public BookingByPayOSController(PayOSClient payOSClient, ILogger<BookingByPayOSController> logger, ManagermentHotelContext hotelContext)
         {
             _payOS = payOSClient;
             _logger = logger;
+            _dbcontext = hotelContext;
         }
 
         //  payos qr tạo booking 
         [HttpPost("booking")]
         public async Task<IActionResult> CreateBookingByPayOS()
         {
+
+            var idUser = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string randomcode = Guid.NewGuid().ToString("N").Substring(0, 5);
+            var orderDescription = "PTDHOTEL" + randomcode + idUser;
+
+            // lưu thông tin cần thanh toán vào bẳng tạm trong database
+            int? IdRoomTemporary = HttpContext.Session.GetInt32("IdRoom");
+            decimal TotalRoomTemporary = Convert.ToDecimal(HttpContext.Session.GetString("TotalRoom"));
+            decimal DepositAmountTemporary = Convert.ToDecimal(HttpContext.Session.GetString("DepositAmount"));
+
+            var startDateTemporary = HttpContext.Session.GetString("StartDate");
+            var endDateTemporary = HttpContext.Session.GetString("EndDate");
+            var CustomerNameTemporary = Request.Form["CustomerName"];
+            var CustomerPhoneTemporary = Request.Form["PhoneNumber"];
+            var NationalityTemporary = Request.Form["Nationality"];
+            var EmailTemporary = Request.Form["Email"];
+
+
+            _dbcontext.BookingTemporaryPayOs.Add(new MyData.Models.BookingTemporaryPayOS()
+            {
+                PaymentCode = orderDescription,
+                IdRoom = IdRoomTemporary,
+                NumberOFRoom = Convert.ToInt32(TotalRoomTemporary),
+                DepositAmount = DepositAmountTemporary,
+                NameCustomer = CustomerNameTemporary,
+                PhoneNumber = CustomerPhoneTemporary,
+                Nationality = NationalityTemporary,
+                Email = EmailTemporary,
+                StartDate = Convert.ToDateTime(startDateTemporary),
+                EndDate = Convert.ToDateTime(endDateTemporary),
+            });
+
+            await _dbcontext.SaveChangesAsync();
+
+
+            // tao đơn thanh toán payos
             decimal DepositAmount = Convert.ToDecimal(HttpContext.Session.GetString("DepositAmount"));
             try
             {
-                var idUser = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
 
                 var paymentRequest = new CreatePaymentLinkRequest
                 {
                     OrderCode = long.Parse(DateTime.Now.ToString("MMddHHmmss")),
                     Amount = Convert.ToInt64(DepositAmount),
-                    Description = "PTDHOTEL" + idUser,
+                    Description = orderDescription,
                     ReturnUrl = "https://your-url.com",
                     CancelUrl = "https://your-url.com"
                 };

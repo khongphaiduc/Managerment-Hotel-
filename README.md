@@ -1,6 +1,6 @@
 # Hệ Thống Đặt Phòng & Quản Lý Khách Sạn 2025
 
-Dự Án Đang Trong Quá Trình Phát Triển  ( 10/08/2025 ) 
+Project is currently under development (10/08/2025)
 
 Software Engineer : Phạm Trung Đức 
 
@@ -8,13 +8,13 @@ Software Engineer : Phạm Trung Đức
 
 - Frontend : ChatGPT  , Copilot , Phạm Trung Đức
 
-Mọi đóng góp hay góp ý xin liên hệ gmail : ptrungduc1011@gmail.com
+For contributions or feedback, please contact: ptrungduc1011@gmail.com
 
-Các ảnh được sử dụng trong dự án được tổng hợp từ  internet 
+Images used in this project are sourced from the Internet.
 
-Link Demo : chưa có hihi
+Demo Link: not available yet 😄
 
-## Công nghệ được sử dụng 
+## Technologies Used
 
 - Backend: C# , ASP.NET, Web API , JavaScript 
 
@@ -26,94 +26,94 @@ Link Demo : chưa có hihi
 
 - Payment Gateway: VNPAY, Quét QR (PayOS) 
 
-### Các tính năng của dự án (theo dự kiến)
-### 1. User (Khách hàng)
-  + Đăng ký / Đăng nhập / Quên mật khẩu
+- RealTime : SignalR(C#)
 
-  + Xem danh sách phòng (theo loại, giá, số người, tiện nghi, tình trạng trống)
+### Project Features
+### 1. User (Customer)
+  + Register / Login / Forgot Password
 
-  + Tìm kiếm & lọc phòng nâng cao (theo giá, số người, tầng,)
+  + Browse room listings (by type, price, number of guests, amenities, availability)
 
-  + Xem chi tiết phòng (ảnh, mô tả, tiện ích, chính sách hủy, đánh giá khách hàng trước)
+  + Advanced search & filtering (by price, number of guests, floor, etc.)
 
-  + Đặt phòng trực tuyến
+  + View room details (photos, description, amenities, cancellation policy, previous customer reviews)
+
+  + Online booking
    
-    - Chọn ngày check-in / check-out
+    - Select check-in / check-out dates
 
-    - Chọn số lượng phòng, người ở
+    - Select number of rooms and guests
 
-    - Thêm dịch vụ đi kèm (ăn sáng, spa, đưa đón sân bay, …)
+    - Add extra services (breakfast, spa, airport transfer, etc.)
 
-  + Thanh toán trực tuyến (Paypal, Stripe, VNPAY, Momo, chuyển khoản…)
+  + Online payment (VNPAY, PayOS bank transfer, etc.)
 
-  + Quản lý booking cá nhân (xem, hủy, đổi lịch, xem trạng thái thanh toán)
+  + View booking history
 
-  + Xem lịch sử đặt phòng
+  + Receive email notifications about related services
 
-  + Đánh giá & phản hồi dịch vụ
+### 2. Staff (Hotel Employee)
 
-  + Nhận email thông báo các dụ vụ liên quan
+  + Staff login
 
-### 2. Staff (Nhân viên khách sạn)
+  + View & manage booking list (by date, room, customer)
 
-  + Đăng nhập nhân viên
+  + Check-in / Check-out guests at the counter (with QR Code check-in option)
+   
+  + Confirm payments via bank transfer (PayOS QR) or cash
 
-  + Xem & quản lý danh sách booking (theo ngày, theo phòng, theo khách)
+  + Update room status (available, cleaning, booked, occupied, maintenance)
 
-  + Check-in / Check-out khách tại quầy (kết hợp check-in by QR Code)
+  + Manage customer information (ID card, passport, contact)
 
-  + Cập nhật tình trạng phòng (trống, đang dọn, đã đặt, đang ở, bảo trì)
+  + Add additional services to guest invoices (room service, car rental, laundry, minibar, etc.)
 
-  + Quản lý thông tin khách (CMND/CCCD, hộ chiếu, liên hệ)
-
-  + Thêm dịch vụ phát sinh (gọi món, thuê xe, giặt ủi, minibar…) vào hóa đơn khách
-
-  + In hóa đơn cho khách (VAT, dịch vụ, tổng tiền)
+  + Print invoices for guests (VAT, services, total amount)
 
 
- ###  3. Admin (Quản trị hệ thống)
+ ###  3. Admin (System Administrator)
 
-  + Đăng nhập quản trị
+  + Admin login
 
-  + Quản lý người dùng (User, Staff, Admin)
+  + User management (User, Staff, Admin)
 
-  + Phân quyền (Staff, Lễ tân, Quản lý, Admin cấp cao)
+  + Role assignment (Staff, Receptionist, Manager, Senior Admin)
 
-  + Khóa/mở tài khoản
-
-  + Quản lý phòng
+  + Room management
     
-  + Thêm/sửa/xóa loại phòng
+     + Add / Edit / Delete room types
 
-  + Thêm/xóa phòng 
+     + Add / Delete rooms
   
-  + Chỉnh sửa thông tin phòng  như các thông tin cơ bản , cập nhật danh sách ảnh , thêm xóa tiện ích , thay đổi avatar phòng
+     + Edit room information such as basic info, update photo gallery, add/remove amenities, change room avatar
 
-  + Cập nhật giá phòng, số lượng phòng
+     + Update room prices and quantities
 
-  + Bật / Tăt hiển thị phòng 
+     + Enable / Disable room display
 
-  + Quản lý tiện ích của phòng
+  + Manage room amenities
 
-  + Quản lý dịch vụ khách sạn (Spa, Gym, Nhà hàng, Tour du lịch…)
 
-  + Quản lý booking toàn hệ thống (lọc theo ngày, trạng thái, khách hàng)
+  + Manage all bookings (filter by date, status, customer)
 
-  + Quản lý thanh toán (online/offline, doanh thu theo ngày/tháng/năm)
+  + Manage payments (online/offline, revenue by day/month/year)
 
-  + Quản lý khuyến mãi / voucher / mã giảm giá
 
-  + Báo cáo – Thống kê
+  + Reports & Analytics
 
-  + Công suất phòng (occupancy rate)
+      + Room occupancy rate
 
-  + Doanh thu theo thời gian
+      + Revenue over time
 
-  + Top khách hàng, dịch vụ được sử dụng nhiều nhất
-
-  + Quản lý nhân viên (tài khoản, phân ca, lịch làm việc)
 ### 4. System Hotel Core 
- + Tự động cập nhật trạng thái booking code mỗi ngày sau 22h và gửi thông báo tự động hủy phòng(case khách không đến check-in)
- + Tự động gửi thông báo nhắc khách hàng thời gian check-in trước 1 ngày 
- + Tự động gửi thông báo nhẵn khách hàng thời gian trả phòng
-### 5. Cung cấp API cho các đối tác như các tính năng Xem danh sách phòng,Xem danh sách phòng còn chống , Xem thông tin chi tiết của từng phòng , Search Advance , Đặt Phòng ,  Hủy Phòng , Thanh Toán ...
+ + Automatically update booking code status daily after 10 PM and send auto-cancellation notifications for no-show guests
+ + Automatically send check-in reminder notifications 1 day before check-in
+ + Automatically send check-out reminder notifications
+ + Real-time notifications for transactions or invoice payments
+### 5. Provide APIs for partners
+
+ + Features such as: view room list, view available rooms, view room details, advanced search, book room, cancel booking, make payments, etc.
+
+###  6. Mini Gamne 
+ + Slot machine game
+ + Chat with other players

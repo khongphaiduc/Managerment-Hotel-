@@ -28,7 +28,7 @@ namespace Management_Hotel_2025.Modules.Rooms.ManagementRoom
                                          .Select(s => new BookingItem()
                                          {
 
-                                             Code = s.BookingCode,
+                                             Code = s.BookingCode ?? "00",
                                              CustomerName = s.CustomerName,
                                              Phone = s.CustomerPhone,
                                              Email = s.Email,

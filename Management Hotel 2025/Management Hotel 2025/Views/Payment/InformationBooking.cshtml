@@ -604,8 +604,7 @@
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // 4. Chuyển hướng đến trang thành công (Sửa URL này theo Route của bạn)
-                    // Ví dụ: /Payment/Success?bookingId=...
+                    
                     window.location.href = `/Payment/PaymentSuccess?bookingCode=${bookingcode}`;
                 }
             });

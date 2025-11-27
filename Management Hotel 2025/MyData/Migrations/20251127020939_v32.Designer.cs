@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mydata.Models;
 
@@ -11,9 +12,11 @@ using Mydata.Models;
 namespace Mydata.Migrations
 {
     [DbContext(typeof(ManagermentHotelContext))]
-    partial class ManagermentHotelContextModelSnapshot : ModelSnapshot
+    [Migration("20251127020939_v32")]
+    partial class v32
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,49 +50,6 @@ namespace Mydata.Migrations
                     b.HasKey("AmenityId");
 
                     b.ToTable("Amenities");
-                });
-
-            modelBuilder.Entity("MyData.Models.BookingTemporaryPayOS", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal?>("DepositAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("IdRoom")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NameCustomer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nationality")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("NumberOFRoom")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BookingTemporary");
                 });
 
             modelBuilder.Entity("MyData.Models.DepositHistory", b =>

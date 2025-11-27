@@ -15,15 +15,32 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
             _dbcontext = dbcontext;
         }
 
-        // xác nhận checkout 
+        // xác nhận checkout / tạo order 
         public async Task<bool> ConfirmCheckOut(Order order, string OrdersMethod, int idStaff)
         {
             var booking = await _dbcontext.Bookings
                 .FirstOrDefaultAsync(b => b.BookingCode == order.BookingCode);
+
+
+
             string status = "Completed";
 
             if (booking == null)
                 return false;
+            // check xem order chủa thằng booking đã có hay chưa 
+            var orderOfBoooking = await _dbcontext.Orders.FirstOrDefaultAsync(s => s.OrderId == booking.BookingId);
+
+
+
+
+
+            if (orderOfBoooking != null)
+            {
+                booking.Status = "CheckOut";
+                orderOfBoooking.OrderStatus = "Completed";
+                await _dbcontext.SaveChangesAsync();
+                return true;
+            }
 
             if (OrdersMethod == "QR Code")
             {
@@ -56,11 +73,18 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomService
                 OrderCode = "PTD" + Code
             };
 
+
+
             _dbcontext.Orders.Add(newOrder);
+
+
+
 
             return await _dbcontext.SaveChangesAsync() > 0;
         }
 
+
+        // confirm chuyển khoản checkout của thằng  khách  thành công
         public async Task<bool> ConfirmTranfersQRcode(string bookingcode)
         {
             try
