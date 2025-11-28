@@ -1,4 +1,4 @@
-# Hệ Thống Đặt Phòng & Quản Lý Khách Sạn 2025
+# Integrated Hotel Reservation Management System
 
 Project is currently under development (10/08/2025)
 
