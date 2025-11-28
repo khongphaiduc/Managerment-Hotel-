@@ -36,5 +36,7 @@ namespace MyData.Models
 
         public DateTime EndDate { get; set; }
 
+        public string? BookingCode { get; set; }
+
     }
 }

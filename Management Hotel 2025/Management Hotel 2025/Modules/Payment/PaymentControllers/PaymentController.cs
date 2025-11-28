@@ -147,7 +147,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
             }
         }
 
-
+        [HttpPost]
         public IActionResult InformationBooking(string NameRoom, decimal Amount, int IdRoom)
         {
 
@@ -158,6 +158,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
             HttpContext.Session.SetString("Amount", Amount.ToString());
             HttpContext.Session.SetInt32("IdRoom", IdRoom);
 
+            ViewBag.idRoom = IdRoom;
 
             // số ngày  ở của hành khách
             DateTime ExpectedChechInTime = Convert.ToDateTime(HttpContext.Session.GetString("StartDate"));
@@ -195,8 +196,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
                 // formatted = "50.000 ₫"
             }
 
-            HttpContext.Session.GetString("TotalRoom");
-            HttpContext.Session.GetString("TotalDays");
+
 
             var email = User.FindFirst(ClaimTypes.Email)?.Value ?? HttpContext.Session.GetString("Email");
             var name = User.FindFirst("FullName")?.Value ?? HttpContext.Session.GetString("CustomerName");

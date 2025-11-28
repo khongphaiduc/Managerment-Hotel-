@@ -264,9 +264,14 @@
             <div class="form-side">
                 <div class="form-header">
                     <div>
-                        <a href="#" class="text-decoration-none" style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <a asp-controller="Room"
+                           asp-action="Detail"
+                           asp-route-idRoom='@ViewBag.idRoom'
+                           class="text-decoration-none"
+                           style="color: var(--text-secondary); font-size: 0.9rem;">
                             <i class="bi bi-arrow-left"></i> Quay lại
                         </a>
+
                         <h3 class="serif-font fw-bold mt-2 mb-0 text-dark">Xác Nhận & Thanh Toán</h3>
                     </div>
                     <div class="text-end">
@@ -600,12 +605,11 @@
                 icon: 'success',
                 background: '#fff',
                 confirmButtonColor: '#0f172a',
-                confirmButtonText: 'Xem Chi Tiết & Hoàn Tất',
+                confirmButtonText: 'Quay lại trang chủ',
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    
-                    window.location.href = `/Payment/PaymentSuccess?bookingCode=${bookingcode}`;
+                    window.location.href = `/home/trungducluxuryhotel`;
                 }
             });
         });

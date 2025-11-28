@@ -1,4 +1,6 @@
 ﻿
+using Management_Hotel_2025.Modules.ManagementQRCode;
+using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
 using Management_Hotel_2025.Modules.Rooms.RoomService;
 using Management_Hotel_2025.Modules.SignalRModels;
 using Microsoft.AspNetCore.Components.Web;
@@ -12,6 +14,8 @@ using PayOS;
 using PayOS.Exceptions;
 using PayOS.Models.V2.PaymentRequests;
 using PayOS.Models.Webhooks;
+using QRCoder;
+using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
@@ -28,8 +32,9 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
         private readonly IOrder _iorder;
         private readonly IHubContext<NotificationSystem> _hubNotificationSystem;
         private readonly ManagermentHotelContext _dbcontext;
-
-        public PaymentWithPayOSController(PayOSClient payOS, ILogger<PaymentWithPayOSController> logger, IGameBlackRed gameBlackRed, IHubContext<CoinHub> coinHub, IOrder order, IHubContext<NotificationSystem> hubNotificationSystem, ManagermentHotelContext managermentHotelContext)
+        private readonly INotifications _iNotification;
+        private readonly IGanarateQRCode _QRcode;
+        public PaymentWithPayOSController(PayOSClient payOS, ILogger<PaymentWithPayOSController> logger, IGameBlackRed gameBlackRed, IHubContext<CoinHub> coinHub, IOrder order, IHubContext<NotificationSystem> hubNotificationSystem, ManagermentHotelContext managermentHotelContext, INotifications notifications, IGanarateQRCode ganarateQRCode)
         {
             _payOS = payOS;
             _logger = logger;
@@ -38,6 +43,8 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
             _iorder = order;
             _hubNotificationSystem = hubNotificationSystem;
             _dbcontext = managermentHotelContext;
+            _iNotification = notifications;
+            _QRcode = ganarateQRCode;
 
         }
 
@@ -172,7 +179,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                     var idUser = webhookData.Description.Substring(13);  // lấy id của user từ Description trong payos
 
                     Console.WriteLine("Round 2 ");
-                    string codeHotel = "TDH";
+
 
                     // note toàn bộ các data lấy từ session sẽ bị null bởi vì nó webhook nó không nằm cùng context của user
 
@@ -185,11 +192,6 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                    .Select(s => s.BookingCode)
                    .FirstOrDefault();
 
-                    // lấy số  nguyên cộng  thêm 1 , bỏ 3 ký tự đầu
-                    int Code = int.Parse(OldCodeBooking.Substring(3)) + 1;
-
-                    // chuyuern 
-                    string CodeBookingCode = codeHotel + Code.ToString("D6");
 
 
 
@@ -204,14 +206,14 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                         CustomerPhone = bookingTemporary.PhoneNumber ?? "000000",
                         Nationality = bookingTemporary.Nationality ?? "00000",
                         Email = bookingTemporary.Email ?? "0000",
-                        BookingCode = CodeBookingCode
+                        BookingCode = bookingTemporary.BookingCode
                     };
                     // check xem có id thằng user không thì mới gán
                     if (Int32.Parse(idUser) != 0)
                     {
                         NewBooking.UserId = Int32.Parse(idUser);
                     }
-                  
+
                     _dbcontext.Bookings.Add(NewBooking);
                     _dbcontext.SaveChanges();
                     int idBooking = NewBooking.BookingId;  // booking id  vừa tạo xong
@@ -234,8 +236,32 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                         Console.WriteLine($"Giá trị của Row là {row}");
 
 
-                        await _hubNotificationSystem.Clients.User(idUser).SendAsync("NotificationBookingByPayOS", CodeBookingCode, bookingTemporary.DepositAmount);
+                        await _hubNotificationSystem.Clients.User(idUser).SendAsync("NotificationBookingByPayOS", bookingTemporary.BookingCode, bookingTemporary.DepositAmount);
 
+                        var QRBookingCode = _QRcode.GenerateQRCodeForBookingDetail(bookingTemporary.BookingCode);   // qr code 
+
+                        string Content = $@"
+<p>Kính gửi Quý khách,</p>
+
+<p>Chúng tôi xin trân trọng cảm ơn Quý khách đã tin tưởng và lựa chọn dịch vụ của 
+<b>Khách sạn Luxury Trung Đức</b>.</p>
+
+<p>Chúng tôi xin thông báo rằng việc đặt phòng của Quý khách đã <b>THÀNH CÔNG</b> với các thông tin sau:</p>
+
+<ul>
+  <li><b>Họ và tên:</b> {bookingTemporary.NameCustomer}</li>
+  <li><b>Số điện thoại:</b> {bookingTemporary.PhoneNumber}</li>
+  <li><b>Email:</b> {bookingTemporary.Email}</li>
+  <li><b>Ngày nhận phòng:</b> {bookingTemporary.StartDate}</li>
+  <li><b>Ngày trả phòng:</b> {bookingTemporary.EndDate}</li>
+  <li><b>Số tiền đã đặt cọc:</b> {bookingTemporary.DepositAmount}</li>
+</ul>
+
+<p>Quý khách vui lòng có mặt tại khách sạn vào ngày nhận phòng và mang theo giấy tờ tùy thân để hoàn tất thủ tục check-in.</p>
+<p>Để check-in nhanh chóng, Quý khách vui lòng đưa mã QR bên dưới cho bộ phận Tiếp tân.</p>
+
+";
+                        var reuslt = await _iNotification.SendBookingSuccessNotification(bookingTemporary.Email, "Xác nhận đặt phòng thành công - Khách sạn Luxury Trung Đức", Content, QRBookingCode);
 
                         return Ok();
                     }

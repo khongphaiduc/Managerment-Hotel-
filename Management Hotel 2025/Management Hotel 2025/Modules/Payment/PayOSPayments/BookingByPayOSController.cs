@@ -44,6 +44,19 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
             var EmailTemporary = Request.Form["Email"];
 
 
+            string? OldCodeBooking = _dbcontext.Bookings
+               .OrderByDescending(s => s.BookingCode)
+               .Select(s => s.BookingCode)
+               .FirstOrDefault();
+
+            // lấy số  nguyên cộng  thêm 1 , bỏ 3 ký tự đầu
+            int Code = int.Parse(OldCodeBooking.Substring(3)) + 1;
+
+            // chuyuern 
+            string codeHotel = "TDH";
+            string CodeBookingCode = codeHotel + Code.ToString("D6");
+
+
             _dbcontext.BookingTemporaryPayOs.Add(new MyData.Models.BookingTemporaryPayOS()
             {
                 PaymentCode = orderDescription,
@@ -56,6 +69,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
                 Email = EmailTemporary,
                 StartDate = Convert.ToDateTime(startDateTemporary),
                 EndDate = Convert.ToDateTime(endDateTemporary),
+                BookingCode = CodeBookingCode
             });
 
             await _dbcontext.SaveChangesAsync();
