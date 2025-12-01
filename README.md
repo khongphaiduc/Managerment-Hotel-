@@ -17,7 +17,7 @@ Demo Link:
  + P1 : Demo Main Flow  https://www.youtube.com/watch?v=tiAMaPyY0SQ
  + P2 : Demo Role Admin https://www.youtube.com/watch?v=FB3BIbSn_Ww
  + P3 : Demo Role Receptionist (Lễ Tân) https://www.youtube.com/watch?v=BZ0BFKbjFhg
- + P4 : Demo Test MiniGame https://www.youtube.com/watch?v=9bWgw6dF9vo
+
 
 ## Technologies Used
 
