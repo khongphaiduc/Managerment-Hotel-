@@ -15,7 +15,7 @@ Images used in this project are sourced from the Internet.
 Demo Link: 
 
  + P1 : Demo Main Flow  https://www.youtube.com/watch?v=tiAMaPyY0SQ
- + P2 : Demo Role Admin https://www.youtube.com/watch?v=FB3BIbSn_Ww
+ + P2 : Demo Role Admin [https://www.youtube.com/watch?v=FB3BIbSn_Ww](https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link)
  + P3 : Demo Role Receptionist (Lễ Tân) https://www.youtube.com/watch?v=BZ0BFKbjFhg
 
 
