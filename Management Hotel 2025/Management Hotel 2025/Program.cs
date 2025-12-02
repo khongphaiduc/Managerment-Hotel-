@@ -105,8 +105,13 @@ namespace Management_Hotel_2025
             .AddAuthentication(option =>
             {
                 option.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                option.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //option.DefaultScheme : scheme mặc định dùng cho tất cả các hành động liên quan đến authentication nếu k set riêng các scheme khác
+                
                 option.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                // option.DefaultSignInScheme : dùng để chỉ định nơi lưu chữ thông tin của user khi đăng nhập thành công (có thể là Cookie) , dùng khi gọi SignInAsync() không truyền scheme
+
+                option.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                // option.DefaultAuthenticateScheme : xác định  nơi sẽ lấy thông tin để xác thực user, dùng khi [Authorize] hoặc HttpContext.User
             })
             .AddCookie(options =>
             {
@@ -221,3 +226,4 @@ namespace Management_Hotel_2025
         }
     }
 }
+
