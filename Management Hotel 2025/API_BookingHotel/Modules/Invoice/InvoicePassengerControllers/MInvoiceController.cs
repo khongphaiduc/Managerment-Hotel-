@@ -1,10 +1,12 @@
 ﻿using API_BookingHotel.Modules.Invoice.MInvoiceServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace API_BookingHotel.Modules.Invoice.InvoicePassengerControllers
 {
+  
     [Route("admin")]
     [ApiController]
     public class MInvoiceController : ControllerBase

@@ -9,6 +9,8 @@ using System.Data;
 using Microsoft.AspNetCore.Authentication.Google;
 using Mydata.Models;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text;
 
 namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 {
@@ -19,15 +21,54 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
         private readonly ValidationAuthen _Validation;
         private readonly Login _Login;
         private readonly ILogger<AuthenController> _Logger;
+        private readonly IConfiguration _cofig;
+        private readonly IHttpClientFactory _httclientf;
 
-        public AuthenController(ManagermentHotelContext dbcontext, RegisterAccount MyRegister, ValidationAuthen Validation, Login login, ILogger<AuthenController> logger)
+        public AuthenController(ManagermentHotelContext dbcontext, RegisterAccount MyRegister, ValidationAuthen Validation, Login login, ILogger<AuthenController> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _dbContext = dbcontext;
             _MyRegister = MyRegister;
             _Validation = Validation;
             _Login = login;
             _Logger = logger;
+            _cofig = configuration;
+            _httclientf = httpClientFactory;
         }
+
+
+        public HttpClient createhttpClient()
+        {
+            var httpClient = _httclientf.CreateClient();
+
+            return httpClient;
+        }
+
+
+        public async Task SaveTokenSession(string name, string role)
+        {
+            using var httpclient = createhttpClient();
+
+            var json = JsonSerializer.Serialize(new { Name = name, Role = role });
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await httpclient.PostAsync(_cofig["URLTokenHotel:endpoin"], content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var tokenResponse = await response.Content.ReadAsStringAsync();
+                var tokenData = JsonSerializer.Deserialize<TokenTemporary>(tokenResponse);
+                if (tokenData.token != null)
+                {
+                    HttpContext.Session.SetString("token", tokenData.token);
+                    _Logger.LogInformation("tạo token thành công");
+                }
+                else
+                {
+                    _Logger.LogInformation("tạo token thất bại");
+                }
+            }
+        }
+
 
         [HttpPost]
         public async Task<JsonResult> Login([FromBody] User users)
@@ -96,6 +137,8 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
                   claimsIdentity: Identity bạn vừa tạo ở trên, được thêm vào principal.
 
                 👉 Nói dễ hiểu: Nếu Identity là “thẻ nhân viên” của bạn,thì Principal là “bạn” — người đang cầm thẻ đó.*/
+
+            await SaveTokenSession(users.Email, users.Role);
 
             // 5. Đăng nhập (lưu cookie)
             await HttpContext.SignInAsync(
@@ -252,6 +295,8 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
             var identity = new ClaimsIdentity(claim, CookieAuthenticationDefaults.AuthenticationScheme);
             var princip = new ClaimsPrincipal(identity);
 
+            await SaveTokenSession(email, user.Role);
+
             // đăng nhập
             await HttpContext.SignInAsync(
                CookieAuthenticationDefaults.AuthenticationScheme, princip
@@ -294,5 +339,13 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
             }
         }
 
+    }
+    public class TokenTemporary
+    {
+        public string token { get; set; }
+
+        public string timeExpire { get; set; }
+
+        public DateTime timeCreate { get; set; }
     }
 }

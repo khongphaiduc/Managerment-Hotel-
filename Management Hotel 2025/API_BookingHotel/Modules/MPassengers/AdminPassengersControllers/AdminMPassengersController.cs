@@ -1,9 +1,11 @@
 ﻿using API_BookingHotel.Modules.MPassengers.AdminPassengersSerives;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_BookingHotel.Modules.MPassengers.AdminPassengersControllers
 {
+    
     [Route("admin")]
     [ApiController]
     public class AdminMPassengersController : ControllerBase

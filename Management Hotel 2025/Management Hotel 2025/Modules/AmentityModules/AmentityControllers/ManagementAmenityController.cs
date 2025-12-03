@@ -2,239 +2,153 @@
 using Microsoft.AspNetCore.Mvc;
 using Mydata.Models;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Management_Hotel_2025.Modules.AmentityModules.AmentityControllers
 {
-
     [Route("admin")]
     public class ManagementAmenityController : Controller
     {
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        // lấy dánh sách các tiện ích 
+        public ManagementAmenityController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        private HttpClient CreateClientWithToken()
+        {
+            var client = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("token");
+            // thêm tokent vào header của request   
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+            return client;
+        }
+
         [HttpGet("amenity")]
         public async Task<IActionResult> ViewListAmentity()
         {
             string url = "https://localhost:7236/api/amenity";
 
-            using (var httpclient = new HttpClient())
+            using var client = CreateClientWithToken();
+            var response = await client.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
             {
-
-                var response = await httpclient.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-
-                    var amentity = JsonConvert.DeserializeObject<List<MyAmenity>>(jsonString);
-
-                    return View(amentity);
-                }
-                else
-                {
-                    return View(new List<MyAmenity>());
-                }
-
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var amenity = JsonConvert.DeserializeObject<List<MyAmenity>>(jsonString);
+                return View(amenity);
             }
 
+            return View(new List<MyAmenity>());
         }
 
-        // xóa tiện ích
         [HttpDelete("amenity/{id}")]
         public async Task<IActionResult> DeleteAmentity(int id)
         {
             string url = $"https://localhost:7236/api/amenity/{id}";
 
-            using (var httpclient = new HttpClient())
-            {
+            using var client = CreateClientWithToken();
+            var response = await client.DeleteAsync(url);
 
-                var response = await httpclient.DeleteAsync(url);
+            if (response.IsSuccessStatusCode)
+                return Ok(new { message = "Xóa thành công" });
 
-                if (response.IsSuccessStatusCode)
-                {
-
-
-                    return Ok(new { message = "Xóa thành công" });
-                }
-                else
-                {
-                    return NotFound("Không tìm thấy Amenity");
-                }
-
-            }
-
+            return NotFound("Không tìm thấy Amenity");
         }
 
-
-        // ẩn tiện ích 
         [HttpPatch("amenity/{id}")]
         public async Task<IActionResult> HideAmentity(int id)
         {
             string url = $"https://localhost:7236/api/amenity/{id}";
 
-            using (var httpclient = new HttpClient())
-            {
-                var emptyContent = new StringContent("", System.Text.Encoding.UTF8, "application/json");
-                var response = await httpclient.PatchAsync(url, emptyContent);
+            using var client = CreateClientWithToken();
+            var emptyContent = new StringContent("", Encoding.UTF8, "application/json");
+            var response = await client.PatchAsync(url, emptyContent);
 
-                if (response.IsSuccessStatusCode)
-                {
+            if (response.IsSuccessStatusCode)
+                return Ok(new { status = true, message = "Thành Công" });
 
-
-                    return Ok(new { status = true, message = "Thành Công" });
-                }
-                else
-                {
-                    return NotFound("Không tìm thấy Amenity");
-                }
-
-            }
-
+            return NotFound("Không tìm thấy Amenity");
         }
 
-        // hiển thị form tạo mới tiện ích
         [HttpGet("amenitys")]
-        public IActionResult ViewCreateAmentity()
-        {
-            return View();
-        }
+        public IActionResult ViewCreateAmentity() => View();
 
-        //tạo mới tiện ích
         [HttpPost("amenity")]
         public async Task<IActionResult> CreateAmentity(MyAmenity request)
         {
-            string url = $"https://localhost:7236/api/amenity";
+            if (request.UpdateImage == null)
+                return BadRequest(new { status = false, message = "Image not found" });
 
-            using (var httpclient = new HttpClient())
-            {
+            string url = "https://localhost:7236/api/amenity";
 
-                try
-                {
-                    using (var client = new HttpClient())
-                    {
-                        using (var content = new MultipartFormDataContent())
-                        {
-                            content.Add(new StringContent(request.Name), "Name");
-                            content.Add(new StringContent(request.Status ?? ""), "Status");
-                            content.Add(new StringContent(request.Description ?? ""), "Description");
+            using var client = CreateClientWithToken();
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(request.Name), "Name");
+            content.Add(new StringContent(request.Status ?? ""), "Status");
+            content.Add(new StringContent(request.Description ?? ""), "Description");
 
-                            if (request.UpdateImage == null)
-                            {
+            var fileContent = new StreamContent(request.UpdateImage.OpenReadStream());
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(request.UpdateImage.ContentType);
+            content.Add(fileContent, "UpdateImage", request.UpdateImage.FileName);
 
-                                return BadRequest(new { status = false, message = "Image not found" });
+            var response = await client.PostAsync(url, content);
 
-                            }
+            if (response.IsSuccessStatusCode)
+                return Ok(new { status = true, message = "Create successful" });
 
-                            var fileContent = new StreamContent(request.UpdateImage.OpenReadStream());
-                            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.UpdateImage.ContentType);
-                            content.Add(fileContent, "UpdateImage", request.UpdateImage.FileName);
-
-                            HttpResponseMessage response = await client.PostAsync(url, content);
-
-                            if (response.IsSuccessStatusCode)
-                            {
-                                return Ok(new { status = true, message = "Create successful" });
-                            }
-                            else
-                            {
-                                return BadRequest(new { message = "Có lỗi xảy ra khi tạo tiện ích." });
-                            }
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-
-                    return StatusCode(500, new { status = false, message = "Lỗi server" });
-                }
-
-            }
+            return BadRequest(new { message = "Có lỗi xảy ra khi tạo tiện ích." });
         }
 
-
-        // hiển thị form tạo mới tiện ích
         [HttpGet("amenity/detail/{id}")]
         public async Task<IActionResult> ViewUpdateAmentity(int id)
         {
             string apiUrl = $"https://localhost:7236/api/amenity/{id}";
 
-            try
+            using var client = CreateClientWithToken();
+            var response = await client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
             {
-                using (var httclient = new HttpClient())
-                {
-                    var response = await httclient.GetAsync(apiUrl);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonString = await response.Content.ReadAsStringAsync();
-                        var amentity = JsonConvert.DeserializeObject<MyAmenity>(jsonString);
-                        return View(amentity);
-                    }
-                    else
-                    {
-                        return NotFound("Không tìm thấy Amenity");
-                    }
-
-                }
-
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var amenity = JsonConvert.DeserializeObject<MyAmenity>(jsonString);
+                return View(amenity);
             }
-            catch (Exception s)
-            {
-                return BadRequest($"Đã xảy ra lỗi hệ thống :{s.Message}");
-            }
+
+            return NotFound("Không tìm thấy Amenity");
         }
 
-
-        // chỉnh sửa tiện ích 
         [HttpPut("amenity")]
         public async Task<IActionResult> UpdateAmentity(MyAmenity request)
         {
-            string url = $"https://localhost:7236/api/amenity";
+            string url = "https://localhost:7236/api/amenity";
 
-            using (var httpclient = new HttpClient())
+            using var client = CreateClientWithToken();
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(request.AmenityId.ToString()), "AmenityId");
+            content.Add(new StringContent(request.Name), "Name");
+            content.Add(new StringContent(request.Description ?? ""), "Description");
+
+            if (request.UpdateImage != null)
             {
-
-                try
-                {
-                    using (var client = new HttpClient())
-                    {
-                        using (var content = new MultipartFormDataContent())
-                        {
-                            content.Add(new StringContent(request.AmenityId.ToString()), "AmenityId");
-                            content.Add(new StringContent(request.Name), "Name");
-                         
-                            content.Add(new StringContent(request.Description ?? ""), "Description");
-
-                            if (request.UpdateImage != null)
-                            {
-                                var fileContent = new StreamContent(request.UpdateImage.OpenReadStream());
-                                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.UpdateImage.ContentType);
-                                content.Add(fileContent, "UpdateImage", request.UpdateImage.FileName);
-                            }
-
-
-
-                            HttpResponseMessage response = await client.PutAsync(url, content);
-
-                            if (response.IsSuccessStatusCode)
-                            {
-                                return Ok(new { status = true, message = "Cập nhật tiện ích thành công" });
-                            }
-                            else
-                            {
-                                return BadRequest(new { message = "Cập nhật tiện ích thất bại" });
-                            }
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-
-                    return StatusCode(500, new { status = false, message = "Lỗi server" });
-                }
-
+                var fileContent = new StreamContent(request.UpdateImage.OpenReadStream());
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(request.UpdateImage.ContentType);
+                content.Add(fileContent, "UpdateImage", request.UpdateImage.FileName);
             }
 
+            var response = await client.PutAsync(url, content);
+
+            if (response.IsSuccessStatusCode)
+                return Ok(new { status = true, message = "Cập nhật tiện ích thành công" });
+
+            return BadRequest(new { message = "Cập nhật tiện ích thất bại" });
         }
     }
 }

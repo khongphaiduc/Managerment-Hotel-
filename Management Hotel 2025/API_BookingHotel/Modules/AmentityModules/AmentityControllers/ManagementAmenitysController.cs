@@ -1,10 +1,12 @@
 ﻿using API_BookingHotel.Modules.AmentityModules.AmentityServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 // put : update toàn bộ resource 
 // patch : cập nhat một phần resource   
 namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 {
+    [Authorize]
     [Route("api")]
     [ApiController]
     public class ManagementAmenitysController : ControllerBase
@@ -20,6 +22,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 
         [Route("amenity")]// ok
         [HttpPost]
+
         public async Task<IActionResult> CreateAmentity(AmentityUpdate amentity)
         {
 
@@ -97,7 +100,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
         }
 
 
-        [HttpPatch("amenity/{id}")] 
+        [HttpPatch("amenity/{id}")]
         public async Task<IActionResult> UpdateStatusAmentity(int id)
         {
 

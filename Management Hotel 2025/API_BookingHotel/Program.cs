@@ -1,5 +1,5 @@
 ﻿
-using API_BookingHotel.Modules.Payment.VNPay;
+
 using API_BookingHotel.Modules.Rooms.RoomsService;
 using Mydata.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,39 +30,25 @@ namespace API_BookingHotel
 
 
             builder.Services.AddAuthentication(
-                JwtBearerDefaults.AuthenticationScheme
+               option => option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme
             ).AddJwtBearer(option =>
             {
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
+
                     ValidateIssuer = true,    // người phát hành token
-                    ValidateAudience = false,   //Audience thường là ứng dụng hoặc client được phép dùng token này.
-                    ValidateLifetime = false,   // thời gian sử dụng của token
+                    ValidateAudience = true,   //Audience thường là ứng dụng hoặc client được phép dùng token này.
+                    ValidateLifetime = true,   // thời gian sử dụng của token
                     ValidateIssuerSigningKey = true,  // chữ ý (sign) của token
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                 };
 
-
-                option.Events = new JwtBearerEvents
-                {
-
-                    OnAuthenticationFailed = context =>
-                    {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                        {
-
-                        }
-                        return Task.CompletedTask;
-                    }
-
-                };
-
             });
 
 
-            //builder.Services.AddTransient<IVnPayService, VnPayService>();
+
             builder.Services.AddTransient<RoomViewDetail>();
             builder.Services.AddTransient<IRoomService, RoomSearchWithPagination>();
             builder.Services.AddTransient<IMyFiles, MyFiles>();
@@ -70,7 +56,7 @@ namespace API_BookingHotel
             builder.Services.AddTransient<IAmenityServices, AmentityServices>();
             builder.Services.AddTransient<IPassengers, Passengers>();
             builder.Services.AddTransient<IInvoiceServices, InvoiceService>();
-            builder.Services.AddTransient<IStatisticsServices,StatisticsServices>();
+            builder.Services.AddTransient<IStatisticsServices, StatisticsServices>();
             builder.Services.AddControllers();
             var app = builder.Build();
 
