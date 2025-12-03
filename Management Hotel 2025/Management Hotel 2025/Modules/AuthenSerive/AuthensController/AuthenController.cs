@@ -136,7 +136,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 
                   claimsIdentity: Identity bạn vừa tạo ở trên, được thêm vào principal.
 
-                👉 Nói dễ hiểu: Nếu Identity là “thẻ nhân viên” của bạn,thì Principal là “bạn” — người đang cầm thẻ đó.*/
+                hiểu: Nếu Identity là “thẻ nhân viên” của bạn,thì Principal là “bạn” — người đang cầm thẻ đó.*/
 
             await SaveTokenSession(users.Email, users.Role);
 
@@ -349,3 +349,4 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
         public DateTime timeCreate { get; set; }
     }
 }
+
