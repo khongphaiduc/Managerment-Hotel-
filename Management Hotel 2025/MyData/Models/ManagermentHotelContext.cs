@@ -61,10 +61,10 @@ public partial class ManagermentHotelContext : DbContext
 
     //27/11/2025
     public virtual DbSet<BookingTemporaryPayOS> BookingTemporaryPayOs { get; set; }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer("Data Source=PHAMTRUNGDUC\\SQLEXPRESS;Initial Catalog=Managerment_Hotel;User ID=sa;Password=123;Trust Server Certificate=True;");
-    }
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+      
+    //}
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

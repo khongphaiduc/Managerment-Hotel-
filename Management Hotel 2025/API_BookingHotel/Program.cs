@@ -1,5 +1,5 @@
 ﻿
-
+using Microsoft.Extensions.Caching.Memory;
 using API_BookingHotel.Modules.Rooms.RoomsService;
 using Mydata.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,6 +27,8 @@ namespace API_BookingHotel
             builder.Services.AddDbContext<ManagermentHotelContext>
                 (options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+            builder.Services.AddMemoryCache();  // đăng ký dịch vụ cache
 
 
             builder.Services.AddAuthentication(

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Mydata.Models;
 using System.Threading.Tasks;
 
@@ -16,11 +17,15 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
     {
         private readonly IRoomService _IRoomService;
         private readonly ManagermentHotelContext _dbcontext;
+        private readonly IMemoryCache _iMemoryCatch;
+        private readonly ILogger<RoomSerivcesController> _logger;
 
-        public RoomSerivcesController(IRoomService _RoomService, ManagermentHotelContext dbcontext)
+        public RoomSerivcesController(IRoomService _RoomService, ManagermentHotelContext dbcontext, IMemoryCache memoryCache, ILogger<RoomSerivcesController> logger)
         {
             _IRoomService = _RoomService;
             _dbcontext = dbcontext;
+            _iMemoryCatch = memoryCache;
+            _logger = logger;
         }
 
         // api cung cấp  danh sách room cho khách hàng 
@@ -59,7 +64,23 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
                          .CountAsync();
 
-            var ListResult = await _IRoomService.SearchRoomByAdvance(PageCurrent, NumerItemOfPage, Floor, PriceMin, PriceMax, Person, StartDate, EndDate,apihost);
+
+            // catching 
+            string cacheKey = $"SearchRoom_{PageCurrent}_{NumerItemOfPage}_{Floor}_{PriceMin}_{PriceMax}_{Person}_{StartDate}_{EndDate}";
+
+            if (!_iMemoryCatch.TryGetValue(cacheKey, out List<ViewRoom> ListResult))
+            {
+
+                ListResult = new List<ViewRoom>();
+                ListResult = await _IRoomService.SearchRoomByAdvance(PageCurrent, NumerItemOfPage, Floor, PriceMin, PriceMax, Person, StartDate, EndDate, apihost);
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(5)) // nếu 5 phút không truy cập -> tự xóa
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(1)); // thời gian tối đa của cache
+
+                _iMemoryCatch.Set(cacheKey, ListResult, cacheOptions);
+            }
+
 
             return Ok(new PaginationResult<ViewRoom>(ListResult, TotalItems, PageCurrent, NumerItemOfPage, newCheckIn, newCheckOut));  //  lưu vào construcor của PaginationResult để trả về
         }
