@@ -111,7 +111,7 @@ namespace Management_Hotel_2025
                 // option.DefaultSignInScheme : dùng để chỉ định nơi lưu chữ thông tin của user khi đăng nhập thành công (có thể là Cookie) , dùng khi gọi SignInAsync() không truyền scheme
 
                 option.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                // option.DefaultAuthenticateScheme : xác định  nơi sẽ lấy thông tin để xác thực user, dùng khi [Authorize] hoặc HttpContext.User
+                // option.DefaultAuthenticateScheme : xác định  nơi sẽ lấy thông tin để xác thực user, dùng khi Authorize hoặc HttpContext.User
             })
             .AddCookie(options =>
             {

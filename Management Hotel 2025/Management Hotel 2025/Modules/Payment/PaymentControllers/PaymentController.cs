@@ -53,7 +53,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
 
         [HttpGet]
-        public IActionResult PaymentCallbackVnpay()
+        public async Task<IActionResult> PaymentCallbackVnpay()
         {
             string codeHotel = "TDH";
 
@@ -76,75 +76,88 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
             var Nationality = HttpContext.Session.GetString("Nationality");
             var Email = HttpContext.Session.GetString("Email");
             // thánh toán thành công 
-            if (response.Success)
+
+            using var transaction = await _dbcontext.Database.BeginTransactionAsync();              // transaction 
+            try
             {
-
-
-                string? OldCodeBooking = _dbcontext.Bookings
-                    .OrderByDescending(s => s.BookingCode)
-                    .Select(s => s.BookingCode)
-                    .FirstOrDefault();
-
-
-                if (string.IsNullOrEmpty(OldCodeBooking))
+                if (response.Success)
                 {
-                    OldCodeBooking = "TDH000001";
+
+
+                    string? OldCodeBooking = _dbcontext.Bookings
+                        .OrderByDescending(s => s.BookingCode)
+                        .Select(s => s.BookingCode)
+                        .FirstOrDefault();
+
+                    if (string.IsNullOrEmpty(OldCodeBooking))
+                    {
+                        OldCodeBooking = "TDH000001";
+                    }
+
+                    // lấy số  nguyên cộng  thêm 1 , bỏ 3 ký tự đầu
+                    int Code = int.Parse(OldCodeBooking.Substring(3)) + 1;
+
+                    // chuyuern 
+                    string CodeBookingCode = codeHotel + Code.ToString("D6");
+
+
+                    var NewBooking = new Booking
+                    {
+                        BookingDate = DateTime.Now,
+                        BookingSource = Id == 0 ? "Walk" : "Website",
+                        DepositAmount = DepositAmount,
+                        TotalAmountBooking = TotalRoom,
+                        Status = "Success",
+                        CustomerName = CustomerName,
+                        CustomerPhone = CustomerPhone,
+                        Nationality = Nationality,
+                        Email = Email,
+                        BookingCode = CodeBookingCode
+                    };
+                    // check xem có id thằng user không thì mới gán
+                    if (Id != 0)
+                    {
+                        NewBooking.UserId = Id;
+                    }
+                    // lưu vào để chuyển qua  bên email
+                    HttpContext.Session.SetString("CodeBooking", CodeBookingCode);
+
+                    _dbcontext.Bookings.Add(NewBooking);
+
+
+                    await _dbcontext.SaveChangesAsync();
+
+                    int idBooking = NewBooking.BookingId;  // booking id  vừa tạo xong
+
+
+                    var NewbookingDetail = new BookingDetail
+                    {
+                        BookingId = idBooking,
+                        RoomId = IdRoom.Value,
+                        CheckInDate = Convert.ToDateTime(HttpContext.Session.GetString("StartDate")),
+                        CheckOutDate = Convert.ToDateTime(HttpContext.Session.GetString("EndDate")),
+                    };
+
+                    _dbcontext.BookingDetails.Add(NewbookingDetail);
+
+                    await _dbcontext.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return RedirectToAction("ResultPayment", "Payment", new { success = true });
                 }
-
-                // lấy số  nguyên cộng  thêm 1 , bỏ 3 ký tự đầu
-                int Code = int.Parse(OldCodeBooking.Substring(3)) + 1;
-
-                // chuyuern 
-                string CodeBookingCode = codeHotel + Code.ToString("D6");
-
-
-                var NewBooking = new Booking
+                else
                 {
-                    BookingDate = DateTime.Now,
-                    BookingSource = Id == 0 ? "Walk" : "Website",
-                    DepositAmount = DepositAmount,
-                    TotalAmountBooking = TotalRoom,
-                    Status = "Success",
-                    CustomerName = CustomerName,
-                    CustomerPhone = CustomerPhone,
-                    Nationality = Nationality,
-                    Email = Email,
-                    BookingCode = CodeBookingCode
-                };
-                // check xem có id thằng user không thì mới gán
-                if (Id != 0)
-                {
-                    NewBooking.UserId = Id;
+                    await transaction.RollbackAsync();
+                    // thành toán thất bại
+                    return BadRequest("Payment failed. Please try again.");
                 }
-                // lưu vào để chuyển qua  bên email
-                HttpContext.Session.SetString("CodeBooking", CodeBookingCode);
-
-                _dbcontext.Bookings.Add(NewBooking);
-
-
-                _dbcontext.SaveChanges();
-
-                int idBooking = NewBooking.BookingId;  // booking id  vừa tạo xong
-
-
-                var NewbookingDetail = new BookingDetail
-                {
-                    BookingId = idBooking,
-                    RoomId = IdRoom.Value,
-                    CheckInDate = Convert.ToDateTime(HttpContext.Session.GetString("StartDate")),
-                    CheckOutDate = Convert.ToDateTime(HttpContext.Session.GetString("EndDate")),
-                };
-
-                _dbcontext.BookingDetails.Add(NewbookingDetail);
-                _dbcontext.SaveChanges();
-
-                return RedirectToAction("ResultPayment", "Payment", new { success = true });
             }
-            else
+            catch (Exception)
             {
-                // thành toán thất bại
-                return BadRequest("Payment failed. Please try again.");
+                await transaction.RollbackAsync();
+                throw;
             }
+
         }
 
         [HttpPost]

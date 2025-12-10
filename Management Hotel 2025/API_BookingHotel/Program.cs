@@ -41,7 +41,7 @@ namespace API_BookingHotel
                     ValidateIssuer = true,    // người phát hành token
                     ValidateAudience = true,   //Audience thường là ứng dụng hoặc client được phép dùng token này.
                     ValidateLifetime = true,   // thời gian sử dụng của token
-                    ValidateIssuerSigningKey = true,  // chữ ý (sign) của token
+                    ValidateIssuerSigningKey = true,  // chữ ý  của token
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
@@ -49,7 +49,11 @@ namespace API_BookingHotel
 
             });
 
-
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost:6379"; // địa chỉ Redis server
+                options.InstanceName = "HotelCache_";     // tiền tố cho key (tuỳ chọn)
+            });
 
             builder.Services.AddTransient<RoomViewDetail>();
             builder.Services.AddTransient<IRoomService, RoomSearchWithPagination>();
