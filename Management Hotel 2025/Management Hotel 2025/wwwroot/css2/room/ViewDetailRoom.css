@@ -1,0 +1,170 @@
+﻿:root {
+    --primary-gold: #c5a365;
+    --primary-dark: #1a1a1a;
+    --text-gray: #666;
+    --bg-light: #f9f9f9;
+}
+
+body {
+    font-family: 'Manrope', sans-serif;
+    color: var(--primary-dark);
+    background-color: #fff;
+    line-height: 1.7;
+}
+
+h1, h2, h3, h4, .serif-font {
+    font-family: 'Playfair Display', serif;
+}
+
+/* --- Carousel Section --- */
+.room-gallery {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.carousel-item {
+    height: 60vh; /* Chiều cao ảnh lớn */
+    min-height: 400px;
+}
+
+    .carousel-item img {
+        object-fit: cover;
+        height: 100%;
+        width: 100%;
+        filter: brightness(0.95);
+    }
+
+.carousel-indicators [data-bs-target] {
+    background-color: #fff;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+}
+
+/* --- Sticky Booking Card --- */
+.booking-sidebar {
+    position: sticky;
+    top: 100px; /* Cách mép trên khi cuộn */
+    z-index: 10;
+}
+
+.booking-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    padding: 2rem;
+    border-radius: 4px;
+}
+
+.price-tag {
+    color: var(--primary-gold);
+    font-size: 1.8rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+}
+
+.price-unit {
+    font-size: 1rem;
+    color: var(--text-gray);
+    font-weight: 400;
+    font-family: 'Manrope', sans-serif;
+}
+
+/* --- Content Styling --- */
+.section-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+        height: 2px;
+        background-color: var(--primary-gold);
+    }
+
+.room-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-gray);
+}
+
+    .feature-item i {
+        color: var(--primary-gold);
+        font-size: 1.2rem;
+    }
+
+/* --- Amenities Alternating --- */
+.amenity-section {
+    padding: 4rem 0;
+    background-color: #fff;
+}
+
+.amenity-card {
+    margin-bottom: 4rem;
+}
+
+.amenity-img-wrapper {
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.amenity-img {
+    transition: transform 0.6s ease;
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+.amenity-card:hover .amenity-img {
+    transform: scale(1.05);
+}
+
+/* --- Buttons --- */
+.btn-luxury {
+    background-color: var(--primary-dark);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    border: 1px solid var(--primary-dark);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+    .btn-luxury:hover {
+        background-color: var(--primary-gold);
+        border-color: var(--primary-gold);
+        color: #fff;
+    }
+
+.btn-back {
+    color: var(--text-gray);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+    .btn-back:hover {
+        color: var(--primary-gold);
+    }

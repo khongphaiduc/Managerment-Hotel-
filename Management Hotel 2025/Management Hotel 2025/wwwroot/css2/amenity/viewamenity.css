@@ -1,0 +1,283 @@
+﻿/* Theme variables */
+:root {
+    --accent-start: #7b3fe4; /* dark purple */
+    --accent-end: #ff6b6b; /* pink red */
+    --accent-contrast: #fff;
+    --card-bg: rgba(255,255,255,0.04);
+}
+
+/* Header / Title block */
+.utilities-header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
+    color: var(--accent-contrast);
+    box-shadow: 0 6px 20px rgba(123,63,228,0.18);
+    margin-bottom: 1.25rem;
+}
+
+    .utilities-header .left {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .utilities-header .icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12) inset;
+    }
+
+    .utilities-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .utilities-header .subtitle {
+        display: block;
+        font-size: 13px;
+        opacity: 0.95;
+        margin-top: 3px;
+        color: rgba(255,255,255,0.92);
+        font-weight: 500;
+    }
+
+/* Right group: search box */
+.utilities-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .utilities-search .input-group {
+        max-width: 520px;
+        box-shadow: 0 6px 18px rgba(11,15,30,0.06);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Create button styles */
+    .utilities-search .create-btn {
+        white-space: nowrap;
+        border-radius: 8px;
+        padding: 8px 12px;
+        background: #fff;
+        color: #4a2fcf;
+        border: none;
+        box-shadow: 0 4px 12px rgba(74,47,207,0.12);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none !important;
+    }
+
+        .utilities-search .create-btn:hover,
+        .utilities-search .create-btn:focus {
+            text-decoration: none !important;
+            transform: translateY(-1px);
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(74,47,207,0.16);
+        }
+
+        .utilities-search .create-btn i {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+/* Table card */
+.utilities-card {
+    background: var(--card-bg);
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgba(11,15,30,0.04);
+    backdrop-filter: blur(6px);
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+    .utilities-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+        .utilities-header .left {
+            gap: 10px;
+        }
+
+        .utilities-header .icon-wrap {
+            width: 56px;
+            height: 56px;
+        }
+
+    .utilities-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .utilities-search .input-group {
+            max-width: 100%;
+        }
+
+        .utilities-search .create-btn {
+            width: 100%;
+            justify-content: center;
+        }
+}
+
+table th, table td {
+    vertical-align: middle !important;
+}
+
+/* Modal */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+    .custom-modal.active {
+        display: flex;
+    }
+
+    .custom-modal .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+        .custom-modal .modal-content h5 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .custom-modal .modal-buttons {
+        display: flex;
+        justify-content: space-around;
+        gap: 10px;
+    }
+
+        .custom-modal .modal-buttons button {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+    .custom-modal .btn-confirm {
+        background: var(--accent-start);
+        color: #fff;
+    }
+
+    .custom-modal .btn-cancel {
+        background: #ccc;
+        color: #333;
+    }
+
+/* Toast */
+#toastContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3000;
+}
+
+.toast {
+    min-width: 200px;
+    margin-top: 10px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0.95;
+}
+
+.toast-success {
+    background-color: #28a745;
+}
+
+.toast-error {
+    background-color: #dc3545;
+}
+
+/* Loader */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.loader {
+    width: 44.8px;
+    height: 44.8px;
+    color: #554cb5;
+    position: relative;
+    background: radial-gradient(11.2px,currentColor 94%,#0000);
+}
+
+    .loader:before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(10.08px at bottom right,#0000 94%,currentColor) top left, radial-gradient(10.08px at bottom left,#0000 94%,currentColor) top right, radial-gradient(10.08px at top right,#0000 94%,currentColor) bottom left, radial-gradient(10.08px at top left,#0000 94%,currentColor) bottom right;
+        background-size: 22.4px 22.4px;
+        background-repeat: no-repeat;
+        animation: loader 1.5s infinite cubic-bezier(0.3,1,0,1);
+    }
+
+@keyframes loader {
+    33% {
+        inset: -11.2px;
+        transform: rotate(0deg);
+    }
+
+    66% {
+        inset: -11.2px;
+        transform: rotate(90deg);
+    }
+
+    100% {
+        inset: 0;
+        transform: rotate(90deg);
+    }
+}

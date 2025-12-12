@@ -2,35 +2,12 @@
 
 @{
     Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    ViewData["Title"] = "Quản lý phòng";
 }
 
-<style>
-    .filter-card {
-        margin-bottom: 20px;
-    }
-
-    .action-bar {
-        margin-bottom: 15px;
-    }
-
-    .action-buttons .btn {
-        margin-right: 5px;
-    }
-
-    /* Loader Overlay */
-    #page-loader {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.55);
-        z-index: 99999;
-        text-align: center;
-        padding-top: 18%;
-    }
-</style>
+@section Styles {
+    <link rel="stylesheet" href="~/css2/management-room.css" />
+}
 
 <div id="page-loader">
     <div class="spinner-border text-light" style="width: 4rem; height: 4rem;"></div>
@@ -39,7 +16,6 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- FORM LỌC NHỎ GỌN & THÊM TÌM KIẾM -->
     <div class="card shadow-sm filter-card">
         <div class="card-body py-3">
             <form id="filterForm" asp-action="AdminManagementRoom" asp-controller="Admin" method="get">
@@ -160,13 +136,11 @@
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        <!-- Nút Ẩn phòng (dùng data-id thay cho asp-route-id) -->
                                         <a href="javascript:void(0);"
                                            class="btn btn-sm btn-outline-secondary btn-hide-room"
                                            data-id="@item.IdRoom">
-                                        <i class="bi bi-eye-slash"></i>
+                                            <i class="bi bi-eye-slash"></i>
                                         </a>
-
                                     </td>
                                 </tr>
                             }
@@ -178,7 +152,6 @@
     </div>
 </div>
 
-<!-- Modal Ẩn phòng -->
 <div class="modal fade" id="hideRoomModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -197,83 +170,6 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        let selectedRoomId = null;
-
-        // Loader khi nhấn edit
-        const editButtons = document.querySelectorAll('.btn-edit');
-        editButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                document.getElementById('page-loader').style.display = 'block';
-            });
-        });
-
-        // Auto-submit form khi chọn tầng hoặc trạng thái
-        const autoSubmitSelects = document.querySelectorAll('.auto-submit');
-        autoSubmitSelects.forEach(select => {
-            select.addEventListener('change', function () {
-                document.getElementById('filterForm').submit();
-            });
-        });
-
-        // Reset filter
-        document.getElementById('resetFilter').addEventListener('click', function() {
-            const form = document.getElementById('filterForm');
-            form.querySelectorAll('select, input').forEach(el => {
-                if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
-                else if (el.tagName.toLowerCase() === 'input') el.value = '';
-            });
-            form.submit();
-        });
-
-        // Xử lý nút ẩn phòng
-        const hideButtons = document.querySelectorAll('.btn-hide-room');
-        hideButtons.forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                selectedRoomId = this.getAttribute('data-id');
-
-                // Mở modal
-                var hideModal = new bootstrap.Modal(document.getElementById('hideRoomModal'));
-                hideModal.show();
-            });
-        });
-
-        // Xử lý nút "Có" trong modal
-        document.getElementById('confirmHideBtn').addEventListener('click', function () {
-            if (!selectedRoomId) return;
-
-            document.getElementById('page-loader').style.display = 'block';
-
-            fetch(`/admin/hide/${selectedRoomId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-
-            })
-            .then(response => {
-                if (response.ok) {
-
-                    location.reload();
-                } else {
-                    alert("Ẩn phòng thất bại!");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Có lỗi xảy ra!");
-            })
-            .finally(() => {
-                document.getElementById('page-loader').style.display = 'none';
-                selectedRoomId = null;
-                var hideModalEl = document.getElementById('hideRoomModal');
-                var hideModal = bootstrap.Modal.getInstance(hideModalEl);
-                hideModal.hide();
-            });
-        });
-
-    });
-</script>
+@section Scripts {
+    <script src="~/js/management-room.js"></script>
+}

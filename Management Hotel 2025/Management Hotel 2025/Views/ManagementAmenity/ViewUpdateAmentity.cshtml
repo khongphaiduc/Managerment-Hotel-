@@ -1,8 +1,8 @@
-﻿@{
-    Layout = null;
-}
+﻿@model Management_Hotel_2025.Modules.AmentityModules.AmentityServices.MyAmenity
 
-@model Management_Hotel_2025.Modules.AmentityModules.AmentityServices.MyAmenity
+@{
+    Layout = null; // Hoặc Layout = "~/Views/Shared/AdminSidebar.cshtml"; tùy bạn
+}
 
 <!doctype html>
 <html lang="vi">
@@ -10,73 +10,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Chỉnh sửa tiện ích</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background: #f8f9fa;
-            min-height: 100vh;
-        }
 
-        .main-card {
-            max-width: 1200px;
-            margin: 28px auto;
-            border-radius: .75rem;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.07);
-            background: #fff;
-        }
-
-        .left-preview {
-            background: #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 64vh;
-            overflow: hidden;
-        }
-
-            .left-preview img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-        .right-form {
-            padding: 30px;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        /* Toast notification */
-        #toast {
-            position: fixed;
-            top: 20px;
-            right: -300px; /* bắt đầu bên ngoài màn hình */
-            min-width: 250px;
-            padding: 15px 20px;
-            background-color: #333;
-            color: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1055;
-            transition: right 0.5s ease, opacity 0.5s ease;
-            opacity: 0;
-        }
-
-            #toast.show {
-                right: 20px; /* chạy vào màn hình */
-                opacity: 1;
-            }
-
-            #toast.success {
-                background-color: #28a745;
-            }
-
-            #toast.error {
-                background-color: #dc3545;
-            }
-    </style>
+    <link href="~/css2/amenity/update.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
@@ -99,22 +36,22 @@
                         <input type="hidden" id="amenityId" value="@Model.AmenityId" />
 
                         <div class="mb-3">
-                            <label class="btn btn-primary" for="fileInput">Chọn ảnh</label>
+                            <label class="btn btn-primary" for="fileInput">Chọn ảnh mới</label>
                             <input id="fileInput" class="file-input" type="file" accept="image/*" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Tên tiện ích</label>
-                            <input id="nameInput" type="text" class="form-control" value="@Model.Name" required />
+                            <input id="nameInput" type="text" class="form-control" value="@Model.Name" required placeholder="Nhập tên tiện ích..." />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Mô tả</label>
-                            <textarea id="descInput" class="form-control" rows="6">@Model.Description</textarea>
+                            <textarea id="descInput" class="form-control" rows="6" placeholder="Nhập mô tả...">@Model.Description</textarea>
                         </div>
 
                         <div class="mb-3 d-flex align-items-center">
-                            <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Quay lại</button>
+                            <button type="button" id="backBtn" class="btn btn-secondary me-2">Quay lại</button>
                             <button id="updateBtn" type="button" class="btn btn-success">Cập nhật</button>
                         </div>
                     </form>
@@ -123,73 +60,8 @@
         </div>
     </div>
 
-    <!-- Toast notification -->
     <div id="toast"></div>
 
-    <script>
-        (() => {
-            const fileInput = document.getElementById('fileInput');
-            const leftPreview = document.getElementById('leftPreview');
-            const nameInput = document.getElementById('nameInput');
-            const descInput = document.getElementById('descInput');
-            const updateBtn = document.getElementById('updateBtn');
-            const id = document.getElementById('amenityId').value;
-
-            let currentFile = null;
-
-            // Xem trước ảnh
-            fileInput.addEventListener('change', e => {
-                const file = e.target.files[0];
-                if (!file) return;
-                currentFile = file;
-
-                const reader = new FileReader();
-                reader.onload = ev => {
-                    leftPreview.innerHTML = `<img src="${ev.target.result}" alt="Preview" />`;
-                };
-                reader.readAsDataURL(file);
-            });
-
-            // Hiển thị toast
-            const showToast = (message, type = 'success') => {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.className = `show ${type}`;
-
-                setTimeout(() => {
-                    toast.className = '';
-                }, 3000);
-            };
-
-            // Cập nhật tiện ích
-                   updateBtn.addEventListener('click', () => {
-            const formData = new FormData();
-            formData.append('AmenityId', id);
-            formData.append('Name', nameInput.value.trim());
-            formData.append('Description', descInput.value.trim());
-
-            if (currentFile) {
-                formData.append('UpdateImage', currentFile);
-            }
-
-            showToast('Đang lưu...', 'success');
-
-            fetch(`/admin/amenity`, {
-                method: 'PUT',
-                body: formData
-            })
-                .then(async response => {
-                    const data = await response.json();
-                    if (response.ok) {
-                        showToast(data.message || 'Đã cập nhật thành công!', 'success');
-                    } else {
-                        // Nếu status code là 400, 500... → màu đỏ
-                        showToast(data.message || 'Cập nhật thất bại!', 'error');
-                    }
-                })
-                .catch(() => showToast('Có lỗi xảy ra khi cập nhật!', 'error'));
-        });
-        })();
-    </script>
+    <script src="~/js/amenity/update.js"></script>
 </body>
 </html>

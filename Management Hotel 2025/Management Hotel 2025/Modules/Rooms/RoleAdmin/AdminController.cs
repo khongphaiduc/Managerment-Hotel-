@@ -261,23 +261,11 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
                     content.Add(new StringContent(room.PricePerNight.ToString()), "PricePerNight");
                     content.Add(new StringContent(room.Description ?? ""), "Description");
 
-                    // Thêm list dạng nhiều row để [FromForm] bind trực tiếp
-                    if (room.DeletedAmenity != null)
-                    {
-                        foreach (var item in room.DeletedAmenity)
-                            content.Add(new StringContent(item.ToString()), "DeletedAmenity");
-                    }
 
                     if (room.NewAmenities != null)
                     {
                         foreach (var item in room.NewAmenities)
                             content.Add(new StringContent(item.ToString()), "NewAmenities");
-                    }
-
-                    if (room.DeletedImageIds != null)
-                    {
-                        foreach (var item in room.DeletedImageIds)
-                            content.Add(new StringContent(item.ToString()), "DeletedImageIds");
                     }
 
                     // Thêm file ảnh
