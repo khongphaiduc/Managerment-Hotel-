@@ -33,7 +33,8 @@ namespace API_BookingHotel
 
             builder.Services.AddAuthentication(
                option => option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme
-            ).AddJwtBearer(option =>
+            )
+            .AddJwtBearer(option =>
             {
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -49,9 +50,11 @@ namespace API_BookingHotel
 
             });
 
+
+            // Redis
             builder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "localhost:6379"; // địa chỉ Redis server
+                options.Configuration = "localhost:7000"; // địa chỉ Redis server
                 options.InstanceName = "HotelCache_";     // tiền tố cho key (tuỳ chọn)
             });
 
