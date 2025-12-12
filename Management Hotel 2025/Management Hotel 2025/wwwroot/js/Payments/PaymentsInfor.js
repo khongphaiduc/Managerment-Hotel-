@@ -130,3 +130,22 @@ connection.start()
         console.log("Kết nối SignalR thành công!");
     })
     .catch(err => console.error("Lỗi kết nối SignalR:", err));
+
+// Bắt đầu kết nối
+connection.start()
+    .then(() => {
+        console.log("Kết nối SignalR thành công!");
+    })
+    .catch(err => console.error("Lỗi kết nối SignalR:", err));
+// Bắt đầu kết nối
+connection.start()
+    .then(() => {
+        console.log("Kết nối SignalR thành công!");
+    })
+    .catch(err => console.error("Lỗi kết nối SignalR:", err));
+// Bắt đầu kết nối
+connection.start()
+    .then(() => {
+        console.log("Kết nối SignalR thành công!");
+    })
+    .catch(err => console.error("Lỗi kết nối SignalR:", err));
