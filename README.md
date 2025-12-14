@@ -21,7 +21,7 @@ Demo Link:
 
 ## Technologies Used
 
-- Backend: C# , ASP.NET, Web API , JavaScript 
+- Backend: C# , ASP.NET, Web API (REST API) , JavaScript  , Redis 
 
 - Frontend: ASP.NET MVC / Razor Pages ,JavaScript , CSS ,Boostrapt , Html
 
