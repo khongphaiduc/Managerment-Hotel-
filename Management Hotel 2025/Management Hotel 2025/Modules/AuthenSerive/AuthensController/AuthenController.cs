@@ -328,6 +328,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
             Console.WriteLine($"email của bạn là {email}");
 
             var result = await _MyRegister.ResetPassword(email);
+
             if (result)
             {
                 return Ok(new { status = result });

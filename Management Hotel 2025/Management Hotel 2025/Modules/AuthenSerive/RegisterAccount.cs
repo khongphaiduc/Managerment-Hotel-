@@ -1,6 +1,7 @@
 ﻿
 using Management_Hotel_2025.Modules.AuthenSerive;
 using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
+using Management_Hotel_2025.Modules.RabbitMQHotel;
 using Microsoft.EntityFrameworkCore;
 using Mydata.Models;
 using System.Security.Cryptography;
@@ -14,13 +15,15 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
         private readonly IEncoding _Iendcoding;
         private readonly INotifications _notification;
         private readonly ILogger<RegisterAccount> _logger;
+        private readonly RabbitMQServices _rabbitMQ;
 
-        public RegisterAccount(ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger)
+        public RegisterAccount(ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger, RabbitMQServices rabbitMQServices)
         {
             _dbcontext = dbcontext;
             _Iendcoding = iencoding;
             _notification = notifications;
             _logger = logger;
+            _rabbitMQ = rabbitMQServices;
         }
 
         public bool Register(string username, string phone, string email, string password)
@@ -97,8 +100,12 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
                 user.PasswordHash = passwordHash;
                 user.Salt = satl;
 
-
-                await _notification.SendNotificationResetPassword(user.Email, "Thay đổi mật khẩu", password);
+                await _rabbitMQ.SendMessages(new RabbitMQMessages
+                {
+                    To = user.Email,
+                    Subject = "Thay đổi mật khẩu",
+                    Body = password
+                });
 
             }
             return await _dbcontext.SaveChangesAsync() > 0;

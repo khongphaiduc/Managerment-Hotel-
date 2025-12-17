@@ -21,6 +21,7 @@ using Management_Hotel_2025.Modules.WorkFile;
 using Management_Hotel_2025.Modules.AdminMPassengers.MPassengersServices;
 using Management_Hotel_2025.Modules.Payment.PayOSPayments;
 using Management_Hotel_2025.Modules.SignalRModels;
+using Management_Hotel_2025.Modules.RabbitMQHotel;
 
 
 
@@ -118,7 +119,7 @@ namespace Management_Hotel_2025
                 options.LoginPath = "/Authen/Login";
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Authen/Denied";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
             }).AddGoogle("Google", options =>
             {
                 options.ClientId = builder.Configuration.GetSection("GoogleKeys:GoogleID").Value;
@@ -141,6 +142,9 @@ namespace Management_Hotel_2025
             //Transient : mỗi lần inject sẽ là  1 instance mới  được tạo ra
             // Scoped   : 1 request sẽ inject duy nhất 1 instance 
             //Singleton : 1 instance sẽ tồn tại đến hết vòng đời của ứng dụng  (tất cả các lần inject đều dùng chung 1 instance)
+            builder.Services.AddSingleton<RabbitMQServices>();
+            builder.Services.AddHostedService<EmailConsumer>();
+
             builder.Services.AddTransient<INotifications, Email>();
             builder.Services.AddScoped<IVnPayService, VnPayService>();
             builder.Services.AddSingleton<IEncoding, MyEncoding>();
@@ -171,6 +175,9 @@ namespace Management_Hotel_2025
             //builder.Services.AddControllers();
             //builder.Services.AddEndpointsApiExplorer();
             ////-----
+
+         
+   
 
 
 
@@ -222,4 +229,5 @@ namespace Management_Hotel_2025
         }
     }
 }
+
 
