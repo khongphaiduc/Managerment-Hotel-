@@ -65,7 +65,14 @@ namespace Management_Hotel_2025.Modules.RabbitMQHotel
 
                         if (content != null)
                         {
-                            await _notification.SendNotificationResetPassword(content.To, content.Subject, content.Body);
+                            if (content.Type == _config["Status:ResetPassword"])
+                            {
+                                await _notification.SendNotificationResetPassword(content.To, content.Subject, content.Body);
+                            }
+                            else if (content.Type == _config["Status:BookingSuccess"])
+                            {
+                                await _notification.SendBookingSuccessNotification(content.To, content.Subject, content.Body, content.QRcode);
+                            }
                         }
 
                         // ⭐ Chỉ acknowledge sau khi xử lý thành công

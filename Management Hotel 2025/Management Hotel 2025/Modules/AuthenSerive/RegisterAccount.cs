@@ -16,14 +16,16 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
         private readonly INotifications _notification;
         private readonly ILogger<RegisterAccount> _logger;
         private readonly RabbitMQServices _rabbitMQ;
+        private readonly IConfiguration _iconfig;
 
-        public RegisterAccount(ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger, RabbitMQServices rabbitMQServices)
+        public RegisterAccount(IConfiguration configuration, ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger, RabbitMQServices rabbitMQServices)
         {
             _dbcontext = dbcontext;
             _Iendcoding = iencoding;
             _notification = notifications;
             _logger = logger;
             _rabbitMQ = rabbitMQServices;
+            _iconfig = configuration;
         }
 
         public bool Register(string username, string phone, string email, string password)
@@ -104,7 +106,8 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
                 {
                     To = user.Email,
                     Subject = "Thay đổi mật khẩu",
-                    Body = password
+                    Body = password,
+                    Type = _iconfig["Status:ResetPassword"]!
                 });
 
             }

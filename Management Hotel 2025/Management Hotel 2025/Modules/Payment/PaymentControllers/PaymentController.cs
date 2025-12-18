@@ -2,6 +2,7 @@
 
 using Management_Hotel_2025.Modules.ManagementQRCode;
 using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
+using Management_Hotel_2025.Modules.RabbitMQHotel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -15,20 +16,23 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 {
     public class PaymentController : Controller
     {
+        private readonly IConfiguration _iconfig;
         private readonly IVnPayService _vnPayService;
         private readonly ManagermentHotelContext _dbcontext;
         private readonly INotifications _notifications;
         private readonly ILogger<PaymentController> _logger;
         private readonly IGanarateQRCode _QRcode;
+        private readonly RabbitMQServices _rabbitMQ;
 
-        public PaymentController(IVnPayService vnPayService, ManagermentHotelContext managermentHotelContext, INotifications notifications, ILogger<PaymentController> logger, IGanarateQRCode qRCode)
+        public PaymentController(IConfiguration configuration, RabbitMQServices rabbitMQServices, IVnPayService vnPayService, ManagermentHotelContext managermentHotelContext, INotifications notifications, ILogger<PaymentController> logger, IGanarateQRCode qRCode)
         {
-
+            _iconfig = configuration;
             _vnPayService = vnPayService;
             _dbcontext = managermentHotelContext;
             _notifications = notifications;
             _logger = logger;
             _QRcode = qRCode;
+            _rabbitMQ = rabbitMQServices;
         }
 
         [HttpPost]
@@ -253,11 +257,20 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
 
 
-            var reuslt = await _notifications.SendBookingSuccessNotification(email, "Xác nhận đặt phòng thành công - Khách sạn Luxury Trung Đức", Content, QRBookingCode);
 
-            var s = reuslt == true ? "Success" : "Fail";
-            _logger.LogInformation($"Enail : {email} :{s}");
-            _logger.LogInformation($"Send email to {email} :{s}");
+
+            // đẩy message vào rabbitmq
+            await _rabbitMQ.SendMessages(new RabbitMQMessages()
+            {
+                To = email,
+                Subject = "Xác nhận đặt phòng thành công - Khách sạn Luxury Trung Đức",
+                Body = Content,
+                QRcode = QRBookingCode,
+                Type = _iconfig["Status:BookingSuccess"] ?? "BookingSuccess"
+
+            });
+
+
             return View();
         }
 

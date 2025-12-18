@@ -1,6 +1,7 @@
 ﻿
 using Management_Hotel_2025.Modules.ManagementQRCode;
 using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
+using Management_Hotel_2025.Modules.RabbitMQHotel;
 using Management_Hotel_2025.Modules.Rooms.RoomService;
 using Management_Hotel_2025.Modules.SignalRModels;
 using Microsoft.AspNetCore.Components.Web;
@@ -34,7 +35,10 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
         private readonly ManagermentHotelContext _dbcontext;
         private readonly INotifications _iNotification;
         private readonly IGanarateQRCode _QRcode;
-        public PaymentWithPayOSController(PayOSClient payOS, ILogger<PaymentWithPayOSController> logger, IGameBlackRed gameBlackRed, IHubContext<CoinHub> coinHub, IOrder order, IHubContext<NotificationSystem> hubNotificationSystem, ManagermentHotelContext managermentHotelContext, INotifications notifications, IGanarateQRCode ganarateQRCode)
+        private readonly IConfiguration _iconfig;
+        private readonly RabbitMQServices _rabbitMQ;
+
+        public PaymentWithPayOSController(RabbitMQServices rabbitMQServices, IConfiguration configuration, PayOSClient payOS, ILogger<PaymentWithPayOSController> logger, IGameBlackRed gameBlackRed, IHubContext<CoinHub> coinHub, IOrder order, IHubContext<NotificationSystem> hubNotificationSystem, ManagermentHotelContext managermentHotelContext, INotifications notifications, IGanarateQRCode ganarateQRCode)
         {
             _payOS = payOS;
             _logger = logger;
@@ -45,6 +49,8 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
             _dbcontext = managermentHotelContext;
             _iNotification = notifications;
             _QRcode = ganarateQRCode;
+            _iconfig = configuration;
+            _rabbitMQ = rabbitMQServices;
 
         }
 
@@ -262,7 +268,16 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
 <p>Để check-in nhanh chóng, Quý khách vui lòng đưa mã QR bên dưới cho bộ phận Tiếp tân.</p>
 
 ";
-                        var reuslt = await _iNotification.SendBookingSuccessNotification(bookingTemporary.Email, "Xác nhận đặt phòng thành công - Khách sạn Luxury Trung Đức", Content, QRBookingCode);
+
+                        await _rabbitMQ.SendMessages(new RabbitMQMessages()
+                        {
+                            To = bookingTemporary.Email,
+                            Subject = "Xác nhận đặt phòng thành công - Khách sạn Luxury Trung Đức",
+                            Body = Content,
+                            QRcode = QRBookingCode,
+                            Type = _iconfig["Status:BookingSuccess"]!
+
+                        });
 
                         return Ok();
                     }

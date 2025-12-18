@@ -7,5 +7,9 @@
         public string Subject { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
 
+        public byte[] QRcode { get; set; } = Array.Empty<byte>();
+
+        public string Type { get; set; } = string.Empty;
+
     }
 }
