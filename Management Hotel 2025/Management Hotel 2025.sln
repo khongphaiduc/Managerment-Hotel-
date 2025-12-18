@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API_BookingHotel", "API_Boo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyData", "MyData\MyData.csproj", "{0440527F-4D2D-4542-9241-8F41E7B70864}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQConsumer", "RabbitMQConsumer\RabbitMQConsumer.csproj", "{A81A8140-E613-4877-9825-D7E2614CA662}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0440527F-4D2D-4542-9241-8F41E7B70864}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0440527F-4D2D-4542-9241-8F41E7B70864}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0440527F-4D2D-4542-9241-8F41E7B70864}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A81A8140-E613-4877-9825-D7E2614CA662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A81A8140-E613-4877-9825-D7E2614CA662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A81A8140-E613-4877-9825-D7E2614CA662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A81A8140-E613-4877-9825-D7E2614CA662}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

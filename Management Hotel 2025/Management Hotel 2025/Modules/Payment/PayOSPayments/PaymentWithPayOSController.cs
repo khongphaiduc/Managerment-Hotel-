@@ -36,9 +36,9 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
         private readonly INotifications _iNotification;
         private readonly IGanarateQRCode _QRcode;
         private readonly IConfiguration _iconfig;
-        private readonly RabbitMQServices _rabbitMQ;
+        private readonly EmailProducer _rabbitMQ;
 
-        public PaymentWithPayOSController(RabbitMQServices rabbitMQServices, IConfiguration configuration, PayOSClient payOS, ILogger<PaymentWithPayOSController> logger, IGameBlackRed gameBlackRed, IHubContext<CoinHub> coinHub, IOrder order, IHubContext<NotificationSystem> hubNotificationSystem, ManagermentHotelContext managermentHotelContext, INotifications notifications, IGanarateQRCode ganarateQRCode)
+        public PaymentWithPayOSController(EmailProducer rabbitMQServices, IConfiguration configuration, PayOSClient payOS, ILogger<PaymentWithPayOSController> logger, IGameBlackRed gameBlackRed, IHubContext<CoinHub> coinHub, IOrder order, IHubContext<NotificationSystem> hubNotificationSystem, ManagermentHotelContext managermentHotelContext, INotifications notifications, IGanarateQRCode ganarateQRCode)
         {
             _payOS = payOS;
             _logger = logger;

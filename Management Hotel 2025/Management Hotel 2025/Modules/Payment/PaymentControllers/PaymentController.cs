@@ -22,9 +22,9 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
         private readonly INotifications _notifications;
         private readonly ILogger<PaymentController> _logger;
         private readonly IGanarateQRCode _QRcode;
-        private readonly RabbitMQServices _rabbitMQ;
+        private readonly EmailProducer _rabbitMQ;
 
-        public PaymentController(IConfiguration configuration, RabbitMQServices rabbitMQServices, IVnPayService vnPayService, ManagermentHotelContext managermentHotelContext, INotifications notifications, ILogger<PaymentController> logger, IGanarateQRCode qRCode)
+        public PaymentController(IConfiguration configuration, EmailProducer rabbitMQServices, IVnPayService vnPayService, ManagermentHotelContext managermentHotelContext, INotifications notifications, ILogger<PaymentController> logger, IGanarateQRCode qRCode)
         {
             _iconfig = configuration;
             _vnPayService = vnPayService;

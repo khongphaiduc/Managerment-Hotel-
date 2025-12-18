@@ -4,11 +4,11 @@ using System.Text.Json;
 
 namespace Management_Hotel_2025.Modules.RabbitMQHotel
 {
-    public class RabbitMQServices
+    public class EmailProducer
     {
         private readonly IConfiguration _config;
 
-        public RabbitMQServices(IConfiguration config)
+        public EmailProducer(IConfiguration config)
         {
             _config = config;
         }
@@ -26,7 +26,7 @@ namespace Management_Hotel_2025.Modules.RabbitMQHotel
             using var channel = await connection.CreateChannelAsync();
 
 
-            var emailQueue = _config["RabbitMQ:Queues:Email"] ?? "Email";
+            var emailQueue = "EmailService";
 
 
             await channel.QueueDeclareAsync(

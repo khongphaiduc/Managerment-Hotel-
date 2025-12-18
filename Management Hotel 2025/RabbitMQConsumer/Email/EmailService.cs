@@ -3,9 +3,9 @@ using System.Net.Mail;
 using System.Net;
 using System.Net.Mime;
 
-namespace Management_Hotel_2025.Modules.Notifications.NotificationsSevices
+namespace RabbitMQConsumer.Email
 {
-    public class Email : INotifications
+    public class EmailService : INotifications
     {
         public Task<bool> SendBookingFailureNotification(string message, string recipient)
         {
@@ -33,7 +33,7 @@ namespace Management_Hotel_2025.Modules.Notifications.NotificationsSevices
                     }
                 }
 
-                Console.WriteLine("Email sent successfully!");
+                Console.WriteLine("EmailService sent successfully!");
                 return true;
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace Management_Hotel_2025.Modules.Notifications.NotificationsSevices
 
 <p>Nếu Quý khách có bất kỳ yêu cầu đặc biệt hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi qua:<br>
 📞 Hotline: 033333333<br>
-📧 Email: hotelluxurytrungduc@gmail.com</p>
+📧 EmailService: hotelluxurytrungduc@gmail.com</p>
 
 <p>Một lần nữa, xin cảm ơn Quý khách đã lựa chọn <b>Khách sạn Luxury Trung Đức</b>.<br>
 Chúng tôi hân hạnh được đón tiếp Quý khách!</p>
@@ -92,7 +92,7 @@ Chúng tôi hân hạnh được đón tiếp Quý khách!</p>
                     }
                 }
 
-                Console.WriteLine("✅ Email sent successfully with QR code!");
+                Console.WriteLine("✅ EmailService sent successfully with QR code!");
                 return true;
             }
             catch (Exception ex)
@@ -123,7 +123,7 @@ Chúng tôi hân hạnh được đón tiếp Quý khách!</p>
 
         <p style='margin:10px 0 0 0;'>Thông tin liên hệ:<br>
         📞 Hotline: <strong>033333333</strong><br>
-        📧 Email: <strong>hotelluxurytrungduc@gmail.com</strong></p>
+        📧 EmailService: <strong>hotelluxurytrungduc@gmail.com</strong></p>
     </div>
 
     <div style='text-align:left;margin-top:18px;font-size:13px;color:#666;'>
@@ -153,7 +153,7 @@ Chúng tôi hân hạnh được đón tiếp Quý khách!</p>
                     }
                 }
 
-                Console.WriteLine("Email sent successfully!");
+                Console.WriteLine("EmailService sent successfully!");
                 return true;
             }
             catch (Exception ex)

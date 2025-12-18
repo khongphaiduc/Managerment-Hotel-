@@ -3,10 +3,10 @@ using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
-using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
+using RabbitMQConsumer.Models;
+using RabbitMQConsumer.Email;
 
-
-namespace Management_Hotel_2025.Modules.RabbitMQHotel
+namespace RabbitMQConsumer.ConsumersRabbitMQ
 {
     public class EmailConsumer : BackgroundService
     {
@@ -36,7 +36,7 @@ namespace Management_Hotel_2025.Modules.RabbitMQHotel
                 _connection = await factory.CreateConnectionAsync();
                 _channel = await _connection.CreateChannelAsync();
 
-                var queue = _config["RabbitMQ:Queues:Email"] ?? "Email";
+                var queue = "EmailService";
 
                 // Khai báo queue
                 await _channel.QueueDeclareAsync(
@@ -67,10 +67,12 @@ namespace Management_Hotel_2025.Modules.RabbitMQHotel
                         {
                             if (content.Type == _config["Status:ResetPassword"])
                             {
+                                Console.WriteLine($"[EmailConsumer] Sending reset on Worker Service");
                                 await _notification.SendNotificationResetPassword(content.To, content.Subject, content.Body);
                             }
                             else if (content.Type == _config["Status:BookingSuccess"])
                             {
+                                Console.WriteLine($"[EmailConsumer] Sending Bookings on Worker Service");
                                 await _notification.SendBookingSuccessNotification(content.To, content.Subject, content.Body, content.QRcode);
                             }
                         }

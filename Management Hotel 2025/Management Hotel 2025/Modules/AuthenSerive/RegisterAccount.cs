@@ -15,10 +15,10 @@ namespace Management_Hotel_2025.Serives.AuthenSerive
         private readonly IEncoding _Iendcoding;
         private readonly INotifications _notification;
         private readonly ILogger<RegisterAccount> _logger;
-        private readonly RabbitMQServices _rabbitMQ;
+        private readonly EmailProducer _rabbitMQ;
         private readonly IConfiguration _iconfig;
 
-        public RegisterAccount(IConfiguration configuration, ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger, RabbitMQServices rabbitMQServices)
+        public RegisterAccount(IConfiguration configuration, ManagermentHotelContext dbcontext, IEncoding iencoding, INotifications notifications, ILogger<RegisterAccount> logger, EmailProducer rabbitMQServices)
         {
             _dbcontext = dbcontext;
             _Iendcoding = iencoding;

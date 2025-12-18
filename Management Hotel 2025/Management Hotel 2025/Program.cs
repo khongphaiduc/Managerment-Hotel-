@@ -142,8 +142,8 @@ namespace Management_Hotel_2025
             //Transient : mỗi lần inject sẽ là  1 instance mới  được tạo ra
             // Scoped   : 1 request sẽ inject duy nhất 1 instance 
             //Singleton : 1 instance sẽ tồn tại đến hết vòng đời của ứng dụng  (tất cả các lần inject đều dùng chung 1 instance)
-            builder.Services.AddSingleton<RabbitMQServices>();
-            builder.Services.AddHostedService<EmailConsumer>();
+            builder.Services.AddSingleton<EmailProducer>();
+          
 
             builder.Services.AddTransient<INotifications, Email>();
             builder.Services.AddScoped<IVnPayService, VnPayService>();
