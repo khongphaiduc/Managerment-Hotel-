@@ -25,7 +25,7 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
 
 
         // lấy danh sách hóa đơn
-        [HttpGet("invoice")]
+        [HttpGet("invoices")]
         public async Task<IActionResult> GetlistInvoicesPassengers(string? key, DateTime? startdate, DateTime? enddate, int indexpage = 1)
         {
             try
@@ -75,7 +75,7 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
         }
 
 
-        [HttpGet("invoice/{bookingcode}")]
+        [HttpGet("invoices/{bookingcode}")]
         public async Task<IActionResult> DetailInvoicesPassenger(string bookingcode)
         {
             var order = await _iOrder.ViewOrder(bookingcode);

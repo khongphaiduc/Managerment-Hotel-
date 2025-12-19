@@ -77,7 +77,7 @@ namespace RabbitMQConsumer.ConsumersRabbitMQ
                             }
                         }
 
-                        // ⭐ Chỉ acknowledge sau khi xử lý thành công
+                       
                         await _channel.BasicAckAsync(ea.DeliveryTag, false);    // có nghĩa là thông báo cho queue rằng đã xử lý message và có thể xóa khỏi queue
                         Console.WriteLine($"[EmailConsumer] Message acknowledged: {message}");
                     }

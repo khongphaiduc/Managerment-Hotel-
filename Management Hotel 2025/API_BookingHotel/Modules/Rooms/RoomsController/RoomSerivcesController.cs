@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using API_BookingHotel.Modules.Rooms.DTOs;
 namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
     [Route("api/roomtotel")]
@@ -31,32 +32,33 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
             _logger = logger;
             _redisCache = redisCache;
         }
+        
 
-        // api cung cấp  danh sách room cho khách hàng 
+        // lấy danh sách phòng 
         [AllowAnonymous]
         [HttpGet("room")]
-        public async Task<IActionResult> SearchRoomAdvance(int PageCurrent, int NumerItemOfPage, int? Floor, int? PriceMin, int? PriceMax, int? Person, string? StartDate, string? EndDate)
+        public async Task<IActionResult> SearchRoomAdvanceVersion2([FromQuery] RoomFilterRequest roomRequest)
         {
             string apihost = $"{Request.Scheme}://{Request.Host}";
 
             // nếu user không chọn ngày thì mặc định tính từ hôm nay tới 7 ngày tiếp theo
-            if (StartDate == null)
-                StartDate = DateTime.Now.ToString();
-            if (EndDate == null)
-                EndDate = DateTime.Now.AddDays(7).ToString();
+            if (roomRequest.StartDate == null)
+                roomRequest.StartDate = DateTime.Now.ToString();
+            if (roomRequest.EndDate == null)
+                roomRequest.EndDate = DateTime.Now.AddDays(7).ToString();
 
-            DateTime newCheckIn = DateTime.Parse(StartDate);
-            DateTime newCheckOut = DateTime.Parse(EndDate);
+            DateTime newCheckIn = DateTime.Parse(roomRequest.StartDate);
+            DateTime newCheckOut = DateTime.Parse(roomRequest.EndDate);
 
             // lấy db trước khi skip
             int TotalItems = await _dbcontext.Rooms
                 .Include(s => s.RoomType)
                 .Include(s => s.BookingDetails)
                 .Where(s => (s.Status == "Active") &&
-                            (!Floor.HasValue || s.Floor == Floor.Value) &&
-                            (!PriceMin.HasValue || s.RoomType.Price >= PriceMin.Value) &&
-                            (!PriceMax.HasValue || s.RoomType.Price <= PriceMax.Value) &&
-                            (!Person.HasValue || s.RoomType.MaxGuests == Person.Value) &&
+                            (!roomRequest.Floor.HasValue || s.Floor == roomRequest.Floor.Value) &&
+                            (!roomRequest.PriceMin.HasValue || s.RoomType.Price >= roomRequest.PriceMin.Value) &&
+                            (!roomRequest.PriceMax.HasValue || s.RoomType.Price <= roomRequest.PriceMax.Value) &&
+                            (!roomRequest.Person.HasValue || s.RoomType.MaxGuests == roomRequest.Person.Value) &&
                             !s.BookingDetails.Any(bd =>
                                 bd.Booking.Status != "Cancelled" &&
                                 newCheckIn < bd.CheckOutDate &&
@@ -64,7 +66,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
                 .CountAsync();
 
             // Redis cache
-            string cacheKey = $"SearchRoom_{PageCurrent}_{NumerItemOfPage}_{Floor}_{PriceMin}_{PriceMax}_{Person}_{StartDate}_{EndDate}";
+            string cacheKey = $"SearchRoom_{roomRequest.PageCurrent}_{roomRequest.NumerItemOfPage}_{roomRequest.Floor}_{roomRequest.PriceMin}_{roomRequest.PriceMax}_{roomRequest.Person}_{roomRequest.StartDate}_{roomRequest.EndDate}";
 
             List<ViewRoom> ListResult = null;
 
@@ -72,13 +74,13 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
             var cachedData = await _redisCache.GetStringAsync(cacheKey);
             if (!string.IsNullOrEmpty(cachedData))
             {
-                // deserialize từ JSON
+               
                 ListResult = JsonSerializer.Deserialize<List<ViewRoom>>(cachedData);
             }
             else
             {
 
-                ListResult = await _IRoomService.SearchRoomByAdvance(PageCurrent, NumerItemOfPage, Floor, PriceMin, PriceMax, Person, StartDate, EndDate, apihost);
+                ListResult = await _IRoomService.SearchRoomByAdvance(roomRequest.PageCurrent, roomRequest.NumerItemOfPage, roomRequest.Floor, roomRequest.PriceMin, roomRequest.PriceMax, roomRequest.Person, roomRequest.StartDate, roomRequest.EndDate, apihost);
 
                 // serialize và lưu vào Redis
                 var cacheOptions = new DistributedCacheEntryOptions()
@@ -88,7 +90,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
                 await _redisCache.SetStringAsync(cacheKey, JsonSerializer.Serialize(ListResult), cacheOptions);
             }
 
-            return Ok(new PaginationResult<ViewRoom>(ListResult, TotalItems, PageCurrent, NumerItemOfPage, newCheckIn, newCheckOut));
+            return Ok(new PaginationResult<ViewRoom>(ListResult, TotalItems, roomRequest.PageCurrent, roomRequest.NumerItemOfPage, newCheckIn, newCheckOut));
         }
 
 

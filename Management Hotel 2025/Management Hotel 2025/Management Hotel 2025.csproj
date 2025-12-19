@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\API_BookingHotel\API_BookingHotel.csproj" />
     <ProjectReference Include="..\MyData\MyData.csproj" />
   </ItemGroup>
 

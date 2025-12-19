@@ -1,5 +1,6 @@
 ﻿
-using Management_Hotel_2025.Serives.CallAPI;
+using API_BookingHotel.Modules.Rooms.DTOs;
+
 using Management_Hotel_2025.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,55 +16,80 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
     public class ManagementRoomController : Controller
     {
         private readonly ManagermentHotelContext _dbContext;
-        private readonly IApiServices _ApiService;
+
         private readonly HttpClient _httpClient;
         private readonly ILogger<ManagementRoomController> _logger;
+        private readonly IHttpClientFactory _IhttpClientF;
+        private readonly IConfiguration _iconfig;
 
-        public ManagementRoomController(ManagermentHotelContext dbcontext, IApiServices api, HttpClient httpClient, ILogger<ManagementRoomController> logger)
+        public ManagementRoomController(IConfiguration configuration, ManagermentHotelContext dbcontext, HttpClient httpClient, ILogger<ManagementRoomController> logger, IHttpClientFactory httpClientFactory)
         {
             _dbContext = dbcontext;
-            _ApiService = api;
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger;
+            _IhttpClientF = httpClientFactory;
+            _iconfig = configuration;
         }
+
+        public HttpClient gethttpClient()
+        {
+
+            var httpclient = _IhttpClientF.CreateClient();
+
+            return httpclient;
+
+        }
+
 
         // hiện thi danh sách phòng(advance) và phân trang
         [AllowAnonymous]
         [Route("list/{PageCurrent}/{NumerItemOfPage}")]
-        public async Task<IActionResult> ViewListRoomVer2(int PageCurrent, int NumerItemOfPage, int? Floor, int? PriceMin, int? PriceMax, int? Person, string? StartDate, string? EndDate)
+        public async Task<IActionResult> ViewListRoomVer2(RoomFilterRequest roomrequest)
         {
-            ViewBag.Floor = Floor;
-            ViewBag.PageCurrent = PageCurrent;
-            ViewBag.NumerItemOfPage = NumerItemOfPage;
-            ViewBag.PriceMin = PriceMin;
-            ViewBag.PriceMax = PriceMax;
-            ViewBag.Person = Person;
+            ViewBag.Floor = roomrequest.Floor;
+            ViewBag.PageCurrent = roomrequest.PageCurrent;
+            ViewBag.NumerItemOfPage = roomrequest.NumerItemOfPage;
+            ViewBag.PriceMin = roomrequest.PriceMin;
+            ViewBag.PriceMax = roomrequest.PriceMax;
+            ViewBag.Person = roomrequest.Person;
 
             var Today = DateTime.Now;
 
-            if (string.IsNullOrEmpty(StartDate) || string.IsNullOrEmpty(EndDate))
+            if (string.IsNullOrEmpty(roomrequest.StartDate) || string.IsNullOrEmpty(roomrequest.EndDate))
             {
-                StartDate = Today.ToString("yyyy-MM-dd");
-                EndDate = Today.AddDays(7).ToString("yyyy-MM-dd");
+                roomrequest.StartDate = Today.ToString("yyyy-MM-dd");
+                roomrequest.EndDate = Today.AddDays(7).ToString("yyyy-MM-dd");
             }
 
-            ViewBag.StartDate = StartDate;
-            ViewBag.EndDate = EndDate;
+            ViewBag.StartDate = roomrequest.StartDate;
+            ViewBag.EndDate = roomrequest.EndDate;
 
             // lưu ngày checkin và out vào session
+            HttpContext.Session.SetString("StartDate", roomrequest.StartDate);
+            HttpContext.Session.SetString("EndDate", roomrequest.EndDate);
 
 
-            HttpContext.Session.SetString("StartDate", StartDate);
-            HttpContext.Session.SetString("EndDate", EndDate);
-
-            var model = await _ApiService.ViewListRoomAPIAsync(PageCurrent, NumerItemOfPage, Floor, PriceMin, PriceMax, Person, StartDate, EndDate);
-            if (model != null)
+            using (var httpclient = gethttpClient())
             {
-                return View(model);
-            }
-            else
-            {
-                return NotFound("No rooms found.");
+
+                string urlapi = _iconfig["ApiHotel:RoomHotel"] + $"?PageCurrent={roomrequest.PageCurrent}&NumerItemOfPage={roomrequest.NumerItemOfPage}&Floor={roomrequest.Floor}&PriceMin={roomrequest.PriceMin}&PriceMax={roomrequest.PriceMax}&Person={roomrequest.Person}&StartDate={roomrequest.StartDate}&EndDate={roomrequest.EndDate}";
+
+                var respone = await httpclient.GetAsync(urlapi);
+
+                if (respone.IsSuccessStatusCode)
+                {
+
+                    var dataRespone = await respone.Content.ReadAsStringAsync();
+
+                    var model = JsonSerializer.Deserialize<PaginatedResult<ViewRoomModel>>(dataRespone,
+                          new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    return View(model);
+                }
+                else
+                {
+                    return NotFound("No rooms found.");
+                }
+
             }
 
         }
@@ -72,22 +98,34 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
         [Route("detail")]
         public async Task<IActionResult> ViewDetailRoomVer2([FromQuery] int IdRoom)
         {
-            var Room = await _ApiService.ViewDetaiRoomAIPAsync(IdRoom);
 
-
-            foreach (string s in Room.ListPathImage)
+            using (var httpclient = gethttpClient())
             {
-                _logger.LogInformation("ảnh 1 :" + s);
+                string url = _iconfig["ApiHotel:ViewDetailRoom"] + $"/{IdRoom}";
+
+                var respon = await httpclient.GetAsync(url);
+
+                if (respon.IsSuccessStatusCode)
+                {
+
+                    var data = await respon.Content.ReadAsStringAsync();
+
+                    var room = JsonSerializer.Deserialize<ViewDetailRoom>(data,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    ?? new ViewDetailRoom();
+
+                    return View(room);
+                }
+                else
+                {
+                    return View(new ViewDetailRoom()
+                    {
+
+                    });
+                }
+
             }
 
-            if (Room != null)
-            {
-                return View(Room);
-            }
-            else
-            {
-                return NotFound("Room not found.");
-            }
         }
 
 

@@ -7,7 +7,6 @@ using Management_Hotel_2025.Modules.Rooms.ManagementRoom;
 using Management_Hotel_2025.Modules.Rooms.RoomService;
 using Management_Hotel_2025.Modules.Secheduler;
 using Management_Hotel_2025.Serives.AuthenSerive;
-using Management_Hotel_2025.Serives.CallAPI;
 using Management_Hotel_2025.Serives.GenarateToken;
 using Management_Hotel_2025.ViewModel;
 using Microsoft.AspNetCore.Authentication;
@@ -152,8 +151,7 @@ namespace Management_Hotel_2025
             builder.Services.AddScoped<ValidationAuthen>();
             builder.Services.AddScoped<Login>();
             builder.Services.AddTransient<GenarateTokenHotel>();
-            builder.Services.AddTransient<IApiServices, ApiCall>();
-            builder.Services.AddTransient<ApiCall>();
+
             builder.Services.AddHttpClient(); // Thêm HttpClient để gọi API bên ngoài
             builder.Services.AddHttpContextAccessor();  // Thêm HttpContextAccessor để truy cập HttpContext trong các dịch vụ
 

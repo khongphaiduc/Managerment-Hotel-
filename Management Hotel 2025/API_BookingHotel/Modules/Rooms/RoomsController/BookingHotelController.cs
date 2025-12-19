@@ -8,7 +8,7 @@ using Mydata.Models;
 
 namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
-    [Route("api/getbooking")]
+    [Route("api")]
     [ApiController]
     public class BookingHotelController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
         // Allow user to view detail the room
         [AllowAnonymous]
-        [HttpGet("ViewDetailRoom/{idRoom}")]
+        [HttpGet("room/{idRoom}")]
         public async Task<IActionResult> ViewDetaiRoom([FromRoute] string idRoom)
         {
             if (string.IsNullOrEmpty(idRoom))
