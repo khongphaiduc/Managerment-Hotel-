@@ -4,6 +4,7 @@
     public class RoomFilterRequest
     {
 
+       
         public int PageCurrent { get; set; }
 
         public int NumerItemOfPage { get; set; } = 8;

@@ -55,8 +55,6 @@ namespace API_BookingHotel.Modules.JWT
             {
                 return BadRequest("get token failure");
             }
-
-
         }
 
     }

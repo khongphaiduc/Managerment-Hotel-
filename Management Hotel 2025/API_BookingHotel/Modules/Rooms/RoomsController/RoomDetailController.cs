@@ -10,12 +10,12 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
     [Route("api")]
     [ApiController]
-    public class BookingHotelController : ControllerBase
+    public class RoomDetailController : ControllerBase
     {
         private readonly ManagermentHotelContext _dbcontext;
         private readonly RoomViewDetail _Mybooking;
 
-        public BookingHotelController(ManagermentHotelContext dbcontext, RoomViewDetail MyBooings)
+        public RoomDetailController(ManagermentHotelContext dbcontext, RoomViewDetail MyBooings)
         {
             _dbcontext = dbcontext;
             _Mybooking = MyBooings;

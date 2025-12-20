@@ -12,6 +12,8 @@ using API_BookingHotel.Modules.AmentityModules.AmentityServices;
 using API_BookingHotel.Modules.MPassengers.AdminPassengersSerives;
 using API_BookingHotel.Modules.Invoice.MInvoiceServices;
 using API_BookingHotel.Modules.Statistics.StatisticsServices;
+using Microsoft.AspNetCore.RateLimiting;
+using API_BookingHotel.MiddlewareCustom;
 
 namespace API_BookingHotel
 {
@@ -22,6 +24,7 @@ namespace API_BookingHotel
             var builder = WebApplication.CreateBuilder(args);
             IdentityModelEventSource.ShowPII = true;
             // Add services to the container.
+
 
             builder.Services.AddControllers();
             builder.Services.AddDbContext<ManagermentHotelContext>
@@ -69,9 +72,11 @@ namespace API_BookingHotel
             builder.Services.AddControllers();
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            app.UseStaticFiles();   // cho phép truy cập ảnh tĩnh trong project wwwroot
+            app.UseMiddleware<RequestLoggingMiddleware>();    // middleware tự  custom
 
+           
+            app.UseStaticFiles();   // cho phép truy cập ảnh tĩnh trong project wwwroot
+         
 
             app.UseHttpsRedirection();
 
