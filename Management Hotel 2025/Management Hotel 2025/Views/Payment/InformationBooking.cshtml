@@ -21,7 +21,12 @@
     <link rel="stylesheet" href="~/css2/Payment/payment-info.css" />
 </head>
 <body>
-
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
     <div class="wrapper">
         <div class="pro-card animate__animated animate__fadeIn">
 

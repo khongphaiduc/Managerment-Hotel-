@@ -21,6 +21,8 @@ using Management_Hotel_2025.Modules.AdminMPassengers.MPassengersServices;
 using Management_Hotel_2025.Modules.Payment.PayOSPayments;
 using Management_Hotel_2025.Modules.SignalRModels;
 using Management_Hotel_2025.Modules.RabbitMQHotel;
+using StackExchange.Redis;
+using Management_Hotel_2025.Modules.RedisServices;
 
 
 
@@ -174,8 +176,8 @@ namespace Management_Hotel_2025
             //builder.Services.AddEndpointsApiExplorer();
             ////-----
 
-         
-   
+
+            builder.Services.AddSingleton<IRedisLockService, RedisLockService>();
 
 
 
@@ -190,6 +192,15 @@ namespace Management_Hotel_2025
 
                 });
             });
+
+
+
+
+
+
+            // Redis 
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+                 ConnectionMultiplexer.Connect("localhost:7000"));
 
 
 

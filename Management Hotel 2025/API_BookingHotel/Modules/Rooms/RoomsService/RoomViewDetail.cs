@@ -18,43 +18,68 @@ namespace API_BookingHotel.Modules.Rooms.RoomsService
         }
 
         // Allow user to view detail the room   
-        public async Task<ViewRoomDetail> ViewDetailRoomAsync(int roomID, string apiHost)
+        public async Task<ViewRoomDetail?> ViewDetailRoomAsync(int roomID, string apiHost)
         {
-
-            var s = await _dbcontext.Rooms
-                .Include(s => s.RoomType)
-                .Include(s => s.RoomAmenities)
-                .Include(s => s.Images)
-                .Where(s => s.RoomId == roomID)
-                .Select(room => new ViewRoomDetail
+            var room = await _dbcontext.Rooms
+                .AsNoTracking()
+                .Where(r => r.RoomId == roomID)
+                .Select(r => new
                 {
-                    RoomId = room.RoomId,
-                    RoomTypeId = room.RoomTypeId,
-                    NameType = room.RoomType.Name,
-                    RoomNumber = room.RoomNumber,
-                    Floor = (int)room.Floor,
-                    Status = room.Status,
+                    r.RoomId,
+                    r.RoomTypeId,
+                    RoomTypeName = r.RoomType.Name,
+                    r.RoomNumber,
+                    r.Floor,
+                    r.Status,
+                    r.Description,
+                    r.PathImage,
+                    Price = r.RoomType.Price,
+                    MaxGuests = r.RoomType.MaxGuests,
 
-                    Description = room.Description,
-                    PathImage = room.PathImage,
-                    Price = room.RoomType.Price,
-                    MaxGuests = room.RoomType.MaxGuests.ToString(),
-                    ListPathImage = room.Images.Select(s => s.LinkImage.StartsWith("http") ? s.LinkImage : $"{apiHost}/images/{s.LinkImage}").ToList(),
-                    ListAmenites = room.RoomAmenities.Where(s => s.Amenity.status == "Active").Select(s => new MyAmenity()
-                    {
-                        AmenityId = s.Amenity.AmenityId,
-                        Name = s.Amenity.Name,
-                        Description = s.Amenity.Description,
-                        UrlImage = s.Amenity.UrlImage.StartsWith("http") ? s.Amenity.UrlImage : $"{apiHost}/ImagesAmentity/{s.Amenity.UrlImage}"
-
-                    }).ToList()
+                    Images = r.Images.Select(i => i.LinkImage).ToList(),
+                    Amenities = r.RoomAmenities
+                        .Where(a => a.Amenity.status == "Active")
+                        .Select(a => new
+                        {
+                            a.Amenity.AmenityId,
+                            a.Amenity.Name,
+                            a.Amenity.Description,
+                            a.Amenity.UrlImage
+                        }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
-            return s ?? new ViewRoomDetail();
+            if (room == null) return null;
 
+            return new ViewRoomDetail
+            {
+                RoomId = room.RoomId,
+                RoomTypeId = room.RoomTypeId,
+                NameType = room.RoomTypeName,
+                RoomNumber = room.RoomNumber,
+                Floor = (int)room.Floor,
+                Status = room.Status,
+                Description = room.Description,
+                PathImage = room.PathImage,
+                Price = room.Price,
+                MaxGuests = room.MaxGuests.ToString(),
+
+                ListPathImage = room.Images
+                    .Select(i => i.StartsWith("http") ? i : $"{apiHost}/images/{i}")
+                    .ToList(),
+
+                ListAmenites = room.Amenities
+                    .Select(a => new MyAmenity
+                    {
+                        AmenityId = a.AmenityId,
+                        Name = a.Name,
+                        Description = a.Description,
+                        UrlImage = a.UrlImage.StartsWith("http")
+                            ? a.UrlImage
+                            : $"{apiHost}/ImagesAmentity/{a.UrlImage}"
+                    }).ToList()
+            };
         }
-
 
     }
 }

@@ -14,6 +14,7 @@ using API_BookingHotel.Modules.Invoice.MInvoiceServices;
 using API_BookingHotel.Modules.Statistics.StatisticsServices;
 using Microsoft.AspNetCore.RateLimiting;
 using API_BookingHotel.MiddlewareCustom;
+using StackExchange.Redis;
 
 namespace API_BookingHotel
 {

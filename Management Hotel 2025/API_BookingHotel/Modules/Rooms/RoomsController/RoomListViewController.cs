@@ -84,8 +84,8 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
                 // serialize và lưu vào Redis
                 var cacheOptions = new DistributedCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))   // nếu 5 phút không truy cập, tự xóa
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(1));  // thời gian tối đa
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))                          // nếu 5 phút không truy cập, tự xóa
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(1));                          // thời gian tối đa
 
                 await _redisCache.SetStringAsync(cacheKey, JsonSerializer.Serialize(ListResult), cacheOptions);
             }

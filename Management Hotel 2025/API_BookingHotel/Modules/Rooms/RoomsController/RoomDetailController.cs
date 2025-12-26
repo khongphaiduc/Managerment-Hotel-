@@ -21,6 +21,12 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
             _Mybooking = MyBooings;
         }
 
+        [HttpGet("test")]
+        public IActionResult Index()
+        {
+            return Accepted();
+        }
+
         // Allow user to view detail the room
         [AllowAnonymous]
         [HttpGet("room/{idRoom}")]
@@ -35,10 +41,10 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
                 var apiHost = $"{Request.Scheme}://{Request.Host}";
 
                 var IDRoomAfterCheck = int.Parse(idRoom);
-                var result = await _Mybooking.ViewDetailRoomAsync(IDRoomAfterCheck,apiHost);
+                var result = await _Mybooking.ViewDetailRoomAsync(IDRoomAfterCheck, apiHost);
                 if (result != null)
                 {
-                    return Ok(result); // Trong WEB API của ASP.NET thì các model chuyền qua OK(object) sẽ tự động chuyển thành JSON
+                    return Ok(result);                            // Trong WEB API của ASP.NET thì các model chuyền qua OK(object) sẽ tự động chuyển thành JSON
                 }
                 else
                 {
@@ -46,6 +52,5 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
                 }
             }
         }
-
     }
 }

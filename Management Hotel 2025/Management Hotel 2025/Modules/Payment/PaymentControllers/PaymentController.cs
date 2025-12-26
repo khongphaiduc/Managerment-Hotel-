@@ -3,6 +3,7 @@
 using Management_Hotel_2025.Modules.ManagementQRCode;
 using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
 using Management_Hotel_2025.Modules.RabbitMQHotel;
+using Management_Hotel_2025.Modules.RedisServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -37,19 +38,38 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
         [HttpPost]
 
-        public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model)
+        public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model, [FromServices] IRedisLockService _redisLock)
         {
             var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
             var CustomterName = Request.Form["CustomerName"];
             var CustomterPhone = Request.Form["PhoneNumber"];
             var Email = Request.Form["Email"];
             var Nationality = Request.Form["Nationality"];
-
+            int? IdRoom = HttpContext.Session.GetInt32("IdRoom");
 
             HttpContext.Session.SetString("CustomerName", CustomterName);
             HttpContext.Session.SetString("CustomerPhone", CustomterPhone);
             HttpContext.Session.SetString("Email", Email);
             HttpContext.Session.SetString("Nationality", Nationality);
+
+
+
+            // tạo khóa Redis Lock
+            var LockKey = IdRoom.ToString() ?? "None";
+            var LockVlaue = Guid.NewGuid().ToString();
+
+            HttpContext.Session.SetString("LockKey", LockKey);
+            HttpContext.Session.SetString("LockValue", LockVlaue);
+
+            // đặt Redis Lock
+            var result = await _redisLock.AcquireAsync(LockKey, LockVlaue, TimeSpan.FromMinutes(3));
+
+            if (!result)
+            {
+                TempData["Error"] = "Ô ồ bạn chậm tay mất rồi , phòng đang được người khách thanh toán . Vui lòng thử lại sau";
+                return RedirectToAction("InformationBooking", new { NameRoom = " ", Amount = 0, IdRoom = 0 }); // action chứa form
+            }
+
             return Redirect(url);
         }
 
@@ -57,7 +77,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
 
         [HttpGet]
-        public async Task<IActionResult> PaymentCallbackVnpay()
+        public async Task<IActionResult> PaymentCallbackVnpay([FromServices] IRedisLockService _redisLock)
         {
             string codeHotel = "TDH";
 
@@ -79,6 +99,10 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
             var CustomerPhone = HttpContext.Session.GetString("CustomerPhone");
             var Nationality = HttpContext.Session.GetString("Nationality");
             var Email = HttpContext.Session.GetString("Email");
+
+            var LockKey = HttpContext.Session.GetString("LockKey");
+            var LockValue = HttpContext.Session.GetString("LockValue");
+
             // thánh toán thành công 
 
             using var transaction = await _dbcontext.Database.BeginTransactionAsync();              // transaction 
@@ -147,18 +171,22 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
                     await _dbcontext.SaveChangesAsync();
 
                     await transaction.CommitAsync();
+                    await _redisLock.ReleaseAsync(LockKey, LockValue); // giải phóng khóa
                     return RedirectToAction("ResultPayment", "Payment", new { success = true });
                 }
                 else
                 {
                     await transaction.RollbackAsync();
+                    await _redisLock.ReleaseAsync(LockKey, LockValue);// giải phóng khóa
                     // thành toán thất bại
+
                     return BadRequest("Payment failed. Please try again.");
                 }
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+                await _redisLock.ReleaseAsync(LockKey, LockValue);// giải phóng khóa
                 throw;
             }
 

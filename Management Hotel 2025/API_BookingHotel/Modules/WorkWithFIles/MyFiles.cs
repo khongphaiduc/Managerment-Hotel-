@@ -27,7 +27,7 @@ namespace API_BookingHotel.Modules.WorkWithFIles
         {
             throw new NotImplementedException();
         }
- 
+
 
         // lưu file 
         public async Task<string> SaveFiles(IFormFile file, string pathfolder)
@@ -44,9 +44,9 @@ namespace API_BookingHotel.Modules.WorkWithFIles
                 Directory.CreateDirectory(pathfolder);
             }
 
-            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}"; // thêm guid ở tên file để tránh trung tên file 
+            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";       // thêm guid ở tên file để tránh trung tên file 
 
-            string filePath = Path.Combine(pathfolder, fileName);  //  nối tên file và đường dẫn của folder 
+            string filePath = Path.Combine(pathfolder, fileName);                           //  nối tên file và đường dẫn của folder 
 
             //  lưu file vào đường dẫn đã tạo   
             using (var stream = new FileStream(filePath, FileMode.Create))

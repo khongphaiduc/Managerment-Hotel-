@@ -20,24 +20,24 @@ namespace API_BookingHotel.Modules.Invoice.MInvoiceServices
         {
             try
             {
-                var InvoicesItem = await _dbcontext.Orders.Where(s => s.OrderCode == invoiceCode)
-                    .Include(s => s.Booking)
-                    .ThenInclude(s => s.BookingDetails)
-                    .ThenInclude(s => s.Room)
-                    .Select(s => new InvoiceViewModel()
-                    {
-                        InvoiceCode = s.OrderCode,
-                        CustomerName = s.Booking.CustomerName,
-                        RoomNumber = string.Join(", ", s.Booking.BookingDetails.Select(b => b.Room.RoomNumber)),
-                        CheckInDate = s.Booking.RealTimeCheckIn,
-                        CheckOutDate = s.Booking.RealTimeCheckOut,
-                        TotalAmount = s.TotalAmount,
-                        StatusInvoice = s.OrderStatus,
-                        CreatedBy = "Phạm Trung Đức"
-                    }).FirstOrDefaultAsync();
+                var invoiceItem = await _dbcontext.Orders
+                      .Where(s => s.OrderCode == invoiceCode)
+                      .Select(s => new InvoiceViewModel
+                      {
+                          InvoiceCode = s.OrderCode,
+                          CustomerName = s.Booking.CustomerName,
+                          RoomNumber = string.Join(", ", s.Booking.BookingDetails.Select(b => b.Room.RoomNumber)),
+                          CheckInDate = s.Booking.RealTimeCheckIn,
+                          CheckOutDate = s.Booking.RealTimeCheckOut,
+                          TotalAmount = s.TotalAmount,
+                          StatusInvoice = s.OrderStatus,
+                          CreatedBy = "Phạm Trung Đức"
+                      })
+                       .FirstOrDefaultAsync();
 
 
-                return InvoicesItem ?? new InvoiceViewModel();
+
+                return invoiceItem ?? new InvoiceViewModel();
 
             }
             catch (Exception s)
