@@ -4,7 +4,9 @@ using API_BookingHotel.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Mydata.Models;
+using System.Collections.Concurrent;
 
 namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
@@ -14,11 +16,19 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
     {
         private readonly ManagermentHotelContext _dbcontext;
         private readonly RoomViewDetail _Mybooking;
+        private readonly IDistributedCache _redisCache;
+        private readonly ILogger<RoomDetailController> _ilogger;
 
-        public RoomDetailController(ManagermentHotelContext dbcontext, RoomViewDetail MyBooings)
+        //  private static readonly SemaphoreSlim _roomDetailLock = new SemaphoreSlim(1, 1);
+
+        private static ConcurrentDictionary<string, SemaphoreSlim> _LockSemaphore = new ConcurrentDictionary<string, SemaphoreSlim>();
+
+        public RoomDetailController(ManagermentHotelContext dbcontext, RoomViewDetail MyBooings, IDistributedCache _RedisCache, ILogger<RoomDetailController> _logger)
         {
             _dbcontext = dbcontext;
             _Mybooking = MyBooings;
+            _redisCache = _RedisCache;
+            _ilogger = _logger;
         }
 
         [HttpGet("test")]
@@ -40,17 +50,65 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
             {   // Lấy host + port của API đang chạy
                 var apiHost = $"{Request.Scheme}://{Request.Host}";
 
-                var IDRoomAfterCheck = int.Parse(idRoom);
-                var result = await _Mybooking.ViewDetailRoomAsync(IDRoomAfterCheck, apiHost);
-                if (result != null)
+
+                // check xem có trong Redis hay chưa 
+                var room = await _redisCache.GetStringAsync($"RoomDetail_{idRoom}");
+
+                if (room != null)
                 {
-                    return Ok(result);                            // Trong WEB API của ASP.NET thì các model chuyền qua OK(object) sẽ tự động chuyển thành JSON
+                    // Nếu có trong Redis thì trả về 
+                    var cachedRoom = System.Text.Json.JsonSerializer.Deserialize<ViewRoomDetail>(room);
+
+                    _ilogger.LogInformation($"RoomDetail_{idRoom} Avaliable Redis");
+
+                    return Ok(cachedRoom);
                 }
                 else
                 {
-                    return BadRequest("Room ID is required");
+                    // lấy semaphore của phòng 
+                    var _roomDetailLock = _LockSemaphore.GetOrAdd(idRoom, new SemaphoreSlim(1, 1));
+
+                    await _roomDetailLock.WaitAsync();
+
+                    var rooms2 = await _redisCache.GetStringAsync($"RoomDetail_{idRoom}");
+
+                    if (rooms2 != null)
+                    {
+
+                        var cachedRoom2 = System.Text.Json.JsonSerializer.Deserialize<ViewRoomDetail>(rooms2);
+                        _ilogger.LogInformation($"RoomDetail_{idRoom} Avaliable Redis");
+                        _roomDetailLock.Release();
+                        return Ok(cachedRoom2);
+                    }
+
+                    try
+                    {
+                        var IDRoomAfterCheck = int.Parse(idRoom);
+                        var result = await _Mybooking.ViewDetailRoomAsync(IDRoomAfterCheck, apiHost);
+
+                        if (result != null)
+                        {
+                            var serializedRoom = System.Text.Json.JsonSerializer.Serialize(result);
+                            var options = new DistributedCacheEntryOptions()
+                                .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+                            await _redisCache.SetStringAsync($"RoomDetail_{idRoom}", serializedRoom, options);
+
+                            return Ok(result);
+                        }
+                        else
+                        {
+                            return NotFound("Room not found");
+                        }
+                    }
+                    finally
+                    {
+                        _roomDetailLock.Release(); // giải phóng semaphore
+                    }
+
                 }
             }
         }
     }
 }
+
+
