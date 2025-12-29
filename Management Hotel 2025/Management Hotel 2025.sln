@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management Hotel 2025", "Management Hotel 2025\Management Hotel 2025.csproj", "{CBECAAD1-330F-4D82-9833-8F4876980F55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEST", "TEST\TEST.csproj", "{B52D3652-8259-4788-9892-882E67708A98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestHotel", "TEST\UnitTestHotel.csproj", "{B52D3652-8259-4788-9892-882E67708A98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API_BookingHotel", "API_BookingHotel\API_BookingHotel.csproj", "{7463B188-B8E2-46E5-8307-FFA3028BBC5E}"
 EndProject

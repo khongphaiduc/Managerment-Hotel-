@@ -12,26 +12,14 @@ namespace TEST
         [InlineData("654321Vcl", true)]
         public void Test1(string input, bool expect)
         {
+            // Rarrang
             ValidationAuthen validationAuthen = new ValidationAuthen();
 
+            // Act  
             var reuslt = validationAuthen.ValidatePassword(input);
 
+            // Assert
             Assert.Equal(expect, reuslt);
         }
-
-
-
-        //[Theory]
-        //[InlineData("ptrungduc@gmal.com", "123456789PhamTrungDuc", true)]
-        //[InlineData("ptrungduc1011@gmail.com", "123456789PhamTrungDuc", true)]
-      
-        //public void TestLogin(string email ,string password, bool expect)
-        //{
-        //    var s = new Login();
-
-        //    var result = s.MyLogin(email, password);
-
-        //    Assert.Equal(expect, result);
-        //}
     }
 }

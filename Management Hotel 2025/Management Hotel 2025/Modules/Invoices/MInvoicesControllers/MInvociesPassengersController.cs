@@ -14,14 +14,26 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
         private string apiBaseUrl;
         private readonly ILogger<MInvociesPassengersController> _Ilogger;
         private readonly IOrder _iOrder;
+        private readonly IHttpClientFactory _Ihttpclientfactory;
 
-        public MInvociesPassengersController(IConfiguration configuration, ILogger<MInvociesPassengersController> logger, IOrder order)
+        public MInvociesPassengersController(IConfiguration configuration, ILogger<MInvociesPassengersController> logger, IOrder order, IHttpClientFactory httpClientFactory)
         {
             _Iconfig = configuration;
             apiBaseUrl = _Iconfig["ApiHotel:PassengerInvoice"];
             _Ilogger = logger;
             _iOrder = order;
+            _Ihttpclientfactory = httpClientFactory;
         }
+
+
+        public HttpClient GetHttpClient()
+        {
+            var httpclient = _Ihttpclientfactory.CreateClient();
+
+            return httpclient;
+        }
+
+
 
 
         // lấy danh sách hóa đơn
@@ -39,7 +51,7 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
                 var apiBaseUrl = _Iconfig["ApiHotel:PassengerInvoice"]
                     + $"?key={key}&startdate={startdate}&enddate={enddate}&indexpage={indexpage}";
 
-                using (var httpclient = new HttpClient())
+                using (var httpclient = GetHttpClient())
                 {
                     var response = await httpclient.GetAsync(apiBaseUrl);
 
