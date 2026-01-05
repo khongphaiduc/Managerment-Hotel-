@@ -14,14 +14,15 @@ Images used in this project are sourced from the Internet.
 
 Demo Link: 
 
- + P1 : Demo Main Flow  https://www.youtube.com/watch?v=tiAMaPyY0SQ
+ + P1 : Demo Main Flow  [https://www.youtube.com/watch?v=tiAMaPyY0SQ](https://drive.google.com/file/d/18C1R1XPtCD8siLFdgYA-yR-teWY61Xsy/view?usp=drive_link)
  + P2 : Demo Role Admin [https://www.youtube.com/watch?v=FB3BIbSn_Ww](https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link)
- + P3 : Demo Role Receptionist (Lễ Tân) https://www.youtube.com/watch?v=BZ0BFKbjFhg
+ + P3 : Demo Role Receptionist (Lễ Tân) [https://www.youtube.com/watch?v=BZ0BFKbjFhg](https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link)
+ + P4 : Demo MiniGame : https://drive.google.com/file/d/1DmjLOsuYcrr-0DYpHSzno8rts9Ps36qQ/view?usp=drive_link
 
 
 ## Technologies Used
 
-- Backend: C# , ASP.NET, Web API (REST API) , JavaScript  , Redis 
+- Backend: C# , ASP.NET, Web API (REST API) , JavaScript  , Redis  (Redis Lock) ,RabbitMQ
 
 - Frontend: ASP.NET MVC / Razor Pages ,JavaScript , CSS ,Boostrapt , Html
 
