@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace API_BookingHotel.Modules.Invoice.InvoicePassengerControllers
 {
-  
+    [Authorize(Roles ="Admin,Staff")]
     [Route("admin")]
     [ApiController]
     public class MInvoiceController : ControllerBase

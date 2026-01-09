@@ -14,6 +14,7 @@ using System.Text.Json;
 using API_BookingHotel.Modules.Rooms.DTOs;
 namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
+    [AllowAnonymous]
     [Route("api/roomtotel")]
     [ApiController]
     public class RoomListViewController : ControllerBase
@@ -35,7 +36,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
 
         // lấy danh sách phòng 
-        [AllowAnonymous]
+      
         [HttpGet("room")]
         public async Task<IActionResult> SearchRoomAdvanceVersion2([FromQuery] RoomFilterRequest roomRequest)
         {

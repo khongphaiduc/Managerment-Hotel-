@@ -7,6 +7,7 @@ using System.Net.WebSockets;
 
 namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
+    [Authorize(Roles ="Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoomEditController : ControllerBase
@@ -22,9 +23,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
         // lấy toàn bộ thông tin của 1 phòng
         [HttpGet]
-        [Route("room/{id}")]
-        [AllowAnonymous]
-
+        [Route("room/{id}")]      
         public async Task<IActionResult> EditRoom([FromRoute] int id)
         {
             string apihost = $"{Request.Scheme}://{Request.Host}";
@@ -38,15 +37,12 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
                 return Ok(room);
             }
         }
-
-
-
-
+        
 
         // chỉnh sửa thong tin của phòng 
         [HttpPut]
         [Route("room")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> EditRoom([FromForm] AdJustRoom room)
         {
             var result = await _editroom.EditRoomStatus(room);
@@ -65,7 +61,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
         // tạo mới  phòng
         [HttpPost]
         [Route("room")]
-        [AllowAnonymous]
+       
         public async Task<IActionResult> CreateRoom([FromForm] AdJustRoom room)
         {
             var result = await _editroom.CreateNewRoom(room);

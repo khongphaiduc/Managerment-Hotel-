@@ -297,6 +297,9 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 
             await SaveTokenSession(email, user.Role);
 
+            _Logger.LogInformation("Tocken là :"+HttpContext.Session.GetString("token"));
+
+
             // đăng nhập
             await HttpContext.SignInAsync(
                CookieAuthenticationDefaults.AuthenticationScheme, princip

@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 
 namespace API_BookingHotel.Modules.Rooms.RoomsController
 {
+    [AllowAnonymous]
     [Route("api")]
     [ApiController]
     public class RoomDetailController : ControllerBase
@@ -37,8 +38,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
             return Accepted();
         }
 
-        // Allow user to view detail the room
-        [AllowAnonymous]
+
         [HttpGet("room/{idRoom}")]
         public async Task<IActionResult> ViewDetaiRoom([FromRoute] string idRoom)
         {

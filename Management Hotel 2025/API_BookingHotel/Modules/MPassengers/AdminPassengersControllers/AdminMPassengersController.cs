@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API_BookingHotel.Modules.MPassengers.AdminPassengersControllers
 {
-    
+    [Authorize(Roles ="Admin,Staff")]
     [Route("admin")]
     [ApiController]
     public class AdminMPassengersController : ControllerBase

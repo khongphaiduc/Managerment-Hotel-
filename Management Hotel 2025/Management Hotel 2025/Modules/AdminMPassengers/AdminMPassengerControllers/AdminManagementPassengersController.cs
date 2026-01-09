@@ -3,6 +3,8 @@ using Management_Hotel_2025.Modules.AdminMPassengers.MPassengersServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using Mydata.Models;
+using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
@@ -26,10 +28,22 @@ namespace Management_Hotel_2025.Modules.AdminMPassengers.AdminMPassengerControll
         }
 
 
+        public string token
+        {
+            get
+            {
+                return HttpContext.Session.GetString("token")!;
+            }
+        }
+
         public HttpClient GetHttpClient()
         {
 
-            return _httpClient.CreateClient();
+            var httpclient = _httpClient.CreateClient();
+            httpclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
+            return httpclient;
         }
 
         // xem danh sách khách hangh

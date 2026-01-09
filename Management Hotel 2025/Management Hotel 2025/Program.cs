@@ -1,5 +1,4 @@
 ﻿
-
 using Management_Hotel_2025.Modules.AuthenSerive;
 using Management_Hotel_2025.Modules.ManagementQRCode;
 using Management_Hotel_2025.Modules.Notifications.NotificationsSevices;
@@ -97,12 +96,12 @@ namespace Management_Hotel_2025
 
             });
 
-            // 3. Thêm QuartzHostedService để Quartz tự chạy  (tự động run khi app mở) 
+            // QuartzHostedService  (tự động run khi app mở) 
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-            //--------------------------------------------------------------------------------
+            
 
-            // AddAuthentication là Bật hệ thống xác thực cho ứng dụng
+
             builder.Services
             .AddAuthentication(option =>
             {
@@ -120,31 +119,26 @@ namespace Management_Hotel_2025
                 options.LoginPath = "/Authen/Login";
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Authen/Denied";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);    //thời gain hệ hạn của cookie
             }).AddGoogle("Google", options =>
             {
                 options.ClientId = builder.Configuration.GetSection("GoogleKeys:GoogleID").Value;
                 options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:GoogleSecret").Value;
-                options.ClaimActions.MapJsonKey("avatar", "picture", "url");         // Lấy giá trị picture trong JSON của Google và lưu nó vào Claims với tên ‘avatar’. 
+                options.ClaimActions.MapJsonKey("avatar", "picture", "url");
             });
 
 
 
 
 
-            builder.Services.AddSession();  //  đăng ký dịch vụ Session trong ứng dụng ASP.NET Core.
-
-            // CookieAuthenticationDefaults trong ASP.NET Core thực chất là một class chứa các hằng  số (constant) được Microsoft định nghĩa sẵn để dùng cho cấu hình Cookie Authentication.
-
-            // bản chất nó là builder.Services.AddAuthentication("Cookies").AddCookie(); nhưng khuyếch nghị dùng (CookieAuthenticationDefaults.AuthenticationScheme) để tránh lỗi chính tả và dễ dàng thay đổi trong tương lai.
+            builder.Services.AddSession();
 
 
 
-            //Transient : mỗi lần inject sẽ là  1 instance mới  được tạo ra
-            // Scoped   : 1 request sẽ inject duy nhất 1 instance 
-            //Singleton : 1 instance sẽ tồn tại đến hết vòng đời của ứng dụng  (tất cả các lần inject đều dùng chung 1 instance)
+
+
             builder.Services.AddSingleton<EmailProducer>();
-          
+
 
             builder.Services.AddTransient<INotifications, Email>();
             builder.Services.AddScoped<IVnPayService, VnPayService>();
@@ -171,10 +165,7 @@ namespace Management_Hotel_2025
             builder.Services.AddTransient<IMyFiles, MyFiles>();
             builder.Services.AddTransient<IAdminMPassengers, AdminMPassengers>();
             builder.Services.AddTransient<IGameBlackRed, GameBlackRed>();
-            ////-----
-            //builder.Services.AddControllers();
-            //builder.Services.AddEndpointsApiExplorer();
-            ////-----
+
 
 
             builder.Services.AddSingleton<IRedisLockService, RedisLockService>();
@@ -210,11 +201,11 @@ namespace Management_Hotel_2025
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+           
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                
                 app.UseHsts();
             }
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 // patch : cập nhat một phần resource   
 namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Route("api")]
     [ApiController]
     public class ManagementAmenitysController : ControllerBase

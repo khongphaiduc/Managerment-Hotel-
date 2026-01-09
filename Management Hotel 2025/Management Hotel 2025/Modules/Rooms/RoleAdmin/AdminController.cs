@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Mydata.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,11 +19,18 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
         private readonly ILogger<AdminController> _logger;
         private readonly IAdminManagement _iadmin;
         private string _apiBaseUrl;
+
         public AdminController(IAdminManagement iadmin, ILogger<AdminController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _iadmin = iadmin;
             _apiBaseUrl = configuration["ApiHotel:AdminEditRoom"];
+        }
+
+
+        public  string GetTocken()
+        {
+            return HttpContext.Session.GetString("token") ?? " ";
         }
 
 
@@ -51,7 +60,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
         public IActionResult AdminManagementRoom(int? floor, string? status, string? key)
         {
 
-             if(!string.IsNullOrEmpty(key))
+            if (!string.IsNullOrEmpty(key))
             {
                 key = key.Trim();
             }
@@ -108,7 +117,8 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
             {
                 using (HttpClient client = new HttpClient())
                 {
-
+                    client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", GetTocken());
                     var response = await client.GetAsync(url);
 
                     if (response.IsSuccessStatusCode)
@@ -143,7 +153,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
         [HttpPut]
         public async Task<IActionResult> AdjustRoom(AdJustRoom room)
         {
-           
+
 
             try
             {
@@ -197,7 +207,8 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
                         // Gửi file kèm tên file gốc
                         content.Add(fileContent, "AvatarRoom", room.AvatarRoom.FileName);
                     }
-
+                    client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", GetTocken());
                     // gửi api và nhận bằng  HttpResponseMessage
                     HttpResponseMessage response = await client.PutAsync(_apiBaseUrl, content);
 
@@ -246,7 +257,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
         [HttpPost]
         public async Task<IActionResult> CreateRoom(AdJustRoom room)
         {
-            
+
 
             try
             {
@@ -288,6 +299,8 @@ namespace Management_Hotel_2025.Modules.Rooms.RoleAdmin
                         // Gửi file kèm tên file gốc
                         content.Add(fileContent, "AvatarRoom", room.AvatarRoom.FileName);
                     }
+                    client.DefaultRequestHeaders.Authorization =
+                      new AuthenticationHeaderValue("Bearer", GetTocken());
 
                     // gửi api và nhận bằng  HttpResponseMessage
                     HttpResponseMessage response = await client.PostAsync(_apiBaseUrl, content);

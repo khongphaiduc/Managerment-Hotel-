@@ -2,6 +2,8 @@
 using Management_Hotel_2025.Modules.Invoices.InvocieModels;
 using Management_Hotel_2025.Modules.Rooms.RoomService;
 using Microsoft.AspNetCore.Mvc;
+using Mydata.Models;
+using System.Net.Http.Headers;
 
 
 
@@ -25,11 +27,18 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
             _Ihttpclientfactory = httpClientFactory;
         }
 
+        public string token
+        {
+            get
+            {
+                return HttpContext.Session.GetString("token")!;
+            }
+        }
 
         public HttpClient GetHttpClient()
         {
             var httpclient = _Ihttpclientfactory.CreateClient();
-
+            httpclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return httpclient;
         }
 

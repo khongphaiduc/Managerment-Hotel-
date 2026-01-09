@@ -24,7 +24,7 @@ namespace API_BookingHotel
         {
             var builder = WebApplication.CreateBuilder(args);
             IdentityModelEventSource.ShowPII = true;
-            // Add services to the container.
+            
 
 
             builder.Services.AddControllers();
@@ -43,10 +43,10 @@ namespace API_BookingHotel
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
 
-                    ValidateIssuer = true,    // người phát hành token
-                    ValidateAudience = true,   //Audience thường là ứng dụng hoặc client được phép dùng token này.
-                    ValidateLifetime = true,   // thời gian sử dụng của token
-                    ValidateIssuerSigningKey = true,  // chữ ý  của token
+                    ValidateIssuer = true,   
+                    ValidateAudience = true,   
+                    ValidateLifetime = true,   
+                    ValidateIssuerSigningKey = true,  
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
@@ -59,7 +59,7 @@ namespace API_BookingHotel
             builder.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = "localhost:7000"; // địa chỉ Redis server
-                options.InstanceName = "HotelCache_";     // tiền tố cho key (tuỳ chọn)
+                options.InstanceName = "HotelCache_";     // tiền tố cho key
             });
 
             builder.Services.AddTransient<RoomViewDetail>();
@@ -76,13 +76,13 @@ namespace API_BookingHotel
             app.UseMiddleware<RequestLoggingMiddleware>();    // middleware tự  custom
 
            
-            app.UseStaticFiles();   // cho phép truy cập ảnh tĩnh trong project wwwroot
+            app.UseStaticFiles();   
          
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();   // xác thực xem mày là ai 
-            app.UseAuthorization();    // xác thực xem mày có quyền làm gì
+            app.UseAuthentication();   
+            app.UseAuthorization();    
 
 
             app.MapControllers();
