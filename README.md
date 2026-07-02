@@ -1,125 +1,204 @@
-# Integrated Hotel Reservation Management System
+# Hotel Manager Booking
 
-Project is currently under development (10/08/2025)
+Hotel Manager Booking is a multi-project ASP.NET Core solution for hotel reservation, front-desk operations, payment processing, and internal administration. The platform combines a web application, a partner-facing API, a shared data layer, and background workers to support both real-time interactions and scheduled operational tasks.
 
-Software Engineer : Phạm Trung Đức 
+## Overview
 
-- Backend : Phạm Trung Đức
+This repository is structured as an end-to-end hotel management platform rather than a single web application. It covers the full booking lifecycle, from room discovery and reservation to invoicing, notifications, operational monitoring, and external integration.
 
-- Frontend : ChatGPT  , Copilot , Phạm Trung Đức
+The solution is designed around the following objectives:
 
-For contributions or feedback, please contact: ptrungduc1011@gmail.com
+- Centralize reservation and room management workflows
+- Support online payments and booking-related automation
+- Expose API endpoints for external or partner integration
+- Handle asynchronous and scheduled tasks outside the main request pipeline
+- Provide a shared data model across application layers
 
-Images used in this project are sourced from the Internet.
+## Solution Structure
 
-Demo Link: 
+The solution file is located at:
 
- + P1 : Demo Main Flow  [https://www.youtube.com/watch?v=tiAMaPyY0SQ](https://drive.google.com/file/d/18C1R1XPtCD8siLFdgYA-yR-teWY61Xsy/view?usp=drive_link)
- + P2 : Demo Role Admin [https://www.youtube.com/watch?v=FB3BIbSn_Ww](https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link)
- + P3 : Demo Role Receptionist (Lễ Tân) [https://www.youtube.com/watch?v=BZ0BFKbjFhg](https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link)
- + P4 : Demo MiniGame : https://drive.google.com/file/d/1DmjLOsuYcrr-0DYpHSzno8rts9Ps36qQ/view?usp=drive_link
+```text
+Management Hotel 2025/Management Hotel 2025.sln
+```
 
+Projects included in the solution:
 
-## Technologies Used
+- `Management Hotel 2025`: main ASP.NET Core MVC application
+- `API_BookingHotel`: REST API for system integration and external access
+- `MyData`: shared Entity Framework Core models and data access artifacts
+- `RabbitMQConsumer`: background worker for asynchronous processing
+- `TEST`: unit test project
 
-- Backend: C# , ASP.NET, Web API (REST API) , JavaScript  , Redis  (Redis Lock) ,RabbitMQ
+## Key Functional Areas
 
-- Frontend: ASP.NET MVC / Razor Pages ,JavaScript , CSS ,Boostrapt , Html
+### Reservation Management
 
-- Database: SQL Server (Entity Framework Core)
+The platform supports core booking workflows including room discovery, availability-based selection, reservation creation, and booking follow-up. The codebase includes room search, room detail, booking, passenger, and invoice-related modules across both the MVC application and the API.
 
-- Authentication: JWT, OAuth2
+### Payment and Billing
 
-- Payment Gateway: VNPAY, Quét QR (PayOS) 
+The system integrates with online payment services such as PayOS and VNPay. Payment-related modules are present in the main application, alongside invoice handling and downstream notification workflows.
 
-- RealTime : SignalR(C#)
+### Scheduling and Automation
 
-### Project Features
-### 1. User (Customer)
-  + Register / Login / Forgot Password
+Quartz.NET is used to run recurring operational jobs. Based on the current application startup configuration, the system includes scheduled tasks for:
 
-  + Browse room listings (by type, price, number of guests, amenities, availability)
+- room-status refresh
+- check-in reminders
+- check-out reminders
+- late check-out calculation
 
-  + Advanced search & filtering (by price, number of guests, floor, etc.)
+These tasks help move operational logic out of manual workflows and into predictable background execution.
 
-  + View room details (photos, description, amenities, cancellation policy, previous customer reviews)
+### Realtime Communication
 
-  + Online booking
-   
-    - Select check-in / check-out dates
+SignalR hubs are configured in the MVC application for realtime features. The current project setup includes hubs for notifications and game-related communication.
 
-    - Select number of rooms and guests
+### Background Messaging
 
-    - Add extra services (breakfast, spa, airport transfer, etc.)
+RabbitMQ is part of the architecture for asynchronous processing. The repository includes a dedicated worker service project and messaging-related modules in the main application.
 
-  + Online payment (VNPAY, PayOS bank transfer, etc.)
+### Caching and Coordination
 
-  + View booking history
+Redis is used for caching and locking scenarios. The codebase includes Redis-based cache registration in the API and a lock service in the MVC application.
 
-  + Receive email notifications about related services
+### API Integration
 
-### 2. Staff (Hotel Employee)
+The API project exposes JWT-protected endpoints and integration modules related to rooms, amenities, passengers, invoices, files, and statistics. This separation allows external consumers to integrate without coupling directly to the web UI.
 
-  + Staff login
+## Technical Stack
 
-  + View & manage booking list (by date, room, customer)
+- `.NET 8`
+- `ASP.NET Core MVC`
+- `ASP.NET Core Web API`
+- `Entity Framework Core`
+- `SQL Server`
+- `Quartz.NET`
+- `SignalR`
+- `RabbitMQ`
+- `Redis`
+- `JWT Authentication`
+- `Cookie Authentication`
+- `Google OAuth`
+- `PayOS`
+- `VNPay`
+- `xUnit`
+- `Moq`
 
-  + Check-in / Check-out guests at the counter (with QR Code check-in option)
-   
-  + Confirm payments via bank transfer (PayOS QR) or cash
+## Architecture Summary
 
-  + Update room status (available, cleaning, booked, occupied, maintenance)
+The repository follows a modular multi-project structure:
 
-  + Manage customer information (ID card, passport, contact)
+- The MVC application serves as the primary operational interface.
+- The API project provides integration-oriented endpoints.
+- The shared data project keeps the database model reusable across applications.
+- The RabbitMQ worker handles background consumption separately from the web host.
+- The test project isolates automated validation for selected business logic and API behavior.
 
-  + Add additional services to guest invoices (room service, car rental, laundry, minibar, etc.)
+At runtime, the application also relies on supporting infrastructure such as SQL Server, Redis, and RabbitMQ.
 
-  + Print invoices for guests (VAT, services, total amount)
+## Repository Layout
 
+```text
+hotel-manager-booking/
+|-- README.md
+|-- Management Hotel 2025/
+|   |-- Management Hotel 2025.sln
+|   |-- Management Hotel 2025/
+|   |-- API_BookingHotel/
+|   |-- MyData/
+|   |-- RabbitMQConsumer/
+|   |-- TEST/
+```
 
- ###  3. Admin (System Administrator)
+## Prerequisites
 
-  + Admin login
+To run the solution locally, prepare the following:
 
-  + User management (User, Staff, Admin)
+- .NET 8 SDK
+- SQL Server
+- Redis
+- RabbitMQ
+- Visual Studio 2022 or another .NET-compatible IDE
 
-  + Role assignment (Staff, Receptionist, Manager, Senior Admin)
+## Configuration
 
-  + Room management
-    
-     + Add / Edit / Delete room types
+Application configuration is stored primarily in `appsettings.json` files within the individual projects.
 
-     + Add / Delete rooms
-  
-     + Edit room information such as basic info, update photo gallery, add/remove amenities, change room avatar
+Configuration areas currently used by the solution include:
 
-     + Update room prices and quantities
+- database connection strings
+- JWT issuer, audience, and signing key
+- Google authentication settings
+- PayOS credentials
+- API callback and integration URLs
+- Redis connection settings
 
-     + Enable / Disable room display
+Before running the system in a new environment, review and update all machine-specific or secret values.
 
-  + Manage room amenities
+## Getting Started
 
+### Restore dependencies
 
-  + Manage all bookings (filter by date, status, customer)
+```powershell
+dotnet restore "Management Hotel 2025\Management Hotel 2025.sln"
+```
 
-  + Manage payments (online/offline, revenue by day/month/year)
+### Build the solution
 
+```powershell
+dotnet build "Management Hotel 2025\Management Hotel 2025.sln"
+```
 
-  + Reports & Analytics
+### Run the MVC application
 
-      + Room occupancy rate
+```powershell
+dotnet run --project "Management Hotel 2025\Management Hotel 2025\Management Hotel 2025.csproj"
+```
 
-      + Revenue over time
+### Run the API project
 
-### 4. System Hotel Core 
- + Automatically update booking code status daily after 10 PM and send auto-cancellation notifications for no-show guests
- + Automatically send check-in reminder notifications 1 day before check-in
- + Automatically send check-out reminder notifications
- + Real-time notifications for transactions or invoice payments
-### 5. Provide APIs for partners
+```powershell
+dotnet run --project "Management Hotel 2025\API_BookingHotel\API_BookingHotel.csproj"
+```
 
- + Features such as: view room list, view available rooms, view room details, advanced search, book room, cancel booking, make payments, etc.
+### Run the background worker
 
-###  6. Mini Gamne 
- + Slot machine game
- + Chat with other players
+```powershell
+dotnet run --project "Management Hotel 2025\RabbitMQConsumer\RabbitMQConsumer.csproj"
+```
+
+## Testing
+
+Execute the test suite with:
+
+```powershell
+dotnet test "Management Hotel 2025\Management Hotel 2025.sln"
+```
+
+The current test project contains examples for authentication validation and invoice API behavior.
+
+## Demo References
+
+- Main flow: <https://drive.google.com/file/d/18C1R1XPtCD8siLFdgYA-yR-teWY61Xsy/view?usp=drive_link>
+- Admin flow: <https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link>
+- Reception workflow: <https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link>
+- Mini game: <https://drive.google.com/file/d/1DmjLOsuYcrr-0DYpHSzno8rts9Ps36qQ/view?usp=drive_link>
+
+## Credits
+
+- Software Engineer: Pham Trung Duc
+- Frontend support and prototyping: ChatGPT, Copilot, Pham Trung Duc
+
+## Contact
+
+For collaboration or feedback:
+
+`ptrungduc1011@gmail.com`
+
+## Notes
+
+- This project is currently under active development.
+- No explicit license file is included in the repository at this time.
+- Some image assets used by the project may originate from external sources and should be reviewed before redistribution.
