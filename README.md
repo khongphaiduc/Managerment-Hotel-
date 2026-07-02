@@ -2,6 +2,13 @@
 
 Hotel Manager Booking is a multi-project ASP.NET Core solution for hotel reservation, front-desk operations, payment processing, and internal administration. The platform combines a web application, a partner-facing API, a shared data layer, and background workers to support both real-time interactions and scheduled operational tasks.
 
+## Demo References
+
+- Main flow: <https://drive.google.com/file/d/18C1R1XPtCD8siLFdgYA-yR-teWY61Xsy/view?usp=drive_link>
+- Admin flow: <https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link>
+- Reception workflow: <https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link>
+- Mini game: <https://drive.google.com/file/d/1DmjLOsuYcrr-0DYpHSzno8rts9Ps36qQ/view?usp=drive_link>
+
 ## Overview
 
 This repository is structured as an end-to-end hotel management platform rather than a single web application. It covers the full booking lifecycle, from room discovery and reservation to invoicing, notifications, operational monitoring, and external integration.
@@ -178,13 +185,6 @@ dotnet test "Management Hotel 2025\Management Hotel 2025.sln"
 ```
 
 The current test project contains examples for authentication validation and invoice API behavior.
-
-## Demo References
-
-- Main flow: <https://drive.google.com/file/d/18C1R1XPtCD8siLFdgYA-yR-teWY61Xsy/view?usp=drive_link>
-- Admin flow: <https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link>
-- Reception workflow: <https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link>
-- Mini game: <https://drive.google.com/file/d/1DmjLOsuYcrr-0DYpHSzno8rts9Ps36qQ/view?usp=drive_link>
 
 ## Credits
 
