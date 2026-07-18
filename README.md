@@ -7,7 +7,6 @@ An ASP.NET Core 8 hotel management platform for online room booking and day-to-d
 - [Main booking flow](https://drive.google.com/file/d/18C1R1XPtCD8siLFdgYA-yR-teWY61Xsy/view?usp=drive_link)
 - [Administration flow](https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link)
 - [Reception workflow](https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link)
-- [Mini game](https://drive.google.com/file/d/1DmjLOsuYcrr-0DYpHSzno8rts9Ps36qQ/view?usp=drive_link)
 
 ## What the platform provides
 
@@ -27,7 +26,7 @@ An ASP.NET Core 8 hotel management platform for online room booking and day-to-d
 ## Architecture at a glance
 
 ```text
-Browser / API Client
+      Browser
         |
         v
 HotelManagement.Web
