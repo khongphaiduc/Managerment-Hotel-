@@ -1,0 +1,344 @@
+@using System
+@using System.Collections.Generic
+@model IEnumerable<Management_Hotel_2025.ViewModel.BookingItem>
+
+@{
+    Layout = "~/Views/Shared/StaffHeader.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Danh sách Booking - Fullscreen</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 1s infinite;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .app-fullscreen {
+            height: 100vh;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .app-content {
+            flex: 1 1 auto;
+            overflow: auto;
+        }
+
+        .table thead th {
+            vertical-align: middle;
+            text-transform: uppercase;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #2c3e50;
+            background: linear-gradient(180deg, #f1f3f5, #e9ecef);
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        @@media (max-width: 768px) {
+            .table thead {
+                display: none;
+            }
+
+            .table, .table tbody, .table tr, .table td {
+                display: block;
+                width: 100%;
+            }
+
+                .table tr {
+                    margin-bottom: 0.75rem;
+                    border: 1px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: .6rem;
+                    background: #fff;
+                }
+
+                .table td::before {
+                    content: attr(data-label);
+                    font-weight: 700;
+                    display: inline-block;
+                    width: 42%;
+                    color: #6c757d;
+                }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-fullscreen d-flex flex-column">
+        <!-- Filters -->
+        <!-- Filters -->
+        <div id="filtersPanel" class="filters-panel bg-white border-bottom">
+            <div class="container-fluid py-3">
+                <form method="get" asp-action="BookingsView" asp-controller="StaffManagementRoom" class="row g-2 align-items-end">
+
+                    <!-- SEARCH -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small mb-1">Tìm kiếm</label>
+                        <div class="input-group input-group-sm search-short">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="search" name="search" id="filterName" class="form-control" placeholder="Mã booking, Tên khách, SDT, Email..." />
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- DATE RANGE -->
+                    <div class="col-12 col-md-6">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-5">
+                                <label class="form-label small mb-1">Ngày booking từ</label>
+                                <input type="date" name="DateStart" id="filterDateFrom" value="@ViewBag.DateStart" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <label class="form-label small mb-1">Ngày booking đến</label>
+                                <input type="date" name="EndDate" id="filterDateTo" value="@ViewBag.EndDate" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <button type="button" id="btnResetDates" class="btn btn-outline-secondary btn-sm w-100">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Đặt lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR BUTTON -->
+                    <div class="col-12 col-md-2 text-end">
+                        <label class="form-label small mb-1 d-none d-md-block">&nbsp;</label>
+                        <button id="btnScanQR" type="button" class="btn btn-success w-100">
+                            <i class="bi bi-qr-code-scan me-1"></i> Quét QR Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Content -->
+        <main class="app-content flex-fill overflow-auto">
+            <div class="container-fluid py-3">
+                <div class="table-responsive shadow-sm rounded bg-white">
+                    <table class="table table-hover table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã booking</th>
+                                <th>Khách hàng</th>
+                                <th>SĐT</th>
+                                <th>Email</th>
+                                <th>Check-in / Check-out(dự kiến)</th>
+                                <th>Số lượng phòng</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày booking</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody">
+                            @if (Model == null || !Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="10" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center justify-content-center fade-in">
+                                            <i class="bi bi-search display-4 text-primary mb-3 animate-pulse"></i>
+                                            <h5 class="fw-bold text-muted mb-2">Không tìm thấy kết quả phù hợp</h5>
+                                            <p class="text-secondary mb-3">Hãy thử thay đổi từ khóa hoặc chọn khoảng ngày khác.</p>
+                                            <button class="btn btn-outline-primary btn-sm shadow-sm" onclick="window.location.href='@Url.Action("BookingsView", "StaffManagementRoom")'">
+                                                <i class="bi bi-arrow-repeat me-1"></i> Quay lại danh sách
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                var index = 1;
+                                foreach (var b in Model)
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>@b.Code</td>
+                                        <td>@b.CustomerName</td>
+                                        <td>@b.Phone</td>
+                                        <td>@(string.IsNullOrEmpty(b.Email) ? "Email trống" : b.Email)</td>
+                                        <td>@b.CheckIn.ToString("dd/MM/yyyy") → @b.CheckOut.ToString("dd/MM/yyyy")</td>
+                                        <td>@b.RoomCount</td>
+                                        <td>
+                                            @switch ((b.Status ?? "").ToLowerInvariant())
+                                            {
+
+                                                case "success":
+                                                    <span class="badge bg-primary">Đã xác nhận </span>
+                                                    ; break;
+
+                                                case "checkIn":
+                                                    <span class="badge bg-success">Đã nhận phòng</span>
+                                                    ; break;
+                                                case "checkout":
+                                                    <span class="badge bg-info text-dark">Hoàn tất trả phòng</span>
+                                                    ; break;
+
+                                                case "canceled":
+                                                    <span class="badge bg-danger">Đã hủy</span>
+                                                    ; break;
+                                                case "overdue":
+                                                    <span class="badge bg-danger">Quá hạn trả phòng</span>
+                                                    ; break;
+                                                default:
+                                                    <span class="badge bg-light text-dark">@b.Status</span>
+                                                    ; break;
+                                            }
+                                        </td>
+                                        <td>@b.BookingDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            <a asp-controller="StaffManagementRoom" asp-action="ViewDetailBooking" asp-route-Code="@b.Code" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal quét QR -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="qrModalLabel"><i class="bi bi-qr-code me-2"></i>Quét mã QR Booking</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="reader" style="width: 100%; max-width: 400px; margin: 0 auto;"></div>
+                    <p id="scan-result" class="mt-3 fw-bold text-success"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <script>
+
+                document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("#filtersPanel form"); // form bao search + date
+            const dateFrom = document.getElementById("filterDateFrom");
+            const dateTo = document.getElementById("filterDateTo");
+            const btnReset = document.getElementById("btnResetDates");
+
+            [dateFrom, dateTo].forEach(input => {
+                input.addEventListener("change", () => {
+                    form.submit();
+                });
+            });
+
+            btnReset.addEventListener("click", function () {
+                dateFrom.value = "";
+                dateTo.value = "";
+                form.submit();
+            });
+        });
+
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnScanQR = document.getElementById("btnScanQR");
+            const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+            let html5QrCode;
+
+            btnScanQR.addEventListener("click", function () {
+                qrModal.show();
+                startQRScanner();
+            });
+
+            function startQRScanner() {
+                const qrRegionId = "reader";
+                html5QrCode = new Html5Qrcode(qrRegionId);
+                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    qrCodeMessage => {
+                        document.getElementById("scan-result").innerText = "✅ Mã: " + qrCodeMessage;
+
+                        html5QrCode.stop().then(() => {
+                            qrModal.hide();
+                            window.location.href = (qrCodeMessage);
+                        }).catch(err => console.error("Dừng camera lỗi:", err));
+                    },
+                    errorMessage => {}
+                ).catch(err => {
+                    alert("Không thể mở camera: " + err);
+                });
+            }
+
+            document.getElementById("qrModal").addEventListener("hidden.bs.modal", function () {
+                if (html5QrCode) {
+                    html5QrCode.stop().catch(() => {});
+                }
+            });
+        });
+    </script>
+</body>
+</html>

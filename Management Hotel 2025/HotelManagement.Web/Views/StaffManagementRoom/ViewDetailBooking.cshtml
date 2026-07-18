@@ -1,0 +1,233 @@
+@{
+    Layout = "~/Views/Shared/StaffHeader.cshtml";
+    string currencyFormat = "{0:N0} ₫";
+
+
+}
+@model Management_Hotel_2025.ViewModel.ViewBookingDetail
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chi tiết Booking - @Model.BookingCode</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link href="~/css/ViewDetailBooking.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+    <div class="container py-4">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h1 class="h3 mb-0">Chi tiết Booking</h1>
+                <small class="text-muted">Mã: <strong>@Model.BookingCode</strong></small>
+            </div>
+            <div class="text-end">
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    @if (Model.BookingStatus == "CheckIn" || Model.BookingStatus == "Overdue")
+                    {
+                        <a href="/StaffManagementRoom/CheckOutPassenger?bookingcode=@Model.BookingCode"
+                           class="btn btn-outline-danger btn-sm"  >
+                            <i class="bi bi-box-arrow-right"></i> Trả phòng
+                        </a>
+                    }
+                    else if (Model.BookingStatus == "CheckOut")
+                    {
+                        <!-- Nếu đã CheckOut thì không hiển thị nút gì -->
+                    }
+                    else
+                    {
+                        <a href="/StaffManagementRoom/CheckInPassengers?bookingcode=@Model.BookingCode"
+                           class="btn btn-primary btn-sm">
+                            <i class="bi bi-door-open-fill"></i> Nhận phòng
+                        </a>
+                    }
+
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary btn-sm"><i class="bi bi-envelope-paper"></i> Gửi email</button>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer"></i> In hóa đơn</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Left column -->
+            <div class="col-lg-4">
+                <!-- Booking Info -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Thông tin Booking</h5>
+                        <dl class="row">
+                            <dt class="col-5 text-muted">Mã Booking</dt>
+                            <dd class="col-7"><strong>@Model.BookingCode</strong></dd>
+                            <dt class="col-5 text-muted">Ngày tạo </dt>
+                            <dd class="col-7">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</dd>
+                            <dt class="col-5 text-muted">Trạng thái Booking</dt>
+                            <dd class="col-7">
+                                <span class="badge
+        @(Model.BookingStatus == "Success" ? "bg-success" :
+          Model.BookingStatus == "Overdue" ? "bg-warning text-dark" :
+          Model.BookingStatus == "Canceled" ? "bg-danger" :
+          Model.BookingStatus == "CheckIn" ? "bg-info text-dark" :
+          Model.BookingStatus == "CheckOut" ? "bg-secondary" :
+          "bg-dark text-light")">
+                                    @Model.BookingStatus
+                                </span>
+                            </dd>
+
+                            <dt class="col-5 text-muted">Nguồn Booking</dt>
+                            <dd class="col-7">@Model.BookingSource</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Thông tin khách hàng</h5>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar me-3">
+                                <img src="https://tse2.mm.bing.net/th/id/OIP.aCCV39ZpySAqOD_yvp1C2wHaJQ?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3" alt="avatar" />
+                            </div>
+                            <div>
+                                <h6 class="mb-0">@Model.CustomerFullName</h6>
+                                <small class="text-muted">@Model.CustomerNationality</small>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-telephone me-2 text-muted"></i> <a href="tel:@Model.CustomerPhone">@Model.CustomerPhone</a></li>
+                            <li><i class="bi bi-envelope me-2 text-muted"></i> <a href="mailto:@Model.CustomerEmail">@Model.CustomerEmail</a></li>
+                        </ul>
+                        @if (!string.IsNullOrWhiteSpace(Model.CustomerSpecialRequest))
+                        {
+                            <hr />
+                            <h6 class="mb-1">Yêu cầu đặc biệt</h6>
+                            <p class="small text-muted mb-0">@Model.CustomerSpecialRequest</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Thông tin thanh toán</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-muted">Tổng tiền phòng</div>
+                            <div class="fw-bold">@String.Format(currencyFormat, Model.TotalAmountRoom)</div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-muted">Đã đặt cọc</div>
+                            <div class="fw-bold text-success">@String.Format(currencyFormat, Model.DepositAmount)</div>
+                        </div>
+                        <div class="progress mb-2" style="height:8px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 20%"></div>
+                        </div>
+                        <small class="text-muted">Thanh toán: Thanh toán qua thẻ</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="col-lg-8">
+                <!-- Stay Info -->
+                <div class="card shadow-sm mb-3 stay-info-card">
+                    <div class="card-body">
+                        <div class="row text-center text-md-start gx-3 gy-2">
+                            <div class="col-md-4">
+                                <div class="stay-item">
+                                    <div class="icon bg-primary text-white"><i class="bi bi-door-open-fill"></i></div>
+                                    <div class="text-muted">Nhận phòng dự kiến</div>
+                                    <div class="fw-bold">@Model.CheckInDate.ToString("dd MMM yyyy")</div>
+                                    <small class="text-muted">@Model.CheckInDate.ToString("HH:mm")</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stay-item">
+                                    <div class="icon bg-danger text-white"><i class="bi bi-box-arrow-right"></i></div>
+                                    <div class="text-muted">Trả phòng dự kiến</div>
+                                    <div class="fw-bold">@Model.CheckOutDate.ToString("dd MMM yyyy")</div>
+                                    <small class="text-muted">@Model.CheckOutDate.ToString("HH:mm")</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stay-item">
+                                    <div class="icon bg-success text-white"><i class="bi bi-calendar3"></i></div>
+                                    <div class="text-muted">Tổng Số đêm</div>
+                                    <div class="fw-bold">@Model.NumberOfNights</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rooms & Internal Notes (giống template trước) -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Thông tin phòng (@Model.NumberOfRoom phòng)</h5>
+                        <div class="accordion" id="roomsAccordion">
+                            @for (int i = 0; i < Model.ListDetailRoom.Count; i++)
+                            {
+                                var room = Model.ListDetailRoom[i];
+                                var idx = "room" + i;
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading-@idx">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@idx">
+                                            @room.NameType - @String.Format(currencyFormat, room.Price)
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-@idx" class="accordion-collapse collapse" data-bs-parent="#roomsAccordion">
+                                        <div class="accordion-body">
+                                            <p>Trạng thái: <span class="badge available">@room.Status</span></p>
+                                            <p>Sức chứa: @room.MaxGuests khách</p>
+                                            <p>Ghi chú: Đây là ghi chú phòng.</p>
+
+                                            <!-- Button xem chi tiết -->
+                                            <button class="btn btn-sm btn-outline-primary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#roomDetail-@idx" aria-expanded="false">
+                                                <i class="bi bi-eye"></i> Xem chi tiết phòng
+                                            </button>
+
+                                            <div class="collapse mt-2" id="roomDetail-@idx">
+                                                <div class="card card-body shadow-sm">
+                                                    <ul class="list-unstyled mb-0">
+                                                        <li><strong>Loại giường:</strong> Giường đôi</li>
+                                                        <li><strong>View:</strong> @room.Description</li>
+                                                        <li><strong>Tiện nghi:</strong> Wifi, TV, Mini-bar</li>
+                                                        <li><strong>Mô tả:</strong> Sang trọng đăng cấp</li>
+                                                        <li><strong>Giá phòng:</strong> @String.Format(currencyFormat, room.Price)</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Ghi chú nội bộ</h5>
+                        <p class="small text-muted mb-0">Không có ghi chú nội bộ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

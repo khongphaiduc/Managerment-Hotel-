@@ -1,0 +1,223 @@
+@model Management_Hotel_2025.ViewModel.Order
+@{
+    Layout = null;
+    Func<decimal, string> fmt = v => string.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:N0} đ", v);
+    string statusBadge(string status) =>
+        status?.ToLower() switch
+        {
+            "Completed" => "badge bg-success",
+            "chưa thanh toán" => "badge bg-danger",
+            "đang chờ" => "badge bg-warning text-dark",
+            _ => "badge bg-secondary"
+        };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/invoice-details.css" />
+
+</head>
+<body>
+    <div class="container my-4 invoice-root">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <!-- Header: Hotel Info + Invoice Meta -->
+                <div class="row">
+                    <div class="col-md-7">
+                        <h3 class="mb-1">TrungDuc Luxury Hotel</h3>
+                        <p class="mb-0">VIET NAM</p>
+                        <p class="mb-0">Điện thoại: 09211212</p>
+                        <p class="mb-0">Email:ptrungduc1011@gmail.com</p>
+
+                        <p class="mb-0">Mã số thuế: 2HONDAICODON</p>
+
+                    </div>
+                </div>
+
+                <hr />
+
+                <!-- Customer & Booking Info -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6>Thông tin khách hàng</h6>
+                        <p class="mb-0"><strong>@Model?.CustomerName</strong></p>
+                        <p class="mb-0">Điện thoại: @Model?.CustomerPhone</p>
+                        @if (!string.IsNullOrEmpty(Model?.Email))
+                        {
+                            <p class="mb-0">Email: @Model.Email</p>
+                        }
+                        <p class="mb-0">Số CCCD/Hộ chiếu: @Model?.PersonalId</p>
+                        @if (!string.IsNullOrEmpty(Model?.CustomerAddress))
+                        {
+                            <p class="mb-0">Địa chỉ: @Model.CustomerAddress</p>
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Thông tin đặt phòng</h6>
+                        <p class="mb-0">Mã đặt phòng: <strong>@Model?.BookingCode</strong></p>
+                        <p class="mb-0">Nhận phòng: @Model?.RealCheckInDate.ToString("dd/MM/yyyy")</p>
+                        <p class="mb-0">Trả phòng:  @ViewBag.TimeCheckOut.ToString("dd/MM/yyyy") </p>
+
+                        @* Thêm hiển thị trạng thái hóa đơn *@
+                        @if (!string.IsNullOrEmpty(Model?.OrderStatus))
+                        {
+                            <p class="mb-0">
+                                Trạng thái hóa đơn:
+                                <span class="@statusBadge(Model?.OrderStatus)">@Model?.OrderStatus</span>
+                            </p>
+                        }
+                    </div>
+                </div>
+
+                <hr />
+
+                <!-- Rooms List -->
+                <h6>Danh sách phòng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Mã/Phòng</th>
+                                <th>Loại phòng</th>
+                                <th class="text-end">Đơn giá /đêm</th>
+                                <th class="text-center">Số đêm</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.roomsOrders != null && Model.roomsOrders.Any())
+                            {
+                                var idx = 1;
+                                foreach (var r in Model.roomsOrders)
+                                {
+                                    <tr>
+                                        <td>@idx</td>
+                                        <td>@r.RoomNumber</td>
+                                        <td>@r.RoomType</td>
+                                        <td class="text-end">@fmt(r.PricePerNight)</td>
+                                        <td class="text-center">@r.NumberOfNights</td>
+                                        <td class="text-end">@fmt(r.PricePerNight * r.NumberOfNights)</td>
+                                    </tr>
+                                    idx++;
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="6" class="text-center">Không có phòng</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <hr />
+
+                <!-- Services -->
+                <h6>Dịch vụ phát sinh</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+
+                                <th>#</th>
+                                <th>Tên dịch vụ</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.roomsOrders != null && Model.roomsOrders.Any())
+                            {
+                                var idx = 1;
+                                foreach (var s in Model.roomsOrders)
+                                {
+
+                                    foreach (var item in s.UsedToServices)
+                                    {
+                                        <tr>
+                                            <td>@idx</td>
+                                            <td>@item.ServiceName</td>
+                                            <td class="text-center">@item.Quantity</td>
+                                            <td class="text-end">@fmt(item.UnitPrice)</td>
+                                            <td class="text-end">@fmt(item.UnitPrice * item.Quantity)</td>
+                                        </tr>
+                                        idx++;
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="5" class="text-center">Không có dịch vụ phát sinh</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <hr />
+
+                <!-- Tax & Discount -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Thuế & Giảm giá</h6>
+                        <p class="mb-0">VAT: <strong>0 %</strong></p>
+                        <p class="mb-0">Giảm giá / Khuyến mãi: <strong>0%</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-md-end">Tổng tạm & Thanh toán</h6>
+                        <table class="w-100">
+                            <tr>
+                                <td>Tổng tiền trước thuế:</td>
+                                <td class="text-end">@fmt(Model.TotalAmountOrder)</td>
+                            </tr>
+                            <tr>
+                                <td>Thuế VAT (0%):</td>
+                                <td class="text-end">@fmt(Model.TotalAmountOrder)</td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>Tổng tiền sau thuế:</td>
+                                <td class="text-end">@fmt(Model.TotalAmountOrder)</td>
+                            </tr>
+                            <tr>
+                                <td>Khách đã trả:</td>
+                                @if (Model.OrderStatus == "Completed")
+                                {
+                                    <td class="text-end">@fmt(Model.TotalAmountOrder - Model.Deposit)</td>
+                                }
+                                else
+                                {
+                                    <td class="text-end">@fmt(Model.Deposit)</td>
+                                }
+
+                            </tr>
+                            <tr>
+                                <td>Tiền còn thiếu:</td>
+                                @if (Model.OrderStatus == "Completed")
+                                {
+                                    <td class="text-end">0 </td>
+                                }
+                                else
+                                {
+                                    <td class="text-end">@fmt(Model.TotalAmountOrder - Model.Deposit)</td>
+                                }
+
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr />
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

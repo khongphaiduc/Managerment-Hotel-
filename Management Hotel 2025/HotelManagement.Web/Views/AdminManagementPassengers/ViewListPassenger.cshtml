@@ -1,0 +1,210 @@
+@model IEnumerable<Management_Hotel_2025.Modules.AdminMPassengers.MPassengerModels.PassengersInfo>
+@using System.Security.Claims
+@{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+    if (role == "Admin")
+    {
+        Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/StaffHeader.cshtml";
+    }
+    ViewBag.Title = "Danh sách khách hàng";
+    var stt = 1;
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+<h3 class="mb-4 text-center">Danh sách khách hàng của TrungDucLuxury Hotel</h3>
+<div class="container-fluid mt-4">
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">STT</th>
+                    <th scope="col">Họ và Tên</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Số điện thoại</th>
+                    <th scope="col">Quốc tịch</th>
+                    <th scope="col">Số lần lưu trú</th>
+                    <th scope="col">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model)
+                {
+                    <tr>
+                        <td>@(stt++)</td>
+                        <td>@customer.Name</td>
+                        <td>@customer.Email</td>
+                        <td>@customer.PhoneNumber</td>
+                        <td>@customer.Nationality</td>
+                        <td>@customer.TimesVisited</td>
+                        <td class="text-center">
+
+                            <a asp-action="GetPassengersInfo" asp-controller="AdminManagementPassengers" asp-route-codePassenger="@customer.PersonalCode" class="btn btn-primary btn-sm mx-1">Thông Tin</a>
+                            <button class="btn btn-info btn-sm mx-1">Lịch Sử</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Template -->
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Thông tin khách hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body" id="customerModalBody">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<style>
+
+    :root {
+    }
+
+    .container-fluid {
+        width: 100%;
+    }
+
+    .mb-4.text-center {
+        font-family: var(--font-primary);
+        color: var(--luxury-dark);
+        font-weight: 700;
+        margin-bottom: 30px !important;
+        padding-bottom: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+
+    thead.table-dark {
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    table th, table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+        tbody tr:nth-child(even) {
+        }
+
+        tbody tr:hover {
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+    .btn {
+        min-width: 100px;
+        font-weight: 600;
+        border-radius: 6px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-info {
+        border: none;
+        color: var(--luxury-dark);
+    }
+
+        .btn-info:hover {
+            background-color: #829ebb;
+            color: #fff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+    .btn-primary {
+        border: 1px solid var(--luxury-dark);
+        color: #fff;
+    }
+
+        .btn-primary:hover {
+            border-color: #0b5ed7;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+    .btn-warning {
+        border: 1px solid var(--luxury-gold);
+    }
+
+        .btn-warning:hover {
+            border-color: #a37b0a;
+            color: #fff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        background-color: var(--luxury-dark);
+        color: #fff;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        padding: 20px 25px;
+    }
+
+    .modal-title {
+        font-family: var(--font-primary);
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    .btn-close {
+    }
+
+    @@media (max-width: 992px) {
+        .container-fluid {
+            padding: 15px 20px;
+        }
+
+        table th, table td {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .btn {
+            min-width: 60px;
+            font-size: 11px;
+            padding: 6px 10px;
+            margin-left: 0 !important;
+            margin: 2px;
+        }
+
+        td.text-center {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>

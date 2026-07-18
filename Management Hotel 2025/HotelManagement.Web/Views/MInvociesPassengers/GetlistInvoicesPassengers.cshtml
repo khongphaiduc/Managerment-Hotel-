@@ -1,0 +1,209 @@
+@using System.Security.Claims
+@model IEnumerable<Management_Hotel_2025.Modules.Invoices.InvocieModels.InvoicesViewModel>
+@{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+
+    if (role == "Admin")
+    {
+        Layout = "~/Views/Shared/AdminSidebar.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/StaffHeader.cshtml";
+    }
+
+    ViewBag.Title = "Danh sách hóa đơn khách sạn";
+
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        .status-paid {
+            color: #2ecc40;
+            font-weight: bold;
+        }
+
+        .status-unpaid {
+            color: #ff4136;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #ff851b;
+            font-weight: bold;
+        }
+
+        .status-cancel {
+            color: #aaaaaa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid my-5">
+
+        <form method="get" asp-controller="MInvociesPassengers" asp-action="GetlistInvoicesPassengers" class="mb-4 p-3 border rounded bg-light">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="searchKey" class="form-label">Tìm kiếm</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchKey" name="key"
+                               placeholder="Nhập mã HĐ, tên khách, số phòng..."
+                               value="@ViewBag.Key" aria-label="Tìm kiếm">
+                        <button class="btn btn-outline-secondary" type="submit" title="Tìm kiếm" aria-label="Tìm kiếm">
+                            <!-- Simple search SVG icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 0a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Khoảng ngày nhận phòng</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" name="startDate"
+                               value="@ViewBag.CurrentStartDate" onchange="this.form.submit()">
+                        <span class="input-group-text">đến</span>
+                        <input type="date" class="form-control" name="endDate"
+                               value="@ViewBag.CurrentEndDate" onchange="this.form.submit()">
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Trạng thái</label>
+                    <select class="form-select" id="status" name="status" onchange="this.form.submit()">
+                        <option value="all" selected="@(ViewBag.CurrentStatus == "all")">Tất cả</option>
+                        <option value="Đã thanh toán" selected="@(ViewBag.CurrentStatus == "Đã thanh toán")">Đã thanh toán</option>
+                        <option value="Chưa thanh toán" selected="@(ViewBag.CurrentStatus == "Chưa thanh toán")">Chưa thanh toán</option>
+                        <option value="Đang xử lý" selected="@(ViewBag.CurrentStatus == "Đang xử lý")">Đang xử lý</option>
+                        <option value="Đã hủy" selected="@(ViewBag.CurrentStatus == "Đã hủy")">Đã hủy</option>
+
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="d-grid gap-2">
+                        <!-- Nút Lọc đã được thay bằng icon bên cạnh ô tìm kiếm. Chỉ giữ Xóa lọc -->
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">Xóa lọc</button>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="mb-3">
+            <strong>Tổng tiền tất cả hóa đơn: </strong>
+            <span class="text-primary">@string.Format("{0:#,##0} VND", ViewBag.TotalAmount)</span>
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Mã hoá đơn</th>
+                    <th>Tên khách hàng</th>
+                    <th>Số phòng</th>
+                    <th>Ngày nhận - Ngày trả</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Nhân viên tạo</th>
+                    <th class="text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int stt = 1;
+                    foreach (var invoice in Model)
+                    {
+                        <tr>
+                            <td>@stt</td>
+                            <td>@invoice.InvoiceCode</td>
+                            <td>@invoice.CustomerName</td>
+                            <td>@invoice.RoomNumber</td>
+                            <td>
+                                @invoice.CheckInDate?.ToString("dd/MM/yyyy") -
+                                @invoice.CheckOutDate?.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>@string.Format("{0:#,##0} đ", invoice.TotalAmount)</td>
+                            <td>
+                                @{
+                                    var statusClass =
+                                    invoice.StatusInvoice == "Đã thanh toán" ? "status-paid" :
+                                    invoice.StatusInvoice == "Chưa thanh toán" ? "status-unpaid" :
+                                    invoice.StatusInvoice == "Đang xử lý" ? "status-pending" :
+                                    "status-cancel";
+                                }
+                                <span class="@statusClass">@invoice.StatusInvoice</span>
+                            </td>
+                            <td>@invoice.CreatedBy</td>
+                            <td class="text-center">
+                                <!-- Nút Xem chi tiết -->
+                                <a class="btn btn-sm btn-outline-primary me-1" target="_blank" asp-controller="MInvociesPassengers" asp-action="DetailInvoicesPassenger" asp-route-bookingcode="@invoice.BookingCode" title="Xem chi tiết">
+                                    <!-- eye SVG -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16" aria-hidden="true">
+                                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z" />
+                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#fff" />
+                                    </svg>
+                                </a>
+
+                                <!-- Nút In (ví dụ) -->
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Home" asp-action="MemeDevelopment" title="In hoá đơn" target="_blank">
+                                    <!-- printer SVG -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16" aria-hidden="true">
+                                        <path d="M2 7a1 1 0 0 0-1 1v3h2V8a1 1 0 0 0-1-1z" />
+                                        <path d="M5 1h6a1 1 0 0 1 1 1v3H4V2a1 1 0 0 1 1-1z" />
+                                        <path d="M0 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a1 1 0 0 1-1 1h-2v-2H3v2H1a1 1 0 0 1-1-1V9z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        stt++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-danger">Không có dữ liệu</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(ViewBag.PageIndex == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("GetlistInvoicesPassengers", new { key = ViewBag.CurrentSearchKey, startdate = ViewBag.CurrentStartDate, enddate = ViewBag.CurrentEndDate, indexpage = ViewBag.PageIndex - 1 })">Trước</a>
+                </li>
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.PageIndex ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("GetlistInvoicesPassengers", new { key = ViewBag.CurrentSearchKey, startdate = ViewBag.CurrentStartDate, enddate = ViewBag.CurrentEndDate, indexpage = i })">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(ViewBag.PageIndex == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("GetlistInvoicesPassengers", new { key = ViewBag.CurrentSearchKey, startdate = ViewBag.CurrentStartDate, enddate = ViewBag.CurrentEndDate, indexpage = ViewBag.PageIndex + 1 })">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</body>
+<script>
+    function resetFilters() {
+        document.getElementById("searchKey").value = "";
+        document.querySelector("input[name='startDate']").value = "";
+        document.querySelector("input[name='endDate']").value = "";
+        document.getElementById("status").value = "all";
+
+        document.querySelector("form").submit();
+    }
+</script>
+
+</html>

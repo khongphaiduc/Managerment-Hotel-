@@ -1,0 +1,246 @@
+@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Chọn Ngày</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="~/css/DateRoom.css" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+        }
+
+        .w-2 {
+            width: 0.5em;
+        }
+
+        .dash {
+            animation: dashArray 2s ease-in-out infinite, dashOffset 2s linear infinite;
+        }
+
+        .spin {
+            animation: spinDashArray 2s ease-in-out infinite, spin 8s ease-in-out infinite, dashOffset 2s linear infinite;
+            transform-origin: center;
+        }
+
+        @@keyframes dashArray {
+            0%
+
+        {
+            stroke-dasharray: 0 1 359 0;
+        }
+
+        50% {
+            stroke-dasharray: 0 359 1 0;
+        }
+
+        100% {
+            stroke-dasharray: 359 1 0 0;
+        }
+
+        }
+
+        @@keyframes spinDashArray {
+            0%
+
+        {
+            stroke-dasharray: 270 90;
+        }
+
+        50% {
+            stroke-dasharray: 0 360;
+        }
+
+        100% {
+            stroke-dasharray: 270 90;
+        }
+
+        }
+
+        @@keyframes dashOffset {
+            0%
+
+        {
+            stroke-dashoffset: 365;
+        }
+
+        100% {
+            stroke-dashoffset: 5;
+        }
+
+        }
+
+        @@keyframes spin {
+            0%
+
+        {
+            rotate: 0deg;
+        }
+
+        100% {
+            rotate: 1080deg;
+        }
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <main class="hero">
+        <div class="overlay"></div>
+        <div class="card" role="region" aria-labelledby="hero-title">
+            <h1 id="hero-title">Tìm Phòng hoàn hảo cho kỳ nghỉ</h1>
+            <p class="subtitle">Chọn ngày đến và ngày đi — chúng tôi sẽ chuẩn bị những lựa chọn tốt nhất dành cho bạn.</p>
+
+            <form id="search-form" class="search-form" novalidate>
+                <div class="date-row">
+                    <!-- Ngày đến -->
+                    <div class="field">
+                        <label for="checkin" class="date-label">Ngày đến</label>
+                        <div class="input-wrapper">
+                            <input type="date"
+                                   id="checkin"
+                                   name="checkin"
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                   value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                   required />
+                            <span class="calendar-icon">📅</span>
+                        </div>
+                    </div>
+
+                    <!-- Ngày đi -->
+                    <div class="field">
+                        <label for="checkout" class="date-label">Ngày đi</label>
+                        <div class="input-wrapper">
+                            <input type="date"
+                                   id="checkout"
+                                   name="checkout"
+                                   min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                                   required />
+                            <span class="calendar-icon">📅</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="search-btn" class="btn">Tìm phòng</button>
+
+                <p id="form-error" class="error" aria-live="polite"></p>
+            </form>
+        </div>
+
+        <!-- ✅ NEW LOADING OVERLAY -->
+        <div id="loadingOverlay">
+            <div class="loader">
+                <svg height="0" width="0" viewBox="0 0 64 64" class="absolute">
+                    <defs>
+                        <linearGradient gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="b">
+                            <stop stop-color="#973BED"></stop>
+                            <stop stop-color="#007CFF" offset="1"></stop>
+                        </linearGradient>
+                        <linearGradient gradientUnits="userSpaceOnUse" y2="0" x2="0" y1="64" x1="0" id="c">
+                            <stop stop-color="#FFC800"></stop>
+                            <stop stop-color="#F0F" offset="1"></stop>
+                            <animateTransform repeatCount="indefinite" dur="8s" values="0 32 32;-270 32 32;-540 32 32;-810 32 32;-1080 32 32" type="rotate" attributeName="gradientTransform" />
+                        </linearGradient>
+                        <linearGradient gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="d">
+                            <stop stop-color="#00E0ED"></stop>
+                            <stop stop-color="#00DA72" offset="1"></stop>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <svg fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#b)" d="M 54.7,4 h 5 c -1,13 -11,24 -24,26 a 2,2 0 0 0 -2,2 v 30 h -4 V 32 a 2,2 0 0 0 -2,-2 C 14,28 4,17 3,4 h 5 c 1,12 11,21 23,22 c 12,0 22,-9 24,-22 z" class="dash" />
+                </svg>
+
+                <svg fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="10" stroke="url(#c)" d="M 32 32 m 0 -27 a 27 27 0 1 1 0 54 a 27 27 0 1 1 0 -54" class="spin" />
+                </svg>
+
+                <div class="w-2"></div>
+
+                <svg fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 4,4 h 5 v 26 c 0,14 12,26 26,26 c 14,0 26,-12 26,-26 V 4 h 5 v 26 c 0,17 -14,31 -31,31 C 18,61 4,47 4,30 Z" class="dash" />
+                </svg>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const checkin = document.getElementById('checkin');
+        const checkout = document.getElementById('checkout');
+        const errorMsg = document.getElementById('form-error');
+
+        checkin.addEventListener('change', () => {
+            const start = new Date(checkin.value);
+            const minCheckout = new Date(start);
+            minCheckout.setDate(start.getDate() + 1);
+
+            const minDateStr = minCheckout.toISOString().split('T')[0];
+            checkout.min = minDateStr;
+
+            if (checkout.value < minDateStr) {
+                checkout.value = minDateStr;
+            }
+        });
+
+        document.getElementById('search-btn').addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const startDate = checkin.value;
+            const endDate = checkout.value;
+
+            if (!startDate || !endDate) {
+                errorMsg.textContent = "Vui lòng chọn ngày đến và ngày đi.";
+                return;
+            }
+
+            if (endDate <= startDate) {
+                errorMsg.textContent = "Ngày đi phải sau ngày đến ít nhất 1 ngày.";
+                return;
+            }
+
+            errorMsg.textContent = "";
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+          const url = `/room/list/1/8?Floor=${null}&PriceMin=${null}&PriceMax=${null}&Person=${null}&StartDate=${encodeURIComponent(startDate)}&EndDate=${encodeURIComponent(endDate)}`;
+
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>

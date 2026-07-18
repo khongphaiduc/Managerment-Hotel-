@@ -1,0 +1,207 @@
+@model Management_Hotel_2025.ViewModel.ViewDetailRoom
+@using System.Security.Claims
+@using System.Globalization
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.NameType | PHAMTRUNGDUC LUXURY</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+
+    <link rel="stylesheet" href="~/css2/room/ViewDetailRoom.css" />
+</head>
+<body>
+
+    <div class="room-gallery">
+        <div id="roomCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.ListPathImage.Count; i++)
+                {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        @if (Model.ListPathImage[i].StartsWith("http"))
+                        {
+                            <img src="@Model.ListPathImage[i]" alt="Luxury Room @(i+1)">
+                        }
+                        else
+                        {
+                            <img src="/images/@Model.ListPathImage[i]" alt="Luxury Room @(i+1)">
+                        }
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        <div class="mb-4">
+            <a href="javascript:history.back()" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="mb-4 border-bottom pb-4">
+                    <h5 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.85rem; letter-spacing: 2px;">
+                        Tầng @Model.Floor • Phòng @Model.RoomNumber
+                    </h5>
+                    <h1 class="display-4 fw-bold mb-3 serif-font">@Model.NameType</h1>
+
+                    <div class="d-flex gap-3 mb-3">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-0">
+                            <i class="bi bi-check-circle me-1"></i> Còn phòng
+                        </span>
+                        <span class="badge bg-dark bg-opacity-10 text-dark border border-dark px-3 py-2 rounded-0">
+                            Miễn phí bữa sáng
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <h3 class="serif-font mb-4">Tổng quan</h3>
+                    <p class="text-secondary mb-4" style="font-size: 1.1rem;">
+                        @Model.Description
+                    </p>
+                    <p class="text-secondary fst-italic border-start border-3 ps-4 border-warning">
+                        "Không gian nghỉ dưỡng đẳng cấp tại PHAMTRUNGDUC LUXURY mang đến sự giao thoa hoàn hảo giữa kiến trúc hiện đại và sự tiện nghi tối thượng. Mỗi góc nhỏ đều được chăm chút tỉ mỉ để nuông chiều cảm xúc của quý khách."
+                    </p>
+                </div>
+
+                <div class="mb-5 bg-light p-4 rounded-1">
+                    <h4 class="serif-font mb-4">Tiện nghi có sẵn</h4>
+                    <div class="room-features-grid">
+                        <div class="feature-item"><i class="bi bi-arrows-angle-expand"></i> 35m²</div>
+                        <div class="feature-item"><i class="bi bi-people"></i> Tối đa @Model.MaxGuests khách</div>
+                        <div class="feature-item"><i class="bi bi-wifi"></i> Wifi 5Ghz</div>
+                        <div class="feature-item"><i class="bi bi-tv"></i> Smart TV 4K</div>
+                        <div class="feature-item"><i class="bi bi-cup-hot"></i> Minibar</div>
+                        <div class="feature-item"><i class="bi bi-safe"></i> Két an toàn</div>
+                        <div class="feature-item"><i class="bi bi-water"></i> Bồn tắm nằm</div>
+                        <div class="feature-item"><i class="bi bi-wind"></i> Điều hòa 2 chiều</div>
+                    </div>
+                </div>
+
+                <div class="amenity-section">
+                    <h3 class="section-title serif-font">Dịch vụ & Tiện ích nổi bật</h3>
+
+                    @if (Model.ListAmenites != null && Model.ListAmenites.Any())
+                    {
+                        for (int i = 0; i < Model.ListAmenites.Count; i++)
+                        {
+                            var amenity = Model.ListAmenites.ElementAt(i);
+                            bool isImageRight = i % 2 != 0;
+
+                            <div class="amenity-card row align-items-center g-5 @(isImageRight ? "" : "flex-row-reverse")" data-aos="fade-up">
+                                <div class="col-md-6">
+                                    <div class="ps-md-4">
+                                        <h4 class="serif-font fw-bold mb-3" style="color: var(--primary-gold);">@amenity.Name</h4>
+                                        <p class="text-secondary">@amenity.Description</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="amenity-img-wrapper">
+                                        <img src="@amenity.UrlImage" alt="@amenity.Name" class="amenity-img">
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="booking-sidebar">
+                    <div class="booking-card">
+                        <div class="text-center mb-4 pb-3 border-bottom">
+                            <div class="text-uppercase text-muted mb-1" style="font-size: 0.8rem;">Giá khởi điểm</div>
+                            <div>
+                                <span class="price-tag">@String.Format(new CultureInfo("vi-VN"), "{0:C0}", Model.Price)</span>
+                                <span class="price-unit">/ đêm</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted"><i class="bi bi-star-fill text-warning"></i> Đánh giá</span>
+                                <strong>4.9 (128 reviews)</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted"><i class="bi bi-check2-all text-success"></i> Tình trạng</span>
+                                <strong class="text-success">Sẵn sàng đón khách</strong>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">NHẬN PHÒNG - TRẢ PHÒNG</label>
+                            <div class="border rounded p-2 d-flex align-items-center justify-content-between bg-light">
+                                <span><i class="bi bi-calendar3 me-2"></i> Từ @HttpContextAccessor.HttpContext.Session.GetString("StartDate") đến @HttpContextAccessor.HttpContext.Session.GetString("EndDate")</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small">KHÁCH</label>
+                            <div class="border rounded p-2 d-flex align-items-center justify-content-between bg-light">
+                                <span>@Model.MaxGuests người </span>
+                            </div>
+                        </div>
+
+                        @if (User.IsInRole("Staff"))
+                        {
+                            <a class="btn btn-luxury mb-3" asp-action="StaffBoookingRoom"
+                               asp-controller="StaffManagementRoom"
+                               target="_blank">
+                                <i class="bi bi-display"></i> Booking (Staff)
+                            </a>
+                        }
+                        else
+                        {
+                            <form asp-action="InformationBooking"
+                                  asp-controller="Payment"
+                                  method="post">
+                                <input type="hidden" name="Amount" value="@Model.Price" />
+                                <input type="hidden" name="NameRoom" value="@Model.NameType" />
+                                <input type="hidden" name="IdRoom" value="@Model.RoomId" />
+
+                                <button type="submit" class="btn btn-luxury mb-3 w-100">
+                                    ĐẶT PHÒNG NGAY
+                                </button>
+                            </form>
+
+                            <p class="text-center text-muted small mt-2">
+                                Không tính phí cho đến khi bạn xác nhận
+                            </p>
+                        }
+
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <small class="text-muted d-block mb-1">Cần hỗ trợ?</small>
+                            <a href="tel:+84999999999" class="fw-bold text-dark text-decoration-none" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">
+                                0999 999 999
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <script src="~/js/room/ViewDetailRoom.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Không có quyền truy cập</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/css/DeniedCss.css" />
+</head>
+<body>
+    <div class="access-denied-wrap">
+        <div class="cute-lock">
+            <div class="lock-shackle"></div>
+            <div class="lock-base"></div>
+            <div class="lock-face">
+                <div class="eyes">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+                <div class="lock-mouth"></div>
+                <div class="lock-blush left"></div>
+                <div class="lock-blush right"></div>
+            </div>
+        </div>
+        <div class="denied-title">Ôi không! Bạn không có quyền truy cập 🛑</div>
+        <div class="denied-msg">
+            Trang này chỉ dành cho những người có quyền truy cập.<br>
+            Nếu bạn nghĩ đây là nhầm lẫn, hãy liên hệ quản trị viên nhé!
+        </div>
+        <button class="go-home-btn" id="goHomeBtn">Về trang chủ</button>
+    </div>
+    <script src="~/js/Denied.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+@{
+    Layout = null;
+}
+@model Mydata.Models.User
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Đăng nhập đặt phòng khách sạn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/css/login.css" />
+</head>
+<body>
+    <video autoplay loop muted playsinline id="bg-video">
+        <source src="~/video/introduction.mp4" type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ video.
+    </video>
+
+    <div class="login-background">
+        <div class="login-blur"></div>
+        <div class="login-container large">
+            <div class="login-header">
+                <img src="https://www.svgrepo.com/show/500047/hotel.svg"
+                     alt="Hotel Booking" class="hotel-icon" />
+                <h2>Chào mừng trở lại!</h2>
+                <p>Đăng nhập để đặt phòng khách sạn siêu nhanh</p>
+            </div>
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="error-message">@ViewBag.Error</div>
+            }
+            <form id="loginForm" autocomplete="off">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input asp-for="Email" type="email" id="email" placeholder="Nhập email của bạn" required />
+                </div>
+                <div class="input-group">
+                    <label for="password">Mật khẩu</label>
+                    <input asp-for="PasswordHash" type="password" id="password" placeholder="Nhập mật khẩu" required />
+                </div>
+                <button type="submit" class="login-btn">Đăng nhập</button>
+            </form>
+            <div id="errorMessage" style="color:red;margin-top:10px;"></div>
+
+            <div class="social-login">
+                <span>Hoặc đăng nhập bằng</span>
+                <div class="social-btn-group">
+                    <a asp-action="LoginByGoogle" asp-controller="Authen" class="social-btn google">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" />
+                        Google
+                    </a>
+                    <a asp-action="Denied" asp-controller="Authen" class="social-btn facebook">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" />
+                        Facebook
+                    </a>
+
+                </div>
+            </div>
+            <div class="register-link">
+                <a asp-controller="Authen" asp-action="RegisterAccount"><b>Đăng ký ngay</b></a>
+                <a asp-controller="Authen" asp-action="ForgotPassword"> || Quên Mật Khẩu</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+               document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+
+            fetch("/Authen/Login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Email: email, PasswordHash: password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                     window.location.href = "/home/trungducluxuryhotel";
+                } else {
+                  document.getElementById("errorMessage").textContent = "Tài khoản hoặc mật khẩu không chính xác.";
+                }
+ 
+
+            })
+            .catch(err => console.error(err));
+        });
+    </script>
+@*     then(res => res.json()) trong Fetch API nghĩa là:
+
+    res ở đây là đối tượng Response mà fetch() trả về.
+
+    Nó chứa toàn bộ thông tin từ server: status code, headers, body, v.v.
+
+    Body lúc này vẫn đang ở dạng stream, chưa parse.
+
+    res.json() là hàm bất đồng bộ (async) của Response object:
+
+    Đọc phần body từ stream.
+
+    Parse chuỗi JSON nhận được thành JavaScript object.
+
+    Trả về Promise chứa object đó.
+
+    Vì res.json() trả về Promise, nên bạn cần .then(...) hoặc await để lấy dữ liệu.
+
+    Ở đây .then(data => { ... }) sẽ nhận data chính là object đã parse. *@
+</body>
+
+
+
+
+</html>
