@@ -23,6 +23,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
         }
 
         [HttpPost("booking")]
+        // Creates a temporary booking record and starts the PayOS booking-payment flow.
         public async Task<IActionResult> CreateBookingByPayOS()
         {
 
@@ -49,7 +50,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
 
             int Code = int.Parse(OldCodeBooking.Substring(3)) + 1;
 
-            // chuyuern 
+            // Build the booking/payment reference used by the temporary booking flow.
             string codeHotel = "TDH";
             string CodeBookingCode = codeHotel + Code.ToString("D6");
 

@@ -23,7 +23,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
         [HttpGet]
         [Route("room/{id}")]      
-        // Handles the EditRoom action.
+// Returns the complete information needed to edit a room, including related metadata and images.
         public async Task<IActionResult> EditRoom([FromRoute] int id)
         {
             string apihost = $"{Request.Scheme}://{Request.Host}";
@@ -42,7 +42,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
         [HttpPut]
         [Route("room")]
         
-        // Handles the EditRoom action.
+// Applies changes submitted for an existing room.
         public async Task<IActionResult> EditRoom([FromForm] AdJustRoom room)
         {
             var result = await _editroom.EditRoomStatus(room);
@@ -61,7 +61,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
         [HttpPost]
         [Route("room")]
        
-        // Handles the CreateRoom action.
+// Creates a new room from the submitted form data.
         public async Task<IActionResult> CreateRoom([FromForm] AdJustRoom room)
         {
             var result = await _editroom.CreateNewRoom(room);

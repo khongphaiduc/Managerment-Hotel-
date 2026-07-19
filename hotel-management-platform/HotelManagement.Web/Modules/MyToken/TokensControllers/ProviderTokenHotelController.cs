@@ -7,7 +7,7 @@ namespace Management_Hotel_2025.Modules.MyToken.TokensControllers
     {
 
         [Authorize(Roles ="Admin")]
-        // Handles the ViewGetInfo action.
+// Displays the page used to request or inspect hotel token information.
         public IActionResult ViewGetInfo()
         {
             return View();

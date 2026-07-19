@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Modules\Games\**" />
     <Compile Remove="Modules\ManagementRoom\**" />
+    <Content Remove="Modules\Games\**" />
     <Content Remove="Modules\ManagementRoom\**" />
+    <EmbeddedResource Remove="Modules\Games\**" />
     <EmbeddedResource Remove="Modules\ManagementRoom\**" />
+    <None Remove="Modules\Games\**" />
     <None Remove="Modules\ManagementRoom\**" />
   </ItemGroup>
 
@@ -50,7 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\Games\GameModel\" />
     <Folder Include="Modules\Statistics\StatisticsServices\" />
   </ItemGroup>
 

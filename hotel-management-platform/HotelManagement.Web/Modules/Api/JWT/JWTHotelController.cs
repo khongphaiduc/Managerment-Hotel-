@@ -19,6 +19,7 @@ namespace API_BookingHotel.Modules.JWT
         }
 
         [HttpPost("token")]
+        // Creates a signed JWT containing the submitted user name and role.
         public IActionResult Get(UserTemporary user)
         {
 

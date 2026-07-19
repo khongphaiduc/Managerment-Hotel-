@@ -14,7 +14,7 @@ public class MStatisticsController : Controller
     }
 
     [HttpGet("statistics")]
-    // Handles the ViewStatistics action.
+// Loads statistics from the statistics service and displays the admin dashboard.
     public async Task<IActionResult> ViewStatistics()
     {
         var result = await _statisticsService.GetStatisticsAsync();

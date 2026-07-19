@@ -21,7 +21,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
         [Route("amenity")]// ok
         [HttpPost]
 
-        // Handles the CreateAmentity action.
+// Creates an amenity from the request data and returns the operation status.
         public async Task<IActionResult> CreateAmentity(AmentityUpdate amentity)
         {
 
@@ -42,7 +42,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 
 
         [HttpGet("amenity/{id}")]// ok 
-        // Handles the GetAmentity action.
+// Gets one amenity by identifier, including its public image URL when available.
         public async Task<IActionResult> GetAmentity(int id)
         {
             string apihost = $"{Request.Scheme}://{Request.Host}";
@@ -61,7 +61,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 
 
         [HttpGet("amenity")]// ok 
-        // Handles the GetAmentityAll action.
+// Gets the complete amenity collection for the admin client.
         public async Task<IActionResult> GetAmentityAll()
         {
             string apihost = $"{Request.Scheme}://{Request.Host}";
@@ -80,7 +80,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 
 
         [HttpPut("amenity")] // ok 
-        // Handles the UpdateAmentity action.
+// Updates an existing amenity after validating its identifier.
         public async Task<IActionResult> UpdateAmentity(AmentityUpdate request)
         {
             if (request.AmenityId == null || request.AmenityId <= 0)
@@ -103,7 +103,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 
 
         [HttpPatch("amenity/{id}")]
-        // Handles the UpdateStatusAmentity action.
+// Toggles the status of an amenity identified by route parameter.
         public async Task<IActionResult> UpdateStatusAmentity(int id)
         {
 
@@ -122,7 +122,7 @@ namespace API_BookingHotel.Modules.AmentityModules.AmentityControllers
 
 
         [HttpDelete("amenity/{id}")]  // ok 
-        // Handles the DeleteAmentity action.
+// Deletes an amenity identified by route parameter.
         public async Task<IActionResult> DeleteAmentity(int id)
         {
 

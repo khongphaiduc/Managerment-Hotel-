@@ -39,6 +39,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
         [Authorize(Roles = "Staff,Admin")]
         [HttpGet]
+        // Loads rooms filtered by status, floor, and date range for staff/admin operations.
         public async Task<IActionResult> StaffViewListRoom(string option, int? Floor, DateTime StartDate, DateTime EndDate)
         {
             if (StartDate == DateTime.MinValue || EndDate == DateTime.MinValue)
@@ -65,7 +66,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
             return View(ListRoom);
         }
 
-        // search room
+        // Searches for one room by room identifier and reuses the room-list view.
         [Authorize(Roles = "Staff,Admin")]
         [HttpGet]
         public async Task<IActionResult> StaffSearchByIdRoom(string IdRoom)
@@ -84,6 +85,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
         }
 
 
+        // Displays the detailed information of a selected room.
         public async Task<IActionResult> StaffViewDetailRoom(string IdRoom)
         {
             var Room = await _IManagementRoom.FilterByIdRoom(IdRoom);
@@ -93,6 +95,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
 
+        // Displays the staff room-booking page.
         public IActionResult StaffBoookingRoom()
         {
             return View();
@@ -100,6 +103,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
 
+        // Displays the booking calendar for a selected room.
         public IActionResult ViewCalenderBookingOfRoom(int IdRoom, string NumberRoom)
         {
             ViewBag.NumberRoom = NumberRoom;
@@ -109,6 +113,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
         }
 
 
+        // Displays today's room map and room availability overview.
         public IActionResult ViewMapOfRoom()
         {
             return View(_IManagementRoom.getListMapRoomToDay());
@@ -120,7 +125,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
 
-        // check in 
+        // Loads the check-in page and booking information for the supplied booking code.
         public IActionResult CheckInPassengers(string bookingcode)
         {
             var booking = _IreceptionService.CheckIn(bookingcode);
@@ -129,6 +134,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpPost]
+        // Confirms or rejects a guest check-in submitted from the staff interface.
         public IActionResult CheckInPassengers([FromBody] Booking booking)
         {
             var item = _IreceptionService.CheckIn(booking);
@@ -146,6 +152,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpGet]
+        // Displays the guest-information form for a booking.
         public IActionResult RegisterGuestInfo(string bookingcode)
         {
             return View();
@@ -154,6 +161,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpPost]
+        // Saves the registered guests and associates each guest with its booking detail.
         public IActionResult RegisterGuestInfo([FromBody] List<PassengerDto> passengers)
         {
 
@@ -203,6 +211,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpGet]
+        // Returns the rooms associated with the supplied booking code.
         public IActionResult GetAvailableRooms(string bookingcode)
         {
 
@@ -217,6 +226,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpGet]
+        // Loads the order and checkout page for a booking.
         public async Task<IActionResult> CheckOutPassenger(string bookingcode)
         {
 
@@ -225,7 +235,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
             return View(order);
         }
 
-        // confirm check-out
+        // Confirms checkout and creates a cash-paid order.
         [HttpPut]
         public async Task<IActionResult> ConfirmCheckOutPassenger([FromBody] Order orderpassager)
         {
@@ -245,6 +255,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpPost]
+        // Confirms checkout and creates an order paid through QR code.
         public async Task<IActionResult> ConfirmCheckOutPassengerQR([FromBody] Order orderpassager)
         {
             var idStaff = int.Parse(User.FindFirst("IdUser").Value);
@@ -262,6 +273,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
         }
 
 
+        // Loads the booking list, using either a search term or a date-range filter.
         public IActionResult BookingsView(string search, DateTime? DateStart, DateTime? EndDate)
         {
             DateTime start = DateStart ?? DateTime.Now.AddMonths(-1);
@@ -284,7 +296,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
             return View(list);
         }
 
-        // xem detail booking
+        // Loads the details of a booking identified by its booking code.
         public IActionResult ViewDetailBooking(string Code)
         {
             var detailbooking = _IManagementBooking.ViewDetailBooking(Code);
@@ -295,6 +307,7 @@ namespace Management_Hotel_2025.Modules.Rooms.RoomsController
 
 
         [HttpGet]
+        // Displays the guests registered for a booking detail.
         public IActionResult RoomViewPassengers(int idbookingdetail)
         {
             return View(_IManagementRoom.ViewDetailRoomPassengers(idbookingdetail));

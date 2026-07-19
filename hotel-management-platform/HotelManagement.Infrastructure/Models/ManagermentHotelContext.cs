@@ -69,8 +69,43 @@ public partial class ManagermentHotelContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // These keys are SQL Server IDENTITY columns. Keep the mapping explicit because
+        // the entities are partly scaffolded and partly hand-written. Seed/application
+        // inserts must omit these values and let SQL Server generate them.
+        modelBuilder.Entity<Amenity>(entity =>
+        {
+            entity.HasKey(e => e.AmenityId);
+            entity.Property(e => e.AmenityId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<Services>(entity =>
+        {
+            entity.HasKey(e => e.ServiceId);
+            entity.Property(e => e.ServiceId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<RoomType>(entity =>
+        {
+            entity.Property(e => e.RoomTypeId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.UserId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<Room>(entity =>
+        {
+            entity.Property(e => e.RoomId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<RoomAmenity>(entity =>
+        {
+            entity.HasKey(e => e.IDRoomAmenity);
+            entity.Property(e => e.IDRoomAmenity).ValueGeneratedOnAdd();
+        });
+
         modelBuilder.Entity<BookingDetail>();
-        modelBuilder.Entity<Services>();
 
         modelBuilder.Entity<Booking>(entity =>
         {

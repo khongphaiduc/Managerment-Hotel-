@@ -20,7 +20,7 @@ namespace API_BookingHotel.Modules.MPassengers.AdminPassengersControllers
 
 
         [HttpGet("passenger/{PassengerCode}")]
-        // Handles the GetPassengerInfo action.
+// Returns detailed passenger information for the supplied passenger code.
         public async Task<IActionResult> GetPassengerInfo(string PassengerCode)
         {
             var hostapi = $"{Request.Scheme}://{Request.Host.Value}";

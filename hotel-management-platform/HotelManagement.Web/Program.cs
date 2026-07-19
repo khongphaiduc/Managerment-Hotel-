@@ -19,7 +19,6 @@ using Management_Hotel_2025.Modules.WorkFile;
 using Management_Hotel_2025.Modules.AdminMPassengers.MPassengersServices;
 using Management_Hotel_2025.Modules.Payment.PayOSPayments;
 using Management_Hotel_2025.Modules.SignalRModels;
-using Management_Hotel_2025.Data;
 using Management_Hotel_2025.Modules.RabbitMQHotel;
 using StackExchange.Redis;
 using Management_Hotel_2025.Modules.RedisServices;
@@ -41,7 +40,7 @@ namespace Management_Hotel_2025
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             DotEnvLoader.Load();
             var builder = WebApplication.CreateBuilder(args);
@@ -51,8 +50,18 @@ namespace Management_Hotel_2025
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpContextAccessor();
 
+            var sqlConnection = builder.Configuration.GetConnectionString("SQL")
+                ?? builder.Configuration["ConnectionStrings:SQL"]
+                ?? Environment.GetEnvironmentVariable("ConnectionStrings__SQL");
+
+            if (string.IsNullOrWhiteSpace(sqlConnection))
+            {
+                throw new InvalidOperationException(
+                    "SQL connection string was not found. Configure ConnectionStrings__SQL in the .env file.");
+            }
+
             builder.Services.AddDbContext<ManagermentHotelContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("SQL")));
+                options.UseSqlServer(sqlConnection));
 
             builder.Services.AddMemoryCache();
 
@@ -253,16 +262,6 @@ namespace Management_Hotel_2025
 
             var app = builder.Build();
 
-            // Create the configured database and apply all pending EF Core migrations
-            // before the application starts serving requests.
-            using (var scope = app.Services.CreateScope())
-            {
-                var database = scope.ServiceProvider.GetRequiredService<ManagermentHotelContext>();
-                database.Database.Migrate();
-                DatabaseSeeder.Seed(database);
-            }
-
-           
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -270,6 +269,7 @@ namespace Management_Hotel_2025
                 app.UseHsts();
             }
 
+        //E:\Hotel PHAMTRUNGDUC\hotel - management - platform\HotelManagement.sln
 
             app.MapHub<NotificationSystem>("/notificationsystem");
 
@@ -288,7 +288,7 @@ namespace Management_Hotel_2025
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Intro}/{id?}");
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

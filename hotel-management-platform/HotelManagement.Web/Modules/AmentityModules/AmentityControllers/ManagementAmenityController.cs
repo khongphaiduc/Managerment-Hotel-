@@ -18,7 +18,7 @@ public class ManagementAmenityController : Controller
     private string PublicHost => $"{Request.Scheme}://{Request.Host}";
 
     [HttpGet("amenity")]
-    // Handles the ViewListAmentity action.
+// Loads all amenities, maps them to the MVC view model, and displays the management list.
     public async Task<IActionResult> ViewListAmentity()
     {
         var items = await _amenityService.GetAllAmenityAsync(PublicHost);
@@ -26,7 +26,7 @@ public class ManagementAmenityController : Controller
     }
 
     [HttpDelete("amenity/{id}")]
-    // Handles the DeleteAmentity action.
+// Deletes the specified amenity and returns a success or not-found response.
     public async Task<IActionResult> DeleteAmentity(int id)
     {
         return await _amenityService.DeleteAmenityAsync(id)
@@ -35,7 +35,7 @@ public class ManagementAmenityController : Controller
     }
 
     [HttpPatch("amenity/{id}")]
-    // Handles the HideAmentity action.
+// Changes the active status of the specified amenity.
     public async Task<IActionResult> HideAmentity(int id)
     {
         return await _amenityService.ChangeStatusAmenityAsync(id)
@@ -44,11 +44,11 @@ public class ManagementAmenityController : Controller
     }
 
     [HttpGet("amenitys")]
-    // Handles the ViewCreateAmentity action.
+// Displays the form used to create a new amenity.
     public IActionResult ViewCreateAmentity() => View();
 
     [HttpPost("amenity")]
-    // Handles the CreateAmentity action.
+// Validates the uploaded image and creates a new amenity through the amenity service.
     public async Task<IActionResult> CreateAmentity(MyAmenity request)
     {
         if (request.UpdateImage is null)
@@ -63,7 +63,7 @@ public class ManagementAmenityController : Controller
     }
 
     [HttpGet("amenity/detail/{id}")]
-    // Handles the ViewUpdateAmentity action.
+// Loads one amenity and displays its data in the update form.
     public async Task<IActionResult> ViewUpdateAmentity(int id)
     {
         var item = await _amenityService.GetAmenityByIdAsync(id, PublicHost);
@@ -73,7 +73,7 @@ public class ManagementAmenityController : Controller
     }
 
     [HttpPut("amenity")]
-    // Handles the UpdateAmentity action.
+// Updates the amenity data and optional image supplied by the management form.
     public async Task<IActionResult> UpdateAmentity(MyAmenity request)
     {
         var updated = await _amenityService.UpdateAmenityAsync(ToApiModel(request));

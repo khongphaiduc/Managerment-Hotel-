@@ -38,7 +38,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
         [HttpPost]
 
-        // Handles the CreatePaymentUrlVnpay action.
+        // Creates a VNPay payment URL, stores booking data in session, and acquires a temporary room lock.
         public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model, [FromServices] IRedisLockService _redisLock)
         {
             var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
@@ -75,7 +75,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
 
         [HttpGet]
-        // Handles the PaymentCallbackVnpay action.
+        // Verifies the VNPay callback and creates the booking and booking detail when payment succeeds.
         public async Task<IActionResult> PaymentCallbackVnpay([FromServices] IRedisLockService _redisLock)
         {
             string codeHotel = "TDH";
@@ -121,7 +121,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
 
                     int Code = int.Parse(OldCodeBooking.Substring(3)) + 1;
 
-                    // chuyuern 
+                    // Build the next booking code using the hotel prefix and a six-digit sequence.
                     string CodeBookingCode = codeHotel + Code.ToString("D6");
 
 
@@ -186,7 +186,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
         }
 
         [HttpPost]
-        // Handles the InformationBooking action.
+        // Stores booking and payment information submitted before redirecting to the payment flow.
         public IActionResult InformationBooking(string NameRoom, decimal Amount, int IdRoom)
         {
 
@@ -221,7 +221,7 @@ namespace Management_Hotel_2025.Modules.Payment.PaymentControllers
             return View();
         }
 
-        // Handles the ResultPayment action.
+        // Displays the final payment result and related booking information.
         public async Task<IActionResult> ResultPayment()
         {
             string deposit = HttpContext.Session.GetString("DepositAmount");

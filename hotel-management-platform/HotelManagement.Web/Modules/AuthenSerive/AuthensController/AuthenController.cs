@@ -42,6 +42,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
         }
 
         [HttpPost]
+        // Validates credentials, creates authentication claims, stores a session token, and signs the user in.
         public async Task<JsonResult> Login([FromBody] User users)
         {
             string email = users.Email;
@@ -94,6 +95,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
         }
 
         [HttpGet]
+        // Displays the login form.
         public ActionResult Login()
         {
             return View();
@@ -101,6 +103,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 
 
         [HttpPost]
+        // Validates registration data and creates a new user account.
         public ActionResult RegisterAccount(User Users)
         {
 
@@ -157,6 +160,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
         }
 
         [HttpGet]
+        // Displays the account-registration form.
         public ActionResult RegisterAccount()
         {
             return View();
@@ -164,11 +168,13 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 
 
         [HttpGet]
+        // Displays the access-denied page.
         public ActionResult Denied()
         {
             return View();
         }
 
+        // Starts the Google authentication challenge and sets the callback URL.
         public async Task LoginByGoogle()
         {
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
@@ -178,6 +184,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
             });
         }
 
+        // Processes the Google callback, creates a local account when needed, and signs the user in.
         public async Task<IActionResult> GoogleResponse()
         {
 
@@ -235,6 +242,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 
         }
 
+        // Signs the current user out of cookie authentication and redirects to the home page.
         public ActionResult SignOut()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -243,6 +251,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
 
 
 
+        // Displays the forgot-password form.
         public async Task<ActionResult> ForgotPassword()
         {
 
@@ -250,6 +259,7 @@ namespace Management_Hotel_2025.Modules.AuthenSerive.AuthensController
         }
 
         [HttpPost]
+        // Requests a password reset for the supplied email address.
         public async Task<ActionResult> ForgotPasswordProcess([FromBody] string email)
         {
 

@@ -26,11 +26,11 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
         }
 
         [HttpGet("test")]
-        // Handles the Index action.
+// Provides a lightweight health/test endpoint for the room-detail API.
         public IActionResult Index() => Accepted();
 
         [HttpGet("room/{idRoom}")]
-        // Handles the ViewDetaiRoom action.
+// Returns room details, using Redis cache when a cached representation is available.
         public async Task<IActionResult> ViewDetaiRoom([FromRoute] string idRoom)
         {
             if (string.IsNullOrEmpty(idRoom))

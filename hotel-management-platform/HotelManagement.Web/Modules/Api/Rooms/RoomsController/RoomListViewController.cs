@@ -37,6 +37,7 @@ namespace API_BookingHotel.Modules.Rooms.RoomsController
 
       
         [HttpGet("room")]
+        // Searches available rooms by date, floor, price, guest capacity, and pagination; results are cached in Redis.
         public async Task<IActionResult> SearchRoomAdvanceVersion2([FromQuery] RoomFilterRequest roomRequest)
         {
             string apihost = $"{Request.Scheme}://{Request.Host}";

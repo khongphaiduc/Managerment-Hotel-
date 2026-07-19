@@ -53,6 +53,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
 
 
         [HttpPost("checkoutbypayos")]
+        // Creates a PayOS checkout link for the supplied payment request.
         public async Task<IActionResult> createpayosCheckOut([FromBody] PaymentRequest payment)
         {
             try
@@ -99,6 +100,7 @@ namespace Management_Hotel_2025.Modules.Payment.PayOSPayments
 
 
         [HttpPost("webhook")]
+        // Verifies PayOS payment notifications and finalizes the related booking or transfer.
         public async Task<IActionResult> Webhook([FromBody] Webhook webhook)
         {
             var webhookData = await _payOS.Webhooks.VerifyAsync(webhook);

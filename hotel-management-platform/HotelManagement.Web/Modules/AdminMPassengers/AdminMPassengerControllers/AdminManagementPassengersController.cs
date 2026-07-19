@@ -26,7 +26,7 @@ namespace Management_Hotel_2025.Modules.AdminMPassengers.AdminMPassengerControll
 
 
         [HttpGet("passengers")]
-        // Handles the ViewListPassenger action.
+        // Loads the passenger list for the administrator's passenger-management page.
         public async Task<IActionResult> ViewListPassenger()
         {
 
@@ -37,7 +37,7 @@ namespace Management_Hotel_2025.Modules.AdminMPassengers.AdminMPassengerControll
 
      
         [HttpGet("passengers/{codePassenger}")]
-        // Handles the GetPassengersInfo action.
+        // Loads a passenger by code and displays the passenger's personal and contact information.
         public async Task<IActionResult> GetPassengersInfo(string codePassenger)
         {
 

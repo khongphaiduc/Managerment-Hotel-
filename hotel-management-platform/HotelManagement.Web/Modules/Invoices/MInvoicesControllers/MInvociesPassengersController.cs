@@ -28,7 +28,7 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
 
 
         [HttpGet("invoices")]
-        // Handles the GetlistInvoicesPassengers action.
+// Loads a paginated invoice list for staff/admin users using optional keyword and date filters.
         public async Task<IActionResult> GetlistInvoicesPassengers(string? key, DateTime? startdate, DateTime? enddate, int indexpage = 1)
         {
             try
@@ -72,7 +72,7 @@ namespace Management_Hotel_2025.Modules.Invoices.MInvoicesControllers
 
 
         [HttpGet("invoices/{bookingcode}")]
-        // Handles the DetailInvoicesPassenger action.
+// Loads the detailed invoice and booking information for one booking code.
         public async Task<IActionResult> DetailInvoicesPassenger(string bookingcode)
         {
             var order = await _iOrder.ViewOrder(bookingcode);

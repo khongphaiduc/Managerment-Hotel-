@@ -41,7 +41,8 @@ public static class DotEnvLoader
                 value = value[1..^1];
             }
 
-            if (Environment.GetEnvironmentVariable(key) is null)
+            // Do not overwrite a value supplied by the host process or deployment environment.
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(key)))
             {
                 Environment.SetEnvironmentVariable(key, value);
             }

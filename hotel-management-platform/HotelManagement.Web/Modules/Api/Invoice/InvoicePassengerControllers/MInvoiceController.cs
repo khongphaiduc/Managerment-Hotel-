@@ -20,7 +20,7 @@ namespace API_BookingHotel.Modules.Invoice.InvoicePassengerControllers
         }
 
         [HttpGet("invoice")]
-        // Handles the GetInvoicePassenger action.
+// Returns a paginated invoice list filtered by keyword and optional date range.
         public async Task<IActionResult> GetInvoicePassenger(string? key, DateTime? startdate, DateTime? enddate, int indexpage)
         {
 
@@ -38,7 +38,7 @@ namespace API_BookingHotel.Modules.Invoice.InvoicePassengerControllers
 
 
         [HttpGet("invoice/{invoiceCode}")]
-        // Handles the GetInvoicePassengerByCode action.
+// Returns the invoice matching the supplied invoice code.
         public async Task<IActionResult> GetInvoicePassengerByCode(string invoiceCode)
         {
             var result = await _Invoices.GetInvoicePassengerByCode(invoiceCode);

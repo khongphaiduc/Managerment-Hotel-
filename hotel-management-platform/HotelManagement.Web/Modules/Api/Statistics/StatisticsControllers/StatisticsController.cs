@@ -16,7 +16,7 @@ namespace API_BookingHotel.Modules.Statistics.StatisticsControllers
         }
 
         [HttpGet("statist")]
-        // Handles the GetStatis action.
+// Returns the statistics dashboard data for the admin client.
         public async Task<IActionResult> GetStatis()
         {
 
