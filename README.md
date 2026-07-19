@@ -1,6 +1,8 @@
 # Hotel Manager Booking
 
-An ASP.NET Core 8 hotel management platform for online room booking and day-to-day hotel operations. The application brings guest booking, room availability, front-desk workflows, payments, invoicing, administration, notifications, and reporting into a single web solution.
+Hotel Manager Booking is an ASP.NET Core 8 hotel operations platform for managing the complete guest journey—from room discovery and booking to payment, check-in, check-out, invoicing, and follow-up communication.
+
+The project combines a customer-facing booking experience with operational workflows for reception staff and hotel administrators. Its modular web host also exposes integration endpoints for room, passenger, invoice, amenity, and statistics data.
 
 ## Demo
 
@@ -8,53 +10,54 @@ An ASP.NET Core 8 hotel management platform for online room booking and day-to-d
 - [Administration flow](https://drive.google.com/file/d/1whk9kUXY8xnFzyDIKguAPObQbWY_cad4/view?usp=drive_link)
 - [Reception workflow](https://drive.google.com/file/d/1e3OPdMkw01cLJmYTmwnViQrHSMcEpX_C/view?usp=drive_link)
 
-## What the platform provides
+## Product capabilities
 
-- Public room browsing, room details, date-based availability, and booking
-- Customer authentication, registration, password recovery, and Google sign-in
-- Booking payment flows through PayOS and VNPay
-- Reception operations including booking review, guest registration, check-in, and check-out
-- Administrative management of rooms, room types, amenities, passengers, invoices, and statistics
-- Role-based access for customers, staff, and administrators
-- JWT-protected integration endpoints for rooms, amenities, invoices, passengers, and statistics
-- Email notifications through RabbitMQ-backed producer/consumer components
-- Scheduled room-status refresh, check-in reminders, check-out reminders, and late check-out calculation
-- Real-time notifications through SignalR
-- Optional Redis-backed caching and distributed locking, with an in-memory fallback for local development
-- QR-code generation for booking details
+- Browse rooms, view room details, check date-based availability, and create bookings.
+- Register and authenticate users with cookie authentication, Google OAuth, and JWT-protected API access.
+- Process booking payments through PayOS and VNPay.
+- Support reception workflows for booking review, guest registration, check-in, check-out, room status, and booking calendars.
+- Manage rooms, room types, amenities, passengers, invoices, hotel services, and statistics.
+- Send email-related work through RabbitMQ producer/consumer components.
+- Deliver real-time user notifications through SignalR.
+- Run scheduled room-status refreshes, check-in reminders, check-out reminders, and late check-out calculations with Quartz.NET.
+- Use Redis for optional distributed caching and locking, with an in-memory fallback for local development.
+- Generate booking QR codes and maintain booking, payment, notification, review, and staff-action records.
 
-## Architecture at a glance
+## Architecture
 
 ```text
-      Browser
-        |
-        v
+Browser / API clients
+          |
+          v
 HotelManagement.Web
-  MVC controllers and Razor views
-  Feature modules: Auth, Rooms, Payments, Invoices, Admin, API, Statistics
-  Authentication, SignalR, Quartz jobs, RabbitMQ, Redis, file handling
-        |
-        v
+  ASP.NET Core MVC host
+  Razor views and controllers
+  Feature modules and API endpoints
+  Authentication, payments, jobs, messaging, SignalR, Redis
+          |
+          v
 HotelManagement.Infrastructure
-  Entity Framework Core DbContext
-  SQL Server models and migrations
-        |
-        v
-     SQL Server
+  EF Core DbContext
+  SQL Server models and mappings
+  EF Core migrations
+          |
+          v
+      SQL Server
 
-External integrations: Google OAuth, PayOS, VNPay, RabbitMQ, Redis
+External services: Google OAuth, PayOS, VNPay, RabbitMQ, Redis
 ```
 
-The solution uses a modular feature-oriented structure inside the web host. Persistence models, the EF Core context, and database migrations are kept in the Infrastructure project, while web workflows and integration endpoints are organized under the Web project’s `Modules` directory.
+`HotelManagement.Web` is the application host. Its `Modules` directory contains feature-oriented areas such as authentication, rooms, payments, invoices, amenities, passengers, statistics, notifications, RabbitMQ, Redis, QR-code generation, and scheduled jobs. `HotelManagement.Infrastructure` contains the scaffolded EF Core model layer, the `ManagermentHotelContext` database context, configuration helpers, and migrations.
 
-## Solution structure
+## Repository structure
 
 ```text
 hotel-manager-booking/
 ├── README.md
 ├── .gitignore
-└── Management Hotel 2025/
+└── hotel-management-platform/
     ├── HotelManagement.sln
+    ├── .env.example
     ├── HotelManagement.Web/
     │   ├── Home/
     │   ├── Modules/
@@ -70,8 +73,7 @@ hotel-manager-booking/
     │   │   ├── Rooms/
     │   │   ├── Secheduler/
     │   │   ├── SignalRModels/
-    │   │   ├── Statistics/
-    │   │   └── WorkFile/
+    │   │   └── Statistics/
     │   ├── ViewModel/
     │   ├── Views/
     │   ├── wwwroot/
@@ -80,142 +82,132 @@ hotel-manager-booking/
     ├── HotelManagement.Infrastructure/
     │   ├── Configuration/
     │   ├── Migrations/
-    │   ├── Models/
-    │   │   └── ManagermentHotelContext.cs
-    │   └── HotelManagement.Infrastructure.csproj
+    │   └── Models/
+    │       └── ManagermentHotelContext.cs
     └── HotelManagement.Tests/
         ├── InvoiceApiTest.cs
-        ├── TestValidationAuthen.cs
-        └── HotelManagement.Tests.csproj
+        └── TestValidationAuthen.cs
 ```
 
 ### Project responsibilities
 
 | Project | Responsibility |
 | --- | --- |
-| `HotelManagement.Web` | ASP.NET Core MVC application, Razor UI, application services, API endpoints, authentication, payments, scheduled jobs, messaging, and real-time notifications |
-| `HotelManagement.Infrastructure` | EF Core `ManagermentHotelContext`, SQL Server model configuration, persistence entities, and migrations |
+| `HotelManagement.Web` | Web application, Razor UI, MVC controllers, API modules, authentication, payments, background jobs, messaging, caching, and real-time notifications |
+| `HotelManagement.Infrastructure` | EF Core context, SQL Server persistence models, model configuration, and database migrations |
 | `HotelManagement.Tests` | xUnit tests for authentication validation and invoice API behavior |
+
+## Domain and persistence model
+
+The EF Core context currently maps the main hotel operations domain, including:
+
+- Users, roles, tokens, notifications, and staff actions
+- Rooms, room types, images, amenities, and room-amenity relationships
+- Bookings, booking details, guests, payments, temporary PayOS bookings, and booking services
+- Orders, invoices, hotel services, reviews, and supporting records
+
+Database schema changes are stored in `HotelManagement.Infrastructure/Migrations`. The context source is `HotelManagement.Infrastructure/Models/ManagermentHotelContext.cs`.
 
 ## Technology stack
 
 - .NET 8 and ASP.NET Core MVC
 - Entity Framework Core 8 with SQL Server
-- Razor Views, Bootstrap, jQuery, and client-side JavaScript
-- Cookie authentication, JWT bearer authentication, and Google OAuth
-- Quartz.NET for scheduled jobs
-- SignalR for real-time notifications
-- RabbitMQ.Client for asynchronous email processing
-- StackExchange.Redis for optional caching and distributed locks
+- Razor Views, Bootstrap, jQuery, and JavaScript
+- Cookie authentication, Google OAuth, and JWT bearer authentication
+- Quartz.NET scheduled jobs
+- SignalR real-time notifications
+- RabbitMQ.Client asynchronous messaging
+- StackExchange.Redis distributed caching and locking
 - PayOS and VNPay payment integrations
-- QRCoder for QR-code generation
-- xUnit and Moq for automated tests
+- QRCoder QR-code generation
+- xUnit and Moq testing
 
 ## Prerequisites
 
 - .NET 8 SDK
 - SQL Server
 - Visual Studio 2022 or another .NET-compatible IDE
-- RabbitMQ if email messaging is enabled
-- Redis if Redis caching/locking is enabled
-- Credentials for Google OAuth, PayOS, and VNPay when those integrations are used
+- RabbitMQ for email messaging features
+- Redis when Redis caching or distributed locking is enabled
+- Provider credentials for Google OAuth, PayOS, VNPay, and SMTP email when those features are used
 
-## Configuration
+## Local configuration
 
-The application loads configuration from `appsettings.json`, environment variables, and an optional `.env` file. `.env` files and development settings are intentionally ignored by Git, so each developer must provide local values.
+Configuration is read from `appsettings.json`, environment variables, and an optional `.env` file. `DotEnvLoader` searches upward from the current directory and the application base directory, so a local `.env` can be placed at the solution/repository level.
 
-At minimum, configure the following sections for the features you need:
+Create a local environment file from the supplied template:
 
-| Section | Used for |
-| --- | --- |
-| `ConnectionStrings:SQL` | SQL Server connection used by Entity Framework Core |
-| `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience` | JWT creation and validation |
-| `GoogleKeys:GoogleID`, `GoogleKeys:GoogleSecret` | Google authentication |
-| `PayOS:ClientId`, `PayOS:ApiKey`, `PayOS:ChecksumKey` | PayOS checkout and webhook handling |
-| `Vnpay:*` | VNPay URL, merchant settings, callback URL, and hash secret |
-| `RabbitMQ:Host`, `RabbitMQ:UserName`, `RabbitMQ:Password`, `RabbitMQ:Queues:Email` | Email message delivery |
-| `Redis:Enabled`, `Redis:Connection` | Optional Redis cache and lock services |
+```powershell
+Copy-Item ".\hotel-management-platform\.env.example" ".\hotel-management-platform\.env"
+```
 
-Use environment-variable nesting with double underscores when configuring outside JSON. For example:
+At minimum, configure the SQL Server connection and JWT settings. Add provider credentials only for the integrations you intend to run:
 
 ```text
 ConnectionStrings__SQL=Server=localhost;Database=HotelManagement;Trusted_Connection=True;TrustServerCertificate=True
 Jwt__Key=replace-with-a-long-development-secret
-Jwt__Issuer=hotel-manager-booking
-Jwt__Audience=hotel-manager-booking-client
+Jwt__Issuer=https://localhost:7236
+Jwt__Audience=https://localhost:7045
 Redis__Enabled=false
+RabbitMQ__Host=localhost
+RabbitMQ__UserName=guest
+RabbitMQ__Password=guest
 ```
 
-Never commit passwords, signing keys, payment credentials, OAuth secrets, or production connection strings.
+The full list of supported keys is documented in `hotel-management-platform/.env.example`, including Google, Facebook, PayOS, VNPay, RabbitMQ, Redis, and SMTP settings. Never commit passwords, signing keys, payment credentials, OAuth secrets, or production connection strings.
 
 ## Getting started
 
-Run the commands below from the repository root.
+Run the commands from the repository root.
 
 ### Restore and build
 
 ```powershell
-dotnet restore "Management Hotel 2025\HotelManagement.sln"
-dotnet build "Management Hotel 2025\HotelManagement.sln"
+dotnet restore ".\hotel-management-platform\HotelManagement.sln"
+dotnet build ".\hotel-management-platform\HotelManagement.sln"
 ```
 
 ### Apply database migrations
 
-The EF Core context and migrations are in `HotelManagement.Infrastructure`; the web project supplies the startup configuration:
+The migrations are owned by `HotelManagement.Infrastructure`, while `HotelManagement.Web` supplies the startup configuration:
 
 ```powershell
 dotnet ef database update `
-  --project "Management Hotel 2025\HotelManagement.Infrastructure\HotelManagement.Infrastructure.csproj" `
-  --startup-project "Management Hotel 2025\HotelManagement.Web\HotelManagement.Web.csproj"
+  --project ".\hotel-management-platform\HotelManagement.Infrastructure\HotelManagement.Infrastructure.csproj" `
+  --startup-project ".\hotel-management-platform\HotelManagement.Web\HotelManagement.Web.csproj"
 ```
 
-Review the migration history and confirm the target connection string before applying changes to a shared or production database.
+Review the configured connection string before applying migrations to a shared or production database.
 
-### Run the application
+### Run the web application
 
 ```powershell
-dotnet run --project "Management Hotel 2025\HotelManagement.Web\HotelManagement.Web.csproj"
+dotnet run --project ".\hotel-management-platform\HotelManagement.Web\HotelManagement.Web.csproj"
 ```
 
-The development launch profiles expose the application at:
+The development launch profiles use:
 
-- HTTPS: `https://localhost:7045`
-- HTTP: `http://localhost:5299`
+- `https://localhost:7045`
+- `http://localhost:5299`
 
-The default route opens the home introduction page. API and operational routes are implemented by the controllers under `HotelManagement.Web/Modules`.
+The default route opens the home introduction page. MVC and API routes are implemented by controllers under `HotelManagement.Web/Modules`.
 
 ## Testing
 
-Run the test project or the complete solution with:
+Run the test project:
 
 ```powershell
-dotnet test "Management Hotel 2025\HotelManagement.Tests\HotelManagement.Tests.csproj"
-dotnet test "Management Hotel 2025\HotelManagement.sln"
+dotnet test ".\hotel-management-platform\HotelManagement.Tests\HotelManagement.Tests.csproj"
 ```
 
-The current test suite covers password validation and invoice API behavior using xUnit and Moq.
-
-## Database model
-
-The EF Core context currently includes entities for bookings, booking details, rooms, room types, users, guests, payments, invoices/orders, services, amenities, images, notifications, reviews, staff actions, tokens, and temporary PayOS bookings. Schema changes are tracked in:
-
-```text
-Management Hotel 2025/HotelManagement.Infrastructure/Migrations
-```
+The current suite includes authentication password-validation tests and an invoice API controller test using Moq.
 
 ## Project status
 
-This project is under active development. Some naming and module paths retain their original historical names, while the solution continues to evolve toward clearer boundaries and more consistent conventions.
+This project is under active development. Some namespaces and folder names preserve historical conventions, including `Management_Hotel_2025`, `Mydata`, `Amentity`, `AuthenSerive`, and `Secheduler`. These names are part of the current source structure and should be considered when adding new modules or refactoring existing ones.
 
 ## Credits
 
-- Software Engineer: Pham Trung Duc
-- Development support and prototyping: ChatGPT, GitHub Copilot, and Pham Trung Duc
+Developed by [Pham Trung Duc](mailto:ptrungduc1011@gmail.com).
 
-## License
-
-No license file is currently included in the repository. Review and add an appropriate license before distributing the project publicly.
-
-## Contact
-
-For collaboration or feedback, contact [ptrungduc1011@gmail.com](mailto:ptrungduc1011@gmail.com).
+No license file is currently included. Add an appropriate license before distributing the project publicly.
