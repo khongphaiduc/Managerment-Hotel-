@@ -1,0 +1,14 @@
+.git
+.vs
+.agents
+.codex
+
+**/bin/
+**/obj/
+**/.env
+**/appsettings.Development.json
+**/Properties/launchSettings.json
+
+README.md
+*.user
+*.suo

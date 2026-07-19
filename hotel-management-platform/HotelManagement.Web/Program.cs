@@ -19,6 +19,7 @@ using Management_Hotel_2025.Modules.WorkFile;
 using Management_Hotel_2025.Modules.AdminMPassengers.MPassengersServices;
 using Management_Hotel_2025.Modules.Payment.PayOSPayments;
 using Management_Hotel_2025.Modules.SignalRModels;
+using Management_Hotel_2025.Data;
 using Management_Hotel_2025.Modules.RabbitMQHotel;
 using StackExchange.Redis;
 using Management_Hotel_2025.Modules.RedisServices;
@@ -251,6 +252,15 @@ namespace Management_Hotel_2025
 
 
             var app = builder.Build();
+
+            // Create the configured database and apply all pending EF Core migrations
+            // before the application starts serving requests.
+            using (var scope = app.Services.CreateScope())
+            {
+                var database = scope.ServiceProvider.GetRequiredService<ManagermentHotelContext>();
+                database.Database.Migrate();
+                DatabaseSeeder.Seed(database);
+            }
 
            
             if (!app.Environment.IsDevelopment())
