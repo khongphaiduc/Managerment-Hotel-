@@ -52,7 +52,7 @@ services:
     restart: unless-stopped
 
   myapp:
-    image: ptrungduc1011/hotel:v9
+    image: ptrungduc1011/hotel:v12
     ports:
       - "8888:8080"
     env_file:

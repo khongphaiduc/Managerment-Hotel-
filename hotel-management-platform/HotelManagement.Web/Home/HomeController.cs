@@ -47,27 +47,27 @@ namespace Management_Hotel_2025.Controllers
         }
 
         [Route("/")]
-        // Displays the public introduction page.
+    
         public IActionResult Intro()
         {
             return View();
         }
 
         [Route("trial")]
-        // Displays the application's trial/development page.
+       
         public IActionResult MemeDevelopment()
         {
             return View();
         }
 
-        // Displays the privacy page.
+      
         public IActionResult Privacy()
         {
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        // Displays the error page with the current request identifier.
+      
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

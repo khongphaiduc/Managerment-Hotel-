@@ -23,6 +23,7 @@ using Management_Hotel_2025.Modules.RabbitMQHotel;
 using StackExchange.Redis;
 using Management_Hotel_2025.Modules.RedisServices;
 using Management_Hotel_2025.Modules.RabbitMQConsumer;
+using Management_Hotel_2025.Data;
 using MyData.Configuration;
 using API_BookingHotel.MiddlewareCustom;
 using API_BookingHotel.Modules.AmentityModules.AmentityServices;
@@ -261,6 +262,8 @@ namespace Management_Hotel_2025
 
 
             var app = builder.Build();
+
+            await DatabaseInitializer.InitializeAsync(app.Services, app.Logger);
 
             if (!app.Environment.IsDevelopment())
             {
